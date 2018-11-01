@@ -1,0 +1,11 @@
+{
+	"manifest_version": 2,
+	"name": "Tabla",
+	"version": "0.0.1",
+	"description": "New Tab page for passive thinking.",
+	"author": "Joel Gustafson",
+	"chrome_url_overrides": {
+		"newtab": "index.html"
+	},
+	"permissions": ["storage"]
+}
