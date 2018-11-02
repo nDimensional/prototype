@@ -1,9 +1,18 @@
 const blockTypes = new Set(["p", "h1", "h2", "h3", "h4", "blockquote"])
-const initialText =
-	"Welcome to Tad! Use this space for scratch notes, reminders, and whatever else you want to keep around. A few markdown elements are supported (just h1-h4 and blockquotes for now) but you're welcome to contribute over at https://github.com/joeltg/tad"
-const initialNodes = [{ object: "text", leaves: [{ text: initialText }] }]
+
+const initialText = [
+	"Welcome to Tad!",
+	"Use this space for scratch notes, reminders, and whatever else you want to keep around. A few markdown elements are supported (just h1-h4 and block quotes for now) but you're welcome to contribute over at https://github.com/joeltg/tad!",
+]
+
 const initialValue = Slate.Value.fromJSON({
-	document: { nodes: [{ object: "block", type: "p", nodes: initialNodes }] },
+	document: {
+		nodes: initialText.map(text => ({
+			object: "block",
+			type: "p",
+			nodes: [{ object: "text", leaves: [{ text }] }],
+		})),
+	},
 })
 
 const STORAGE_KEY = "--tad-storage--"
