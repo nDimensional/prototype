@@ -1,4 +1,4 @@
-const blockTypes = new Set(["p", "h1", "h2", "h3", "h4"])
+const blockTypes = new Set(["p", "h1", "h2", "h3", "h4", "blockquote"])
 const initialText = "A line of text in a paragraph."
 const initialNodes = [{ object: "text", leaves: [{ text: initialText }] }]
 const initialValue = Slate.Value.fromJSON({
@@ -9,15 +9,20 @@ const STORAGE_KEY = "--tabla-slate-value--"
 const TAB_ID_KEY = "--tabla-tab-id--"
 
 const headerTest = /^(#+)(?: |$)/
+const blockQuoteTest = /^> /
 
 function normalizeNode(node, editor, next) {
 	if (blockTypes.has(node.type)) {
-		const match = headerTest.exec(node.text)
-		if (match) {
-			const [_, { length }] = match
-			const type = "h" + length
+		const { text } = node.getFirstText()
+		const match = headerTest.exec(text)
+		if (match && match[1].length < 5) {
+			const type = "h" + match[1].length
 			if (node.type !== type) {
 				return () => editor.setNodeByKey(node.key, { type })
+			}
+		} else if (blockQuoteTest.test(text)) {
+			if (node.type !== "blockquote") {
+				return () => editor.setNodeByKey(node.key, { type: "blockquote" })
 			}
 		} else if (node.type !== "p") {
 			return () => editor.setNodeByKey(node.key, { type: "p" })
