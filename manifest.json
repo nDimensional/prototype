@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "Tad",
 	"version": "0.1.0",
-	"description": "A new tab scratch space for notes, reminders, and whatever else you want to keep around",
+	"description": "A scratch space for notes, reminders, and whatever else you want to keep around",
 	"author": "Joel Gustafson",
 	"chrome_url_overrides": {
 		"newtab": "index.html"
