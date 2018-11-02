@@ -16,22 +16,52 @@
 	<script type="text/javascript" src="vendor/slate-react.min.js"></script>
 </head>
 <style>
-	html,
+	html {
+		height: 100%;
+	}
+
 	body {
 		height: 100%;
 		margin: 0;
+		background-color: rgba(42, 42, 46, 1);
+		color: rgba(249, 249, 250, 1);
 	}
 
 	main {
-		height: 100%;
 		padding: 1em;
 		margin: auto;
 		max-width: 840px;
 		font-family: "iA Writer Duospace";
 	}
+	button {
+		border: 0;
+		cursor: pointer;
+		fill: rgba(249, 249, 250, 0.8);
+		padding: 15px;
+		/* background-position: center center; */
+		background-repeat: no-repeat;
+		/* background-size: 16px; */
+		-moz-context-properties: fill;
+		/* display: inline-block; */
+		/* height: 16px; */
+			/* width: 16px; */
+		vertical-align: middle;
+	
+		background-image: url("chrome://browser/skin/settings.svg");
+		background-color: transparent;
+		background-position: 50% 50%;
+		position: fixed;
+		top: 15px;
+		z-index: 1000;
+		right: 15px;
+	}
+	button:hover {
+		background-color: rgba(249, 249, 250, 0.1);
+	}
 </style>
 
 <body>
+	<!-- <button></button> -->
 	<main></main>
 </body>
 <script type="text/javascript" src="index.js"></script>

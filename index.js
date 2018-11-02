@@ -1,4 +1,4 @@
-const nodeTypes = new Set(["p", "h1", "h2", "h3", "h4"])
+const blockTypes = new Set(["p", "h1", "h2", "h3", "h4"])
 const initialText = "A line of text in a paragraph."
 const initialNodes = [{ object: "text", leaves: [{ text: initialText }] }]
 const initialValue = Slate.Value.fromJSON({
@@ -8,16 +8,42 @@ const initialValue = Slate.Value.fromJSON({
 const STORAGE_KEY = "--tabla-slate-value--"
 const TAB_ID_KEY = "--tabla-tab-id--"
 
+const headerTest = /^(#+)(?: |$)/
+
+function normalizeNode(node, editor, next) {
+	if (blockTypes.has(node.type)) {
+		const match = headerTest.exec(node.text)
+		if (match) {
+			const [_, { length }] = match
+			const type = "h" + length
+			if (node.type !== type) {
+				return () => editor.setNodeByKey(node.key, { type })
+			}
+		} else if (node.type !== "p") {
+			return () => editor.setNodeByKey(node.key, { type: "p" })
+		}
+	}
+	return next()
+}
+
+function renderNode(props, editor, next) {
+	if (blockTypes.has(props.node.type)) {
+		return React.createElement(props.node.type, props)
+	} else {
+		return next()
+	}
+}
+
 class Tabla extends React.Component {
 	constructor(props) {
 		super(props)
 		this.sync = true
-		this.state = { value: initialValue, disabled: true }
+		this.state = { value: null }
 		this.document = initialValue.document
 		this.onChange = this.onChange.bind(this)
 		this.onKeyDown = this.onKeyDown.bind(this)
-		this.renderNode = this.renderNode.bind(this)
 	}
+
 	async componentDidMount() {
 		// Get tab id
 		const tab = await window.browser.tabs.getCurrent()
@@ -27,7 +53,7 @@ class Tabla extends React.Component {
 		const data = await window.browser.storage.sync.get(STORAGE_KEY)
 		const { [STORAGE_KEY]: json } = data
 		const value = json === undefined ? initialValue : Slate.Value.fromJSON(json)
-		this.setState({ disabled: false, value })
+		this.setState({ value })
 
 		// Attach listener
 		window.browser.storage.onChanged.addListener(
@@ -42,6 +68,7 @@ class Tabla extends React.Component {
 			}
 		)
 	}
+
 	async save(value) {
 		this.sync = false
 		this.value = null
@@ -51,6 +78,7 @@ class Tabla extends React.Component {
 		if (this.value !== null) this.save(this.value)
 		else this.sync = true
 	}
+
 	onChange({ value }) {
 		if (value.document !== this.state.value.document) {
 			if (this.sync) this.save(value)
@@ -58,23 +86,24 @@ class Tabla extends React.Component {
 		}
 		this.setState({ value })
 	}
+
 	onKeyDown(event, editor, next) {
 		const { metaKey, keyCode } = event
 		if (metaKey && keyCode === 83) event.preventDefault()
 		else return next()
 	}
+
 	render() {
-		const { onChange, onKeyDown, renderNode } = this
-		const { value, disabled } = this.state
-		const props = { value, disabled, onChange, onKeyDown, renderNode }
-		return React.createElement(SlateReact.Editor, props)
-	}
-	renderNode(props, editor, next) {
-		if (nodeTypes.has(props.node.type)) {
-			return React.createElement(props.node.type, props)
-		} else {
-			return next()
-		}
+		const { onChange, onKeyDown } = this
+		const { value } = this.state
+		if (value === null) return null
+		return React.createElement(SlateReact.Editor, {
+			value,
+			plugins: [{ normalizeNode }],
+			onChange,
+			onKeyDown,
+			renderNode,
+		})
 	}
 }
 
