@@ -22,34 +22,6 @@ const STORAGE_KEY = "--tad-storage--"
 const headerTest = /^(#+)(?: |$)/
 const blockQuoteTest = /^> /
 
-function normalizeNode(node, editor, next) {
-	if (blockTypes.has(node.type)) {
-		const { text } = node.getFirstText()
-		const match = headerTest.exec(text)
-		if (match && match[1].length < 5) {
-			const type = "h" + match[1].length
-			if (node.type !== type) {
-				return () => editor.setNodeByKey(node.key, { type })
-			}
-		} else if (blockQuoteTest.test(text)) {
-			if (node.type !== "blockquote") {
-				return () => editor.setNodeByKey(node.key, { type: "blockquote" })
-			}
-		} else if (node.type !== "p") {
-			return () => editor.setNodeByKey(node.key, { type: "p" })
-		}
-	}
-	return next()
-}
-
-function renderNode(props, editor, next) {
-	if (blockTypes.has(props.node.type)) {
-		return React.createElement(props.node.type, props)
-	} else {
-		return next()
-	}
-}
-
 class Tad extends React.Component {
 	constructor(props) {
 		super(props)
@@ -97,6 +69,8 @@ class Tad extends React.Component {
 	}
 
 	render() {
+		// normalizeNode & renderNode are static functions
+		const { normalizeNode, renderNode } = Tad
 		return React.createElement(SlateReact.Editor, {
 			value: this.state.value,
 			plugins: [{ normalizeNode }],
@@ -105,46 +79,71 @@ class Tad extends React.Component {
 			renderNode,
 		})
 	}
-}
 
-const main = document.querySelector("main")
-const panel = document.getElementById("panel")
+	static renderNode(props, editor, next) {
+		if (blockTypes.has(props.node.type)) {
+			return React.createElement(props.node.type, props)
+		} else {
+			return next()
+		}
+	}
+
+	static normalizeNode(node, editor, next) {
+		if (blockTypes.has(node.type)) {
+			const { text } = node.getFirstText()
+			const match = headerTest.exec(text)
+			if (match && match[1].length < 5) {
+				const type = "h" + match[1].length
+				if (node.type !== type) {
+					return () => editor.setNodeByKey(node.key, { type })
+				}
+			} else if (blockQuoteTest.test(text)) {
+				if (node.type !== "blockquote") {
+					return () => editor.setNodeByKey(node.key, { type: "blockquote" })
+				}
+			} else if (node.type !== "p") {
+				return () => editor.setNodeByKey(node.key, { type: "p" })
+			}
+		}
+		return next()
+	}
+}
 
 let isDark
 function setTheme(theme) {
-	console.log("setting theme from", isDark, "to", theme)
 	isDark = theme
 	if (isDark) document.body.classList.add("dark")
 	else document.body.classList.remove("dark")
 }
 
-async function initialize() {
-	// Get tab id & data browser storage
-	const [{ id }, data] = await Promise.all([
-		window.browser.tabs.getCurrent(),
-		window.browser.storage.sync.get([STORAGE_KEY, THEME_KEY]),
-	])
-
-	const { [STORAGE_KEY]: json, [THEME_KEY]: theme } = data
+// Get tab id & data from browser storage
+Promise.all([
+	window.browser.tabs.getCurrent(),
+	window.browser.storage.sync.get([STORAGE_KEY, THEME_KEY]),
+]).then(([{ id }, { [STORAGE_KEY]: json, [THEME_KEY]: theme }]) => {
+	// `theme` is undefined if not set previously
 	setTheme(!!theme)
 
+	// Attach theme listeners
 	window.browser.commands.onCommand.addListener(command => {
 		if (command === "toggle-theme") {
+			// Don't call setTheme() here, let the storage.onChanged
+			// listener do the actual theme changing.
 			window.browser.storage.sync.set({ [THEME_KEY]: !isDark })
 		}
 	})
 
 	window.browser.storage.onChanged.addListener(
-		({ [THEME_KEY]: values }, areaName) => {
-			if (areaName === "sync" && values) {
-				const { newValue } = values
-				setTheme(newValue)
+		({ [THEME_KEY]: value }, areaName) => {
+			if (value && areaName === "sync") {
+				setTheme(value.newValue)
 			}
 		}
 	)
 
 	const value = json ? Slate.Value.fromJSON(json) : initialValue
-	ReactDOM.render(React.createElement(Tad, { id, value }), main)
-}
-
-initialize()
+	ReactDOM.render(
+		React.createElement(Tad, { id, value }),
+		document.querySelector("main")
+	)
+})
