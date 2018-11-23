@@ -1,71 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>New Tad</title>
+		<link rel="icon" type="image/png" href="logo.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" type="text/css" href="Webfonts/fonts.css" />
+		<script defer src="vendor/immutable.min.js"></script>
+		<script defer src="vendor/react.production.min.js"></script>
+		<script defer src="vendor/react-dom.production.min.js"></script>
+		<script defer src="vendor/react-dom-server.production.min.js"></script>
+		<script defer src="vendor/slate.min.js"></script>
+		<script defer src="vendor/slate-react.min.js"></script>
+	</head>
+	<style>
+		html {
+			height: 100%;
+		}
 
-<head>
-	<meta charset="UTF-8">
-	<title>New Tad</title>
-	<meta name="theme-color" content="#fffff8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" type="text/css" href="Webfonts/fonts.css">
+		body {
+			height: 100%;
+			margin: 0;
+			font-family: "iA Writer Duospace";
 
-	<script defer type="text/javascript" src="vendor/immutable.min.js"></script>
-	<script defer type="text/javascript" src="vendor/react.production.min.js"></script>
-	<script defer type="text/javascript" src="vendor/react-dom.production.min.js"></script>
-	<script defer type="text/javascript" src="vendor/react-dom-server.production.min.js"></script>
-	<script defer type="text/javascript" src="vendor/slate.min.js"></script>
-	<script defer type="text/javascript" src="vendor/slate-react.min.js"></script>
-</head>
-<style>
-	html {
-		height: 100%;
-	}
+			background-color: #f9f9fa;
+			color: #0c0c0d;
+		}
 
-	body {
-		height: 100%;
-		margin: 0;
-		background-color: rgba(42, 42, 46, 1);
-		color: rgba(249, 249, 250, 1);
-	}
+		@media (prefers-color-scheme: dark) {
+			body {
+				background-color: rgba(42, 42, 46, 1);
+				color: rgba(249, 249, 250, 1);
+			}
+		}
 
-	main {
-		padding: 1em;
-		margin: auto;
-		max-width: 680px;
-		font-family: "iA Writer Duospace";
-	}
+		body.dark {
+			background-color: rgba(42, 42, 46, 1);
+			color: rgba(249, 249, 250, 1);
+		}
 
-	button {
-		border: 0;
-		cursor: pointer;
-		fill: rgba(249, 249, 250, 0.2);
-		padding: 15px;
-		background-repeat: no-repeat;
-		-moz-context-properties: fill;
-		vertical-align: middle;
-	
-		background-image: url("chrome://browser/skin/settings.svg");
-		background-color: transparent;
-		background-position: 50% 50%;
-		position: fixed;
-		top: 15px;
-		z-index: 1000;
-		right: 15px;
-	}
+		main {
+			padding: 1em;
+			margin: auto;
+			max-width: 680px;
+		}
 
-	button:hover {
-		background-color: rgba(249, 249, 250, 0.1);	
-		fill: rgba(249, 249, 250, 0.8);
-	}
+		blockquote {
+			text-indent: -2ch;
+		}
+		h1 {
+			text-indent: -2ch;
+		}
+		h2 {
+			text-indent: -3ch;
+		}
+		h3 {
+			text-indent: -4ch;
+		}
+	</style>
 
-	blockquote {
-		text-indent: -2ch;
-	}
-</style>
-
-<body>
-	<!-- <button></button> -->
-	<main></main>
-</body>
-<script defer type="text/javascript" src="index.js"></script>
-
+	<body>
+		<main></main>
+	</body>
+	<script defer type="text/javascript" src="index.js"></script>
 </html>

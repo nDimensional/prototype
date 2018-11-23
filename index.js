@@ -15,8 +15,9 @@ const initialValue = Slate.Value.fromJSON({
 	},
 })
 
-const STORAGE_KEY = "--tad-storage--"
 const ID_KEY = "--tad-id--"
+const THEME_KEY = "--tad-theme--"
+const STORAGE_KEY = "--tad-storage--"
 
 const headerTest = /^(#+)(?: |$)/
 const blockQuoteTest = /^> /
@@ -53,28 +54,15 @@ class Tad extends React.Component {
 	constructor(props) {
 		super(props)
 		this.sync = true
-		this.state = { value: null }
-		this.document = initialValue.document
-		this.onChange = this.onChange.bind(this)
-		this.onKeyDown = this.onKeyDown.bind(this)
-	}
-
-	async componentDidMount() {
-		// Get tab id
-		const tab = await window.browser.tabs.getCurrent()
-		this.id = tab.id
-
-		// Get data browser storage
-		const data = await window.browser.storage.sync.get(STORAGE_KEY)
-		const { [STORAGE_KEY]: json } = data
-		const value = json === undefined ? initialValue : Slate.Value.fromJSON(json)
-		this.setState({ value })
+		this.state = { value: this.props.value }
+		this.handleChange = this.handleChange.bind(this)
+		this.handleKeyDown = this.handleKeyDown.bind(this)
 
 		// Attach listener
 		window.browser.storage.onChanged.addListener(
 			({ [STORAGE_KEY]: storage, [ID_KEY]: tab }, areaName) => {
 				if (areaName === "sync" && storage && tab) {
-					if (tab.newValue === this.id) return
+					if (tab.newValue === this.props.id) return
 					const value = Slate.Value.fromJSON(storage.newValue)
 					if (value.document !== this.state.value.document) {
 						this.setState({ value })
@@ -88,13 +76,13 @@ class Tad extends React.Component {
 		this.sync = false
 		this.value = null
 		const json = value.toJSON()
-		const data = { [STORAGE_KEY]: json, [ID_KEY]: this.id }
+		const data = { [STORAGE_KEY]: json, [ID_KEY]: this.props.id }
 		await window.browser.storage.sync.set(data)
 		if (this.value !== null) this.save(this.value)
 		else this.sync = true
 	}
 
-	onChange({ value }) {
+	handleChange({ value }) {
 		if (value.document !== this.state.value.document) {
 			if (this.sync) this.save(value)
 			else this.value = value
@@ -102,25 +90,61 @@ class Tad extends React.Component {
 		this.setState({ value })
 	}
 
-	onKeyDown(event, editor, next) {
+	handleKeyDown(event, editor, next) {
 		const { metaKey, keyCode } = event
 		if (metaKey && keyCode === 83) event.preventDefault()
 		else return next()
 	}
 
 	render() {
-		const { onChange, onKeyDown } = this
-		const { value } = this.state
-		if (value === null) return null
 		return React.createElement(SlateReact.Editor, {
-			value,
+			value: this.state.value,
 			plugins: [{ normalizeNode }],
-			onChange,
-			onKeyDown,
+			onChange: this.handleChange,
+			onKeyDown: this.handleKeyDown,
 			renderNode,
 		})
 	}
 }
 
 const main = document.querySelector("main")
-ReactDOM.render(React.createElement(Tad, {}), main)
+const panel = document.getElementById("panel")
+
+let isDark
+function setTheme(theme) {
+	console.log("setting theme from", isDark, "to", theme)
+	isDark = theme
+	if (isDark) document.body.classList.add("dark")
+	else document.body.classList.remove("dark")
+}
+
+async function initialize() {
+	// Get tab id & data browser storage
+	const [{ id }, data] = await Promise.all([
+		window.browser.tabs.getCurrent(),
+		window.browser.storage.sync.get([STORAGE_KEY, THEME_KEY]),
+	])
+
+	const { [STORAGE_KEY]: json, [THEME_KEY]: theme } = data
+	setTheme(!!theme)
+
+	window.browser.commands.onCommand.addListener(command => {
+		if (command === "toggle-theme") {
+			window.browser.storage.sync.set({ [THEME_KEY]: !isDark })
+		}
+	})
+
+	window.browser.storage.onChanged.addListener(
+		({ [THEME_KEY]: values }, areaName) => {
+			if (areaName === "sync" && values) {
+				const { newValue } = values
+				setTheme(newValue)
+			}
+		}
+	)
+
+	const value = json ? Slate.Value.fromJSON(json) : initialValue
+	ReactDOM.render(React.createElement(Tad, { id, value }), main)
+}
+
+initialize()
