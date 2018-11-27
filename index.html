@@ -9,7 +9,6 @@
 		<script defer src="vendor/immutable.min.js"></script>
 		<script defer src="vendor/react.production.min.js"></script>
 		<script defer src="vendor/react-dom.production.min.js"></script>
-		<script defer src="vendor/react-dom-server.production.min.js"></script>
 		<script defer src="vendor/slate.min.js"></script>
 		<script defer src="vendor/slate-react.min.js"></script>
 	</head>
@@ -27,17 +26,18 @@
 			color: #0c0c0d;
 		}
 
-		@media (prefers-color-scheme: dark) {
-			body {
-				background-color: rgba(42, 42, 46, 1);
-				color: rgba(249, 249, 250, 1);
-			}
-		}
-
 		body.dark {
 			background-color: rgba(42, 42, 46, 1);
 			color: rgba(249, 249, 250, 1);
 		}
+
+		/* Once Firefox implements prefers-color-scheme we'll switch over */
+		/* @media (prefers-color-scheme: dark) {
+			body {
+				background-color: rgba(42, 42, 46, 1);
+				color: rgba(249, 249, 250, 1);
+			}
+		} */
 
 		main {
 			padding: 1em;
@@ -56,6 +56,9 @@
 		}
 		h3 {
 			text-indent: -4ch;
+		}
+		h4 {
+			text-indent: -5ch;
 		}
 	</style>
 

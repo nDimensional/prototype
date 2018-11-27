@@ -1,8 +1,11 @@
 const blockTypes = new Set(["p", "h1", "h2", "h3", "h4", "blockquote"])
 
+const key = navigator.platform === "MacIntel" ? "⌘" : "Ctrl"
+
 const initialText = [
-	"Welcome to Tad!",
+	"# Welcome to Tad!",
 	"Use this space for scratch notes, reminders, and whatever else you want to keep around. A few markdown elements are supported (just h1-h4 and block quotes for now) but you're welcome to contribute over at https://github.com/joeltg/tad!",
+	`Use ${key}-Period to toggle between light and dark themes.`,
 ]
 
 const initialValue = Slate.Value.fromJSON({
@@ -77,6 +80,7 @@ class Tad extends React.Component {
 			onChange: this.handleChange,
 			onKeyDown: this.handleKeyDown,
 			renderNode,
+			autoFocus: true,
 		})
 	}
 
@@ -111,8 +115,7 @@ class Tad extends React.Component {
 
 let isDark
 function setTheme(theme) {
-	isDark = theme
-	if (isDark) document.body.classList.add("dark")
+	if ((isDark = theme)) document.body.classList.add("dark")
 	else document.body.classList.remove("dark")
 }
 
@@ -127,8 +130,8 @@ Promise.all([
 	// Attach theme listeners
 	window.browser.commands.onCommand.addListener(command => {
 		if (command === "toggle-theme") {
-			// Don't call setTheme() here, let the storage.onChanged
-			// listener do the actual theme changing.
+			// Don't call setTheme() here.
+			// Let the storage listener do the actual theme changing.
 			window.browser.storage.sync.set({ [THEME_KEY]: !isDark })
 		}
 	})

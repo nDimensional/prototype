@@ -1,14 +1,19 @@
 {
 	"manifest_version": 2,
 	"name": "Tad",
-	"version": "0.1.0",
-	"description": "A scratch space for notes, reminders, and whatever else you want to keep around",
+	"version": "0.2.0",
+	"description": "A scratch space for notes, reminders, and whatever else you want to keep around.",
 	"author": "Joel Gustafson",
 	"chrome_url_overrides": {
 		"newtab": "index.html"
 	},
 	"chrome_settings_overrides": {
 		"homepage": "index.html"
+	},
+	"icons": {
+		"48": "tad-48.png",
+		"96": "tad-96.png",
+		"192": "tad-192.png"
 	},
 	"permissions": ["storage"],
 	"applications": {
