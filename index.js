@@ -71,13 +71,17 @@ class Tad extends React.Component {
 		else return next()
 	}
 
+	componentDidMount() {
+		if (this.editor) {
+			this.editor.moveToEndOfDocument()
+		}
+	}
+
 	render() {
 		// normalizeNode & renderNode are static functions
 		const { normalizeNode, renderNode } = Tad
 		return React.createElement(SlateReact.Editor, {
-			// Collapse focus to end of document on first load.
-			// Really should do this before the first render by operation on value
-			ref: editor => editor && editor.moveEndToEndOfDocument().moveToEnd(),
+			ref: editor => (this.editor = editor),
 			value: this.state.value,
 			plugins: [{ normalizeNode }],
 			onChange: this.handleChange,
