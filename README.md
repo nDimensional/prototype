@@ -12,8 +12,10 @@ Fonts are [iA Writer QuattoS](https://github.com/iaolo/iA-Fonts/tree/master/iA%2
 
 ## Vendored libraries
 
-- immutable@3.8.2: [immutable.min.js](https://unpkg.com/immutable@3.8.2/dist/immutable.min.js)
-- react-dom@16.7.0: [react-dom.production.min.js](https://unpkg.com/react-dom@16.7.0/umd/react-dom.production.min.js)
-- react@16.7.0: [react-production.min.js](https://unpkg.com/react@16.7.0/umd/react.production.min.js)
-- slate-react@0.21.15: [slate-react.min.js](https://unpkg.com/slate-react@0.21.15/dist/slate-react.min.js)
-- slate@0.44.9: [slate.min.js](https://unpkg.com/slate@0.44.9/dist/slate.min.js)
+| name | version | unpkg link |
+| --- | --- | --- |
+| `Immutable` | 3.8.2 | [immutable.min.js](https://unpkg.com/immutable@3.8.2/dist/immutable.min.js) |
+| `ReactDOM` | 16.7.0 | [react-dom.production.min.js](https://unpkg.com/react-dom@16.7.0/umd/react-dom.production.min.js) |
+| `React` | 16.7.0 | [react-production.min.js](https://unpkg.com/react@16.7.0/umd/react.production.min.js) |
+| `SlateReact` | 0.21.15 | [slate-react.min.js](https://unpkg.com/slate-react@0.21.15/dist/slate-react.min.js) |
+| `Slate` | 0.44.9 | [slate.min.js](https://unpkg.com/slate@0.44.9/dist/slate.min.js) |
