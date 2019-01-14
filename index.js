@@ -87,7 +87,7 @@ class Tad extends React.Component {
 			onChange: this.handleChange,
 			onKeyDown: this.handleKeyDown,
 			renderNode,
-			autoFocus: true,
+			// autoFocus: true,
 		})
 	}
 
