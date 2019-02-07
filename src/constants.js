@@ -1,6 +1,8 @@
 export const defaultTheme = "light"
 export const darkTheme = "dark"
 export const themes = new Set([defaultTheme, darkTheme])
+export const defaultSize = "medium"
+export const sizes = ["small", "medium", "large", "larger"]
 export const defaultFont = "quattro"
 export const fonts = {
 	quattro: "iA Writer QuattroS",

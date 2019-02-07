@@ -8,9 +8,11 @@ import {
 	themes,
 	defaultFont,
 	fonts,
+	sizes,
 	inputSpacing,
 	offsets,
 	quoteSpacing,
+	defaultSize,
 } from "./constants"
 
 const ctrlKey = navigator.platform === "MacIntel" ? "⌘" : "Ctrl"
@@ -22,21 +24,20 @@ const main = document.querySelector("main")
 const settings = document.getElementById("settings")
 const themeElement = document.getElementById("theme")
 
-// const fontElements = {}
-// fonts.forEach(id => (fontElements[id] = document.getElementById(id)))
 const fontElements = Object.keys(fonts).map(id => document.getElementById(id))
+const sizeElements = sizes.map(id => document.getElementById(id))
 
 const initialText = [
 	"# Welcome to Tad!",
 	"Use this space for scratch notes, reminders, and whatever else you want to keep around.",
 	"Tad uses a new markup language called Prototype that's designed to be \"rendered as source\", but you don't have to worry about that if you don't want to. Mostly it works like you'd expect.",
 	`Press ${ctrlKey}-Period to open and close the settings panel, where you can set the font and color theme.`,
-	"> Block quotes start with a single right chevron. You can't have multi-line quotes, but the text will wrap with nice indentation.",
+	"You can *bold text* by wrapping it with asterisks. This is *different from markdown*, where a single pair of asterisks only buys you italics. If you want italics, _use underscores!_ They're much simpler.",
+	"You can also `format text` inline! Formatted text is always rendered with a fixed-width font.",
 	"You can make a horizontal divider with line of only dashes - at least three in a row.",
 	"---",
 	"------",
-	"You can *bold text* by wrapping it with asterisks. This is *different from markdown*, where a single pair of asterisks only buys you italics. If you want italics, _use underscores!_ They're much simpler.",
-	"You can also `format text` inline! Formatted text is always rendered with a fixed-width font.",
+	"> Block quotes start with a single right chevron. You can't have multi-line quotes, but the text will wrap with nice indentation.",
 	"",
 ]
 
@@ -118,6 +119,15 @@ fontElements.forEach(element =>
 	})
 )
 
+sizeElements.forEach(element =>
+	element.addEventListener("change", () => {
+		const checkedElement = sizeElements.find(element => element.checked)
+		if (checkedElement && checkedElement.id !== currentSize) {
+			window.browser.storage.sync.set({ [SIZE_KEY]: checkedElement.id })
+		}
+	})
+)
+
 let currentTheme = defaultTheme
 function setTheme(theme) {
 	if (theme !== currentTheme) {
@@ -130,6 +140,7 @@ function setTheme(theme) {
 let currentFont = defaultFont
 function setFont(font) {
 	if (fonts.hasOwnProperty(font) && font !== currentFont) {
+		currentFont = font
 		fontElements.forEach(element => (element.checked = element.id === font))
 		document.documentElement.style.setProperty("--h1-offset", offsets[font][0])
 		document.documentElement.style.setProperty("--h2-offset", offsets[font][1])
@@ -146,14 +157,21 @@ function setFont(font) {
 			"--main-font-family",
 			fonts[font]
 		)
-		// document.body.style.fontFamily = fonts[font]
-		currentFont = font
+	}
+}
+
+let currentSize = defaultSize
+function setSize(size) {
+	if (sizes.includes(size) && size !== currentSize) {
+		currentSize = size
+		sizeElements.forEach(element => (element.checked = element.id === size))
+		document.documentElement.style.setProperty("--main-font-size", size)
 	}
 }
 
 // Get tab id & data from browser storage
 window.browser = window.browser || window.chrome
-const storageKeys = [VALUE_KEY, THEME_KEY, FONT_KEY]
+const storageKeys = [VALUE_KEY, THEME_KEY, FONT_KEY, SIZE_KEY]
 Promise.all(
 	window.chrome
 		? [
@@ -165,7 +183,15 @@ Promise.all(
 				window.browser.storage.sync.get(storageKeys),
 		  ]
 ).then(
-	([{ id }, { [VALUE_KEY]: json, [THEME_KEY]: theme, [FONT_KEY]: font }]) => {
+	([
+		{ id },
+		{
+			[VALUE_KEY]: json,
+			[THEME_KEY]: theme,
+			[FONT_KEY]: font,
+			[SIZE_KEY]: size,
+		},
+	]) => {
 		if (themes.has(theme)) {
 			setTheme(theme)
 			themeElement.checked = theme !== defaultTheme
@@ -180,6 +206,13 @@ Promise.all(
 			window.browser.storage.sync.set({ [FONT_KEY]: defaultFont })
 		}
 
+		if (sizes.includes(size)) {
+			setSize(size)
+			sizeElements.forEach(element => (element.checked = element.id === size))
+		} else {
+			window.browser.storage.sync.set({ [SIZE_KEY]: defaultSize })
+		}
+
 		// Attach theme listeners
 		window.browser.commands.onCommand.addListener(command => {
 			if (command === "toggle-settings") {
@@ -190,13 +223,23 @@ Promise.all(
 		})
 
 		window.browser.storage.onChanged.addListener(
-			({ [THEME_KEY]: themeValue, [FONT_KEY]: fontValue }, areaName) => {
+			(
+				{
+					[THEME_KEY]: themeValue,
+					[FONT_KEY]: fontValue,
+					[SIZE_KEY]: sizeValue,
+				},
+				areaName
+			) => {
 				if (areaName === "sync") {
 					if (themeValue && themes.has(themeValue.newValue)) {
 						setTheme(themeValue.newValue)
 					}
 					if (fontValue && fonts.hasOwnProperty(fontValue.newValue)) {
 						setFont(fontValue.newValue)
+					}
+					if (sizeValue && sizes.includes(sizeValue.newValue)) {
+						setSize(sizeValue.newValue)
 					}
 				}
 			}

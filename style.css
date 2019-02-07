@@ -10,8 +10,8 @@
 
 	--main-font-family: "iA Writer QuattroS";
 	--main-font-size: medium;
-	--input-spacing: "0.05em";
-	--quote-spacing: "-1.75ch";
+	--input-spacing: 0.05em;
+	--quote-spacing: -1.75ch;
 
 	--h1-offset: -1.75ch;
 	--h2-offset: -2.75ch;
@@ -180,7 +180,7 @@ code {
 	font-size: 1em;
 	font-family: "iA Writer MonoS";
 	border-radius: 2px;
-	padding: 0;
+	padding: 0 0.1em;
 	background-color: var(--light-highlight-color);
 }
 

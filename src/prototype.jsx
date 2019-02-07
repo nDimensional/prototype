@@ -43,9 +43,9 @@ export default class Prototype extends React.Component {
 	}
 
 	componentDidMount() {
-		if (this.editor) {
-			this.editor.moveToEndOfDocument()
-		}
+		// if (this.editor) {
+		// 	this.editor.moveToEndOfDocument()
+		// }
 	}
 
 	render() {
