@@ -122,7 +122,7 @@ body.dark #settings label.noselect:hover {
 main {
 	padding: 1em 2em 1em 3em;
 	margin: 0 auto;
-	max-width: 680px;
+	width: 680px;
 }
 
 blockquote {
