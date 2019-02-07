@@ -10,12 +10,10 @@ Markdown "support" is limited to h1-h4 and blockquotes for now.
 
 Fonts are [iA Writer Quatto](https://github.com/iaolo/iA-Fonts/tree/master/iA%20Writer%20Quattro) and [iA Writer Mono](https://github.com/iaolo/iA-Fonts/tree/master/iA%20Writer%20Mono), which are themselves both forks of [IBM Plex](https://github.com/IBM/plex).
 
-## Vendored libraries
+## Philosophy
 
-| name         | version | unpkg link                                                                                        |
-| ------------ | ------- | ------------------------------------------------------------------------------------------------- |
-| `Immutable`  | 3.8.2   | [immutable.min.js](https://unpkg.com/immutable@3.8.2/dist/immutable.min.js)                       |
-| `ReactDOM`   | 16.7.0  | [react-dom.production.min.js](https://unpkg.com/react-dom@16.7.0/umd/react-dom.production.min.js) |
-| `React`      | 16.7.0  | [react-production.min.js](https://unpkg.com/react@16.7.0/umd/react.production.min.js)             |
-| `SlateReact` | 0.21.15 | [slate-react.min.js](https://unpkg.com/slate-react@0.21.15/dist/slate-react.min.js)               |
-| `Slate`      | 0.44.9  | [slate.min.js](https://unpkg.com/slate@0.44.9/dist/slate.min.js)                                  |
+**See the whole state**. There are no menus or buttons or any hidden state whatsoever. Every piece of style and formatting is a pure function of the **visible text** on the page. Your shortcuts for bolding and italicizing will still work, they'll just edit the text surrounding your selection. WYSIWYG is less relevant since it's so common to create and consume in the same place, especially in a 'personal notes' context, and nothing is more personal than your new tab page. What we really want is WYTIWYS ('witty-whiz') - What You Type Is What You See.
+
+This has occasional surprises: there's no auto-styling of raw URLs in text, and non-URL-text enclosed in square brackets will still render as an HTML achor tag.
+
+The one exception to this is the color sheme - which you can toggle with Ctrl/Cmd-Period (only a default binding, since it uses the WebExtension commands API - change it your browser settings). In the future this shortcut will be deprecated and replaced with `prefers-color-scheme` in CSS once browsers implement it.

@@ -1,0 +1,263 @@
+:root {
+	--light-background-color: #f9f9fa;
+	--light-text-color: #0c0c0d;
+	--light-highlight-color: #eaecef;
+	/* --light-highlight-color: rgba(27,31,35,.05); */
+
+	--dark-background-color: rgba(42, 42, 46, 1);
+	--dark-text-color: rgba(249, 249, 250, 1);
+	--dark-highlight-color: #363636;
+
+	--main-font-family: "iA Writer QuattroS";
+	--main-font-size: medium;
+	--input-spacing: "0.05em";
+	--quote-spacing: "-1.75ch";
+
+	--h1-offset: -1.75ch;
+	--h2-offset: -2.75ch;
+	--h3-offset: -3.75ch;
+}
+
+body {
+	display: flex;
+	margin: 0;
+	font-family: var(--main-font-family);
+	font-size: var(--main-font-size);
+
+	background-color: var(--light-background-color);
+	color: var(--light-text-color);
+}
+
+body.dark {
+	background-color: var(--dark-background-color);
+	color: var(--dark-text-color);
+}
+
+/* Once Firefox implements prefers-color-scheme we'll switch over */
+/* @media (prefers-color-scheme: dark) {
+	body {
+		background-color: var(--dark-background-color);
+		color: var(--dark-color);
+	}
+} */
+
+#settings {
+	min-width: 300px;
+	padding: 1em;
+	border-left: 1px solid var(--light-highlight-color);
+}
+
+#settings h1 {
+	text-indent: initial;
+}
+
+body.dark #settings {
+	border-left: 1px solid var(--dark-highlight-color);
+}
+
+#settings.hidden {
+	display: none;
+}
+
+#settings label.heading {
+	display: block;
+	margin-bottom: 4px;
+}
+
+#settings label.noselect {
+	display: block;
+	border-top-left-radius: 2px;
+	border-bottom-left-radius: 2px;
+	cursor: pointer;
+	padding-left: 4px;
+	margin-left: -4px;
+}
+
+#settings label.heading + label.noselect {
+	padding-bottom: 2px;
+}
+
+#settings label.noselect input {
+	cursor: pointer;
+	outline: none;
+}
+
+#settings label.noselect input {
+	-webkit-appearance: none;
+}
+
+#settings label.noselect input:after {
+	font-size: initial;
+	font-family: var(--main-font-family);
+	color: var(--light-text-color);
+	letter-spacing: var(--input-spacing);
+	content: "[ ]";
+}
+
+body.dark #settings label.noselect input:after {
+	color: var(--dark-text-color);
+}
+
+#settings label.noselect input[type="radio"]:after {
+	content: "( )";
+}
+
+#settings label.noselect input:checked:after {
+	letter-spacing: 0;
+	content: "[x]";
+}
+
+#settings label.noselect input[type="radio"]:checked:after {
+	content: "(o)";
+}
+
+#settings label.noselect:hover {
+	background-color: var(--light-highlight-color);
+}
+
+body.dark #settings label.noselect:hover {
+	background-color: var(--dark-highlight-color);
+}
+
+main {
+	padding: 1em 2em 1em 3em;
+	margin: 0 auto;
+	max-width: 680px;
+}
+
+blockquote {
+	border-radius: 1px;
+	background-color: var(--light-highlight-color);
+	text-indent: var(--quote-spacing);
+	margin-left: -0.5em;
+	margin-right: -0.5em;
+	padding-left: calc(0.5em - var(--quote-spacing));
+
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+	padding-right: 0.5em;
+}
+
+body.dark blockquote {
+	background-color: var(--dark-highlight-color);
+}
+
+h1 {
+	text-indent: var(--h1-offset);
+	/* margin-left: var(--h1-offset);
+	padding-left: calc(var(--h1-offset) * -1); */
+	padding-bottom: 0;
+	border-bottom: 2px solid var(--light-highlight-color);
+}
+
+body.dark h1 {
+	border-bottom: 2px solid var(--dark-highlight-color);
+}
+
+h2 {
+	text-indent: var(--h2-offset);
+	padding-bottom: 2px;
+	border-bottom: 2px solid var(--light-highlight-color);
+}
+
+body.dark h2 {
+	border-bottom: 2px solid var(--dark-highlight-color);
+}
+
+h3 {
+	text-indent: var(--h3-offset);
+}
+
+ul {
+	padding-left: 1em;
+}
+
+li {
+	display: block;
+}
+
+code {
+	font-size: 1em;
+	font-family: "iA Writer MonoS";
+	border-radius: 2px;
+	padding: 0;
+	background-color: var(--light-highlight-color);
+}
+
+body.dark code {
+	background-color: var(--dark-highlight-color);
+}
+
+a {
+	margin-left: -0.5ch;
+	margin-right: -0.5ch;
+	padding-left: 0.5ch;
+	padding-right: 0.5ch;
+	border-radius: 2px;
+
+	color: inherit;
+	/* text-decoration: none;	 */
+}
+
+body.cmd a:hover {
+	background: var(--light-highlight-color);
+	cursor: pointer;
+}
+
+body.dark.cmd a:hover {
+	background: var(--dark-highlight-color);
+}
+
+div.divider {
+	display: flex;
+	margin: 1em 0;
+}
+
+div.divider:after {
+	background: linear-gradient(
+		180deg,
+		rgba(0, 0, 0, 0) calc(50%),
+		var(--light-highlight-color) calc(50%),
+		rgba(0, 0, 0, 0) calc(50% + 3px)
+	);
+	width: 100%;
+	content: "";
+	pointer-events: none;
+}
+
+body.dark div.divider:after {
+	background: linear-gradient(
+		180deg,
+		rgba(0, 0, 0, 0) calc(50%),
+		var(--dark-highlight-color) calc(50%),
+		rgba(0, 0, 0, 0) calc(50% + 3px)
+	);
+}
+
+/* div.divider:after {
+	border-top: 1px solid #363636;
+	content: "";
+	position: relative;
+	top: 1ch;
+	width: 100%;
+} */
+
+div.divider > span {
+	margin-right: 0.5em;
+}
+
+.noselect {
+	-webkit-touch-callout: none; /* iOS Safari */
+	-webkit-user-select: none; /* Safari */
+	-khtml-user-select: none; /* Konqueror HTML */
+	-moz-user-select: none; /* Firefox */
+	-ms-user-select: none; /* Internet Explorer/Edge */
+	user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+@media print {
+	#settings,
+	#settings * {
+		display: none !important;
+	}
+}

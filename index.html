@@ -4,74 +4,68 @@
 		<meta charset="UTF-8" />
 		<title>New Tad</title>
 		<link rel="icon" type="image/png" href="logo.png" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!-- <meta name="viewport" content="width=device-width, initial-scale=1" /> -->
 		<link rel="stylesheet" type="text/css" href="Webfonts/fonts.css" />
-		<script defer src="vendor/immutable.min.js"></script>
-		<script defer src="vendor/react.production.min.js"></script>
-		<script defer src="vendor/react-dom.production.min.js"></script>
-		<script defer src="vendor/slate.min.js"></script>
-		<script defer src="vendor/slate-react.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="style.css" />
 	</head>
-	<style>
-		html {
-			height: 100%;
-		}
-
-		body {
-			height: 100%;
-			margin: 0;
-			font-family: "iA Writer QuattroS";
-
-			background-color: #f9f9fa;
-			color: #0c0c0d;
-		}
-
-		body.dark {
-			background-color: rgba(42, 42, 46, 1);
-			color: rgba(249, 249, 250, 1);
-		}
-
-		/* Once Firefox implements prefers-color-scheme we'll switch over */
-		/* @media (prefers-color-scheme: dark) {
-			body {
-				background-color: rgba(42, 42, 46, 1);
-				color: rgba(249, 249, 250, 1);
-			}
-		} */
-
-		main {
-			padding: 1em;
-			margin: auto;
-			max-width: 680px;
-		}
-
-		blockquote {
-			background-color: #e6e6e6;
-			text-indent: -1.75ch;
-			margin: 1ch -1.5ch;
-			padding: 1ch 3.25ch;
-		}
-
-		body.dark blockquote {
-			background-color: #363636;
-		}
-
-		h1 {
-			text-indent: -1.75ch;
-		}
-		h2 {
-			text-indent: -2.75ch;
-		}
-		h3 {
-			text-indent: -3.75ch;
-		}
-		h4 {
-			text-indent: -4.75ch;
-		}
-	</style>
-
 	<body>
 		<main></main>
+		<div id="settings" class="hidden">
+			<h1>Settings</h1>
+			<p>
+				<label class="noselect" for="theme"
+					>Dark theme: <input type="checkbox" name="theme" id="theme"
+				/></label>
+			</p>
+
+			<p>
+				<label class="heading" for="font">Font Family:</label>
+				<label class="noselect" for="quattro" name="font"
+					><input type="radio" id="quattro" name="font" value="quattro" /> iA
+					Writer Quattro</label
+				>
+
+				<label class="noselect" for="mono" name="font"
+					><input type="radio" id="mono" name="font" value="mono" /> iA Writer
+					Mono</label
+				>
+
+				<label class="noselect" for="book" name="font"
+					><input type="radio" id="book" name="font" value="book" /> ET
+					Book</label
+				>
+				<label class="noselect" for="go" name="font"
+					><input type="radio" id="go" name="font" value="go" /> Go
+					Regular</label
+				>
+			</p>
+			<p>
+				<label class="heading" for="size">Font Size:</label>
+				<label class="noselect" for="smaller" name="size"
+					><input type="radio" id="smaller" name="size" value="smaller" /> Even
+					Smaller</label
+				>
+
+				<label class="noselect" for="small" name="size"
+					><input type="radio" id="small" name="size" value="small" />
+					Small</label
+				>
+
+				<label class="noselect" for="medium" name="size"
+					><input type="radio" id="medium" name="size" value="medium" />
+					Medium</label
+				>
+				<label class="noselect" for="large" name="size"
+					><input type="radio" id="large" name="size" value="large" />
+					Large</label
+				>
+				<label class="noselect" for="larger" name="size"
+					><input type="radio" id="larger" name="size" value="larger" /> Even
+					Larger</label
+				>
+			</p>
+			<p>Close this panel with <span class="ctrl-key"></span>-Period.</p>
+		</div>
 	</body>
-	<script defer type="text/javascript" src="index.js"></script>
+	<script defer type="text/javascript" src="dist/bundle.min.js"></script>
 </html>

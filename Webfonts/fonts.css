@@ -7,23 +7,9 @@
 
 @font-face {
 	font-family: "iA Writer MonoS";
-	font-weight: normal;
-	font-style: italic;
-	src: url("iAWriterMonoS-RegularItalic.woff2") format("woff2");
-}
-
-@font-face {
-	font-family: "iA Writer MonoS";
 	font-weight: bold;
 	font-style: normal;
 	src: url("iAWriterMonoS-Bold.woff2") format("woff2");
-}
-
-@font-face {
-	font-family: "iA Writer MonoS";
-	font-weight: bold;
-	font-style: italic;
-	src: url("iAWriterMonoS-BoldItalic.woff2") format("woff2");
 }
 
 @font-face {
@@ -35,21 +21,35 @@
 
 @font-face {
 	font-family: "iA Writer QuattroS";
-	font-weight: normal;
-	font-style: italic;
-	src: url("iAWriterQuattroS-RegularItalic.woff2") format("woff2");
-}
-
-@font-face {
-	font-family: "iA Writer QuattroS";
 	font-weight: bold;
 	font-style: normal;
 	src: url("iAWriterQuattroS-Bold.woff2") format("woff2");
 }
 
 @font-face {
-	font-family: "iA Writer QuattroS";
-	font-weight: bold;
+	font-family: "et-book";
+	font-weight: normal;
+	font-style: normal;
+	src: url("et-book-roman-line-figures.woff") format("woff");
+}
+
+@font-face {
+	font-family: "et-book";
+	font-weight: normal;
 	font-style: italic;
-	src: url("iAWriterQuattroS-BoldItalic.woff2") format("woff2");
+	src: url("et-book-display-italic-old-style-figures.woff") format("woff");
+}
+
+@font-face {
+	font-family: "et-book";
+	font-weight: bold;
+	font-style: normal;
+	src: url("et-book-bold-line-figures.woff") format("woff");
+}
+
+@font-face {
+	font-family: "Go Regular";
+	font-weight: normal;
+	font-style: normal;
+	src: url("Go-Regular.ttf") format("truetype");
 }
