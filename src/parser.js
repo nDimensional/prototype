@@ -1,6 +1,9 @@
+import * as MarkdownIt from "markdown-it"
 // import * as URI from "uri-js"
 import { Point, Decoration, Mark } from "slate"
 // console.log(URI)
+
+const md = new MarkdownIt()
 
 const pairs = [
 	["`", "`", "code", false],
@@ -9,8 +12,13 @@ const pairs = [
 	["*", "*", "strong", true],
 ]
 
-export default function parse(key, text, decorations) {
+export default function parse(key, text, decorations, environment) {
 	const stack = {}
+	const tokens = md.parseInline(text, environment)
+	if (tokens.length > 0) {
+		const [{ children }] = tokens
+	}
+	console.log("tokens", tokens)
 	for (let i = 0; i < text.length; i++) {
 		// Look for closing tags
 		if (stack.hasOwnProperty(text[i])) {

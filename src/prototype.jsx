@@ -110,7 +110,10 @@ export default class Prototype extends React.Component {
 	static decorateNode(node, editor, next) {
 		if (node.object === "block") {
 			const decorations = []
-			node.getTexts().forEach(({ key, text }) => parse(key, text, decorations))
+			const env = {}
+			node
+				.getTexts()
+				.forEach(({ key, text }) => parse(key, text, decorations, env))
 			return decorations
 		}
 	}

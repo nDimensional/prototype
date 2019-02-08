@@ -19,7 +19,6 @@
 }
 
 body {
-	display: flex;
 	margin: 0;
 	font-family: var(--main-font-family);
 	font-size: var(--main-font-size);
@@ -34,12 +33,24 @@ body.dark {
 }
 
 /* Once Firefox implements prefers-color-scheme we'll switch over */
+/* tracking bug at https://bugzilla.mozilla.org/show_bug.cgi?id=1494034 */
 /* @media (prefers-color-scheme: dark) {
 	body {
 		background-color: var(--dark-background-color);
 		color: var(--dark-color);
 	}
 } */
+
+main {
+	display: flex;
+	width: 100%;
+}
+
+#editor {
+	padding: 1em;
+	width: 640px;
+	margin: auto;
+}
 
 #settings {
 	min-width: 300px;
@@ -117,12 +128,6 @@ body.dark #settings label.noselect input:after {
 
 body.dark #settings label.noselect:hover {
 	background-color: var(--dark-highlight-color);
-}
-
-main {
-	padding: 1em 2em 1em 3em;
-	margin: 0 auto;
-	width: 680px;
 }
 
 blockquote {

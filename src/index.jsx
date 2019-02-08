@@ -13,19 +13,15 @@ import {
 	offsets,
 	quoteSpacing,
 	defaultSize,
+	ctrlKey,
 } from "./constants"
+import Panel from "./panel"
 
-const ctrlKey = navigator.platform === "MacIntel" ? "⌘" : "Ctrl"
 document
 	.querySelectorAll(".ctrl-key")
 	.forEach(node => (node.textContent = ctrlKey))
 
 const main = document.querySelector("main")
-const settings = document.getElementById("settings")
-const themeElement = document.getElementById("theme")
-
-const fontElements = Object.keys(fonts).map(id => document.getElementById(id))
-const sizeElements = sizes.map(id => document.getElementById(id))
 
 const initialText = [
 	"# Welcome to Tad!",
@@ -34,7 +30,7 @@ const initialText = [
 	`Press ${ctrlKey}-Period to open and close the settings panel, where you can set the font and color theme.`,
 	"You can *bold text* by wrapping it with asterisks. This is *different from markdown*, where a single pair of asterisks only buys you italics. If you want italics, _use underscores!_ They're much simpler.",
 	"You can also `format text` inline! Formatted text is always rendered with a fixed-width font.",
-	"You can make a horizontal divider with line of only dashes - at least three in a row.",
+	"You can make a horizontal divider with a line of only dashes (at least three in a row).",
 	"---",
 	"------",
 	"> Block quotes start with a single right chevron. You can't have multi-line quotes, but the text will wrap with nice indentation.",
@@ -61,9 +57,13 @@ const SETTINGS_KEY = "--tad-settings--"
 class Document extends React.Component {
 	constructor(props) {
 		super(props)
-		this.state = { value: this.props.initialValue }
+		const { value, theme, font, size, settings } = props
+		this.state = { value, theme, font, size, settings }
 		this.sync = true
-		this.handleChange = this.handleChange.bind(this)
+		this.handleValueChange = this.handleValueChange.bind(this)
+		this.handleThemeChange = this.handleThemeChange.bind(this)
+		this.handleFontChange = this.handleFontChange.bind(this)
+		this.handleSizeChange = this.handleSizeChange.bind(this)
 	}
 
 	async save(value) {
@@ -77,22 +77,71 @@ class Document extends React.Component {
 	}
 
 	componentDidMount() {
-		main.focus()
+		window.browser.commands.onCommand.addListener(command => {
+			if (command === "toggle-settings") {
+				window.browser.storage.sync.set({
+					[SETTINGS_KEY]: !this.state.settings,
+				})
+			}
+		})
+
 		window.browser.storage.onChanged.addListener(
-			({ [VALUE_KEY]: storage, [ID_KEY]: tab }, area) => {
-				if (area === "sync" && storage && tab) {
-					if (tab.newValue === this.props.id) return // ignore local edits
-					const value = Value.fromJSON(storage.newValue)
-					// Only update if the _document_ is different
-					if (!is(value.document, this.state.value.document)) {
-						this.setState({ value })
+			(
+				{
+					[VALUE_KEY]: storage,
+					[ID_KEY]: tab,
+					[THEME_KEY]: themeValue,
+					[FONT_KEY]: fontValue,
+					[SIZE_KEY]: sizeValue,
+					[SETTINGS_KEY]: settingsValue,
+				},
+				area
+			) => {
+				if (area === "sync") {
+					let { value, theme, font, size, settings } = this.state
+					let update = false
+					if (storage && tab && tab.newValue !== this.props.id) {
+						// ignore local edits
+						const newValue = Value.fromJSON(storage.newValue)
+						// Only update if the _document_ is different
+						if (!is(newValue.document, value.document)) {
+							value = newValue
+							update = true
+						}
 					}
+
+					if (themeValue && themes.has(themeValue.newValue)) {
+						setTheme(themeValue.newValue)
+						theme = themeValue.newValue
+						update = true
+					}
+
+					if (fontValue && fonts.hasOwnProperty(fontValue.newValue)) {
+						setFont(fontValue.newValue)
+						font = fontValue.newValue
+						update = true
+					}
+
+					if (sizeValue && sizes.includes(sizeValue.newValue)) {
+						setSize(sizeValue.newValue)
+						size = sizeValue.newValue
+						update = true
+					}
+
+					if (settingsValue) {
+						if (settingsValue.newValue !== this.state.settings) {
+							settings = settingsValue.newValue
+							update = true
+						}
+					}
+
+					if (update) this.setState({ value, theme, font, size, settings })
 				}
 			}
 		)
 	}
 
-	handleChange({ value }) {
+	handleValueChange({ value }) {
 		if (value.document !== this.state.value.document) {
 			if (this.sync) this.save(value)
 			else this.value = value
@@ -100,33 +149,48 @@ class Document extends React.Component {
 		this.setState({ value })
 	}
 
+	handleThemeChange(theme) {
+		window.browser.storage.sync.set({ [THEME_KEY]: theme })
+	}
+
+	handleFontChange(font) {
+		window.browser.storage.sync.set({ [FONT_KEY]: font })
+	}
+
+	handleSizeChange(size) {
+		window.browser.storage.sync.set({ [SIZE_KEY]: size })
+	}
+
+	renderPanel() {
+		const { theme, font, size } = this.state
+		return (
+			<div id="settings">
+				<Panel
+					theme={theme}
+					font={font}
+					size={size}
+					onThemeChange={this.handleThemeChange}
+					onFontChange={this.handleFontChange}
+					onSizeChange={this.handleSizeChange}
+				/>
+			</div>
+		)
+	}
+
 	render() {
-		return <Prototype value={this.state.value} onChange={this.handleChange} />
+		return (
+			<React.Fragment>
+				<div id="editor">
+					<Prototype
+						value={this.state.value}
+						onChange={this.handleValueChange}
+					/>
+				</div>
+				{this.state.settings && this.renderPanel()}
+			</React.Fragment>
+		)
 	}
 }
-
-themeElement.addEventListener("change", () => {
-	const theme = themeElement.checked ? darkTheme : defaultTheme
-	window.browser.storage.sync.set({ [THEME_KEY]: theme })
-})
-
-fontElements.forEach(element =>
-	element.addEventListener("change", () => {
-		const checkedElement = fontElements.find(element => element.checked)
-		if (checkedElement && checkedElement.id !== currentFont) {
-			window.browser.storage.sync.set({ [FONT_KEY]: checkedElement.id })
-		}
-	})
-)
-
-sizeElements.forEach(element =>
-	element.addEventListener("change", () => {
-		const checkedElement = sizeElements.find(element => element.checked)
-		if (checkedElement && checkedElement.id !== currentSize) {
-			window.browser.storage.sync.set({ [SIZE_KEY]: checkedElement.id })
-		}
-	})
-)
 
 let currentTheme = defaultTheme
 function setTheme(theme) {
@@ -141,7 +205,7 @@ let currentFont = defaultFont
 function setFont(font) {
 	if (fonts.hasOwnProperty(font) && font !== currentFont) {
 		currentFont = font
-		fontElements.forEach(element => (element.checked = element.id === font))
+		// fontElements.forEach(element => (element.checked = element.id === font))
 		document.documentElement.style.setProperty("--h1-offset", offsets[font][0])
 		document.documentElement.style.setProperty("--h2-offset", offsets[font][1])
 		document.documentElement.style.setProperty("--h3-offset", offsets[font][2])
@@ -164,14 +228,14 @@ let currentSize = defaultSize
 function setSize(size) {
 	if (sizes.includes(size) && size !== currentSize) {
 		currentSize = size
-		sizeElements.forEach(element => (element.checked = element.id === size))
+		// sizeElements.forEach(element => (element.checked = element.id === size))
 		document.documentElement.style.setProperty("--main-font-size", size)
 	}
 }
 
 // Get tab id & data from browser storage
 window.browser = window.browser || window.chrome
-const storageKeys = [VALUE_KEY, THEME_KEY, FONT_KEY, SIZE_KEY]
+const storageKeys = [VALUE_KEY, THEME_KEY, FONT_KEY, SIZE_KEY, SETTINGS_KEY]
 Promise.all(
 	window.chrome
 		? [
@@ -190,63 +254,47 @@ Promise.all(
 			[THEME_KEY]: theme,
 			[FONT_KEY]: font,
 			[SIZE_KEY]: size,
+			[SETTINGS_KEY]: settings,
 		},
 	]) => {
 		if (themes.has(theme)) {
 			setTheme(theme)
-			themeElement.checked = theme !== defaultTheme
 		} else {
 			window.browser.storage.sync.set({ [THEME_KEY]: defaultTheme })
+			theme = defaultTheme
 		}
 
 		if (fonts.hasOwnProperty(font)) {
 			setFont(font)
-			fontElements.forEach(element => (element.checked = element.id === font))
 		} else {
 			window.browser.storage.sync.set({ [FONT_KEY]: defaultFont })
+			font = defaultFont
 		}
 
 		if (sizes.includes(size)) {
 			setSize(size)
-			sizeElements.forEach(element => (element.checked = element.id === size))
 		} else {
 			window.browser.storage.sync.set({ [SIZE_KEY]: defaultSize })
+			size = defaultSize
 		}
 
-		// Attach theme listeners
-		window.browser.commands.onCommand.addListener(command => {
-			if (command === "toggle-settings") {
-				settings.classList.contains("hidden")
-					? settings.classList.remove("hidden")
-					: settings.classList.add("hidden")
-			}
-		})
-
-		window.browser.storage.onChanged.addListener(
-			(
-				{
-					[THEME_KEY]: themeValue,
-					[FONT_KEY]: fontValue,
-					[SIZE_KEY]: sizeValue,
-				},
-				areaName
-			) => {
-				if (areaName === "sync") {
-					if (themeValue && themes.has(themeValue.newValue)) {
-						setTheme(themeValue.newValue)
-					}
-					if (fontValue && fonts.hasOwnProperty(fontValue.newValue)) {
-						setFont(fontValue.newValue)
-					}
-					if (sizeValue && sizes.includes(sizeValue.newValue)) {
-						setSize(sizeValue.newValue)
-					}
-				}
-			}
-		)
+		if (settings !== true && settings !== false) {
+			settings = true
+			window.browser.storage.sync.set({ [SETTINGS_KEY]: true })
+		}
 
 		// const value = json ? Value.fromJSON(json) : initialValue
 		const value = initialValue
-		ReactDOM.render(<Document id={id} initialValue={value} />, main)
+		ReactDOM.render(
+			<Document
+				id={id}
+				settings={settings}
+				theme={theme}
+				font={font}
+				size={size}
+				value={value}
+			/>,
+			main
+		)
 	}
 )

@@ -31,3 +31,5 @@ export const offsets = {
 	book: ["-2ch", "-3.5ch", "-5ch"],
 	go: ["-0.87em", "-1.44em", "-2.05em"],
 }
+
+export const ctrlKey = navigator.platform === "MacIntel" ? "⌘" : "Ctrl"
