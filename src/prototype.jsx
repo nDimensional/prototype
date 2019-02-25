@@ -1,6 +1,8 @@
 import React from "react"
 import { Editor } from "slate-react"
 // import * as URI from "uri-js"
+import { Map } from "immutable"
+import { Decoration, Point, Mark } from "slate"
 
 import parse from "./parser"
 import { autoClose } from "./plugins"
@@ -92,12 +94,25 @@ export default class Prototype extends React.Component {
 
 	static decorateNode(node, editor, next) {
 		if (node.object === "block") {
-			if (node.type === "img") return
 			const decorations = []
-			const env = {}
-			node
-				.getTexts()
-				.forEach(({ key, text }) => parse(key, text, decorations, env))
+			if (node.type === "img") {
+				console.log(node, node.data.get("src"), node.data.toJS())
+				const { key, text } = node.nodes.get(0)
+				const src = node.data.get("src")
+				const anchor = Point.create({
+					key,
+					offset: text.length - 1 - src.length,
+				})
+				const focus = Point.create({ key, offset: text.length - 1 })
+				const mark = Mark.create({ type: "a", data: Map({ href: src }) })
+				const decoration = Decoration.create({ anchor, focus, mark })
+				decorations.push(decoration)
+			} else {
+				const env = {}
+				node
+					.getTexts()
+					.forEach(({ key, text }) => parse(key, text, decorations, env))
+			}
 			return decorations
 		}
 	}

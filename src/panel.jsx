@@ -75,7 +75,11 @@ export default class Panel extends React.Component {
 						</label>
 					))}
 				</p>
-				<p>{`Close this panel with ${ctrlKey}-Period.`}</p>
+				<p>
+					Complain &#38; contribute on{" "}
+					<a href="http://github.com/joeltg/tad">GitHub</a>
+				</p>
+				<p>Close this panel with {ctrlKey}-Period.</p>
 			</React.Fragment>
 		)
 	}

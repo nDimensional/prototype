@@ -67,6 +67,10 @@ export const autoClose = {
 				}
 			} else {
 			}
+		} else if (event.keyCode === 9) {
+			// tab
+			event.preventDefault()
+			return
 		}
 		return next()
 	},
