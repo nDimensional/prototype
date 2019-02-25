@@ -1,5 +1,12 @@
 import React from "react"
-import { defaultTheme, fonts, sizes, darkTheme, ctrlKey } from "./constants"
+import {
+	defaultTheme,
+	fonts,
+	fontProperty,
+	sizes,
+	darkTheme,
+	ctrlKey,
+} from "./constants"
 
 export default class Panel extends React.Component {
 	constructor(props) {
@@ -47,6 +54,7 @@ export default class Panel extends React.Component {
 								onChange={this.handleFontChange}
 							/>
 							{fonts[key]}
+							<span className="label">{fontProperty[key]}</span>
 						</label>
 					))}
 				</p>
@@ -55,14 +63,15 @@ export default class Panel extends React.Component {
 					{sizes.map(key => (
 						<label key={key} className="noselect" name="size">
 							<input
+								className="capitalize"
 								type="radio"
 								id={key}
 								name="size"
 								value={key}
 								checked={key === size}
 								onChange={this.handleSizeChange}
-							/>
-							{key}
+							/>{" "}
+							{key[0].toUpperCase() + key.slice(1)}
 						</label>
 					))}
 				</p>

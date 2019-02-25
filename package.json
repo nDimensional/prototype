@@ -1,39 +1,43 @@
 {
-  "name": "tad",
-  "version": "0.3.3",
-  "description": "A scratch space for notes, reminders, and whatever else you want to keep around",
-  "main": "manifest.json",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/joeltg/tad.git"
-  },
-  "author": "Joel Gustafson",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/joeltg/tad/issues"
-  },
-  "homepage": "https://github.com/joeltg/tad#readme",
-  "dependencies": {
-    "@babel/polyfill": "^7.2.5",
-    "immutable": "^3.8.2",
-    "markdown-it": "^8.4.2",
-    "react": "^16.7.0",
-    "react-dom": "^16.7.0",
-    "slate": "^0.44.10",
-    "slate-react": "^0.21.16",
-    "uri-js": "^4.2.2"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.2.2",
-    "@babel/plugin-proposal-class-properties": "^7.3.0",
-    "@babel/preset-env": "^7.3.1",
-    "@babel/preset-react": "^7.0.0",
-    "babel-loader": "^8.0.5",
-    "babel-preset-minify": "^0.5.0",
-    "webpack": "^4.29.1",
-    "webpack-cli": "^3.2.1"
-  }
+	"name": "tad",
+	"version": "0.3.3",
+	"description": "A scratch space for notes, reminders, and whatever else you want to keep around",
+	"main": "manifest.json",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"watch": "webpack --mode development --watch",
+		"build": "webpack --mode production"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/joeltg/tad.git"
+	},
+	"author": "Joel Gustafson",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/joeltg/tad/issues"
+	},
+	"homepage": "https://github.com/joeltg/tad#readme",
+	"dependencies": {
+		"@babel/polyfill": "^7.2.5",
+		"immutable": "^3.8.2",
+		"katex": "^0.10.1",
+		"markdown-it": "^8.4.2",
+		"markdown-it-katex": "^2.0.3",
+		"react": "^16.7.0",
+		"react-dom": "^16.7.0",
+		"slate": "^0.44.10",
+		"slate-react": "^0.21.16",
+		"uri-js": "^4.2.2"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.2.2",
+		"@babel/plugin-proposal-class-properties": "^7.3.0",
+		"@babel/preset-env": "^7.3.1",
+		"@babel/preset-react": "^7.0.0",
+		"babel-loader": "^8.0.5",
+		"babel-preset-minify": "^0.5.0",
+		"webpack": "^4.29.1",
+		"webpack-cli": "^3.2.1"
+	}
 }

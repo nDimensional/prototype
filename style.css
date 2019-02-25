@@ -2,20 +2,19 @@
 	--light-background-color: #f9f9fa;
 	--light-text-color: #0c0c0d;
 	--light-highlight-color: #eaecef;
-	/* --light-highlight-color: rgba(27,31,35,.05); */
 
 	--dark-background-color: rgba(42, 42, 46, 1);
 	--dark-text-color: rgba(249, 249, 250, 1);
 	--dark-highlight-color: #363636;
 
-	--main-font-family: "iA Writer QuattroS";
+	--main-font-family: "ET Book";
 	--main-font-size: medium;
-	--input-spacing: 0.05em;
-	--quote-spacing: -1.75ch;
+	--input-spacing: 0.1em;
+	--quote-spacing: -1em;
 
-	--h1-offset: -1.75ch;
-	--h2-offset: -2.75ch;
-	--h3-offset: -3.75ch;
+	--h1-offset: -0.94em;
+	--h2-offset: -1.64em;
+	--h3-offset: -2.35em;
 }
 
 body {
@@ -48,8 +47,9 @@ main {
 
 #editor {
 	padding: 1em;
+	padding-left: 3em;
 	width: 640px;
-	margin: auto;
+	margin: 0 auto;
 }
 
 #settings {
@@ -95,6 +95,7 @@ body.dark #settings {
 
 #settings label.noselect input {
 	-webkit-appearance: none;
+	margin: 0 1ch;
 }
 
 #settings label.noselect input:after {
@@ -120,6 +121,11 @@ body.dark #settings label.noselect input:after {
 
 #settings label.noselect input[type="radio"]:checked:after {
 	content: "(o)";
+}
+
+#settings label.noselect span.label {
+	float: right;
+	opacity: 0.4;
 }
 
 #settings label.noselect:hover {
@@ -174,18 +180,47 @@ h3 {
 }
 
 ul {
-	padding-left: 1em;
+	padding-left: 2ch;
 }
 
 li {
 	display: block;
 }
 
+.margin {
+	position: relative;
+	float: right;
+	clear: right;
+	margin-right: -50%;
+	width: 40%;
+}
+
+figcaption {
+	margin-bottom: 1em;
+}
+
+span.margin {
+	margin-left: 0;
+	margin-top: 0;
+	margin-bottom: 0;
+
+	-webkit-touch-callout: none; /* iOS Safari */
+	-webkit-user-select: text; /* Safari */
+	-khtml-user-select: text; /* Konqueror HTML */
+	-moz-user-select: text; /* Firefox */
+	-ms-user-select: text; /* Internet Explorer/Edge */
+	user-select: text; /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+img {
+	max-width: 100%;
+}
+
 code {
 	font-size: 1em;
-	font-family: "iA Writer MonoS";
+	font-family: "Fira Code";
 	border-radius: 2px;
-	padding: 0 0.1em;
+	padding: 0;
 	background-color: var(--light-highlight-color);
 }
 
@@ -194,19 +229,23 @@ body.dark code {
 }
 
 a {
-	margin-left: -0.5ch;
+	/* margin-left: -0.5ch;
 	margin-right: -0.5ch;
 	padding-left: 0.5ch;
 	padding-right: 0.5ch;
-	border-radius: 2px;
+	border-radius: 2px; */
+	border-radius: 1px;
 
 	color: inherit;
 	/* text-decoration: none;	 */
 }
 
+body.cmd a {
+	cursor: pointer;
+}
+
 body.cmd a:hover {
 	background: var(--light-highlight-color);
-	cursor: pointer;
 }
 
 body.dark.cmd a:hover {

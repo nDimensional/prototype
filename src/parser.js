@@ -1,101 +1,92 @@
+import { Map } from "immutable"
 import * as MarkdownIt from "markdown-it"
-// import * as URI from "uri-js"
-import { Point, Decoration, Mark } from "slate"
-// console.log(URI)
+import * as MarkdownItKatex from "markdown-it-katex"
+import { Text, Inline, Point, Decoration, Mark } from "slate"
 
-const md = new MarkdownIt()
+const md = new MarkdownIt({ linkify: true })
 
-const pairs = [
-	["`", "`", "code", false],
-	["[", "]", "a", false],
-	["_", "_", "em", true],
-	["*", "*", "strong", true],
-]
+md.use(MarkdownItKatex)
 
 export default function parse(key, text, decorations, environment) {
-	const stack = {}
 	const tokens = md.parseInline(text, environment)
+	// console.log("environment", environment)
 	if (tokens.length > 0) {
 		const [{ children }] = tokens
-	}
-	console.log("tokens", tokens)
-	for (let i = 0; i < text.length; i++) {
-		// Look for closing tags
-		if (stack.hasOwnProperty(text[i])) {
-			const [start, type] = stack[text[i]]
-			// const result = [start, i + 1, type]
-			// const children = results.splice(index, results.length - index, result)
-			// result.push(children)
-			// results.push(result)
-
-			decorations.push(
-				Decoration.create({
-					anchor: Point.create({ key, offset: start }),
-					focus: Point.create({ key, offset: i + 1 }),
-					mark: Mark.create({ type }),
-				})
-			)
-
-			delete stack[text[i]]
-			continue
-		}
-
-		// Check for open tags
-		const pair = pairs.find(([start]) => text[i] === start)
-		if (pair !== undefined) {
-			const [_, end, type, recurse] = pair
-			if (recurse) {
-				// hmm
-				// stack[end] = [i, type, results.length]
-				stack[end] = [i, type]
-			} else {
-				const j = text.indexOf(end, i + 1)
-				if (j > 0) {
-					if (type === "a") {
-						decorations.push(
-							Decoration.create({
-								anchor: Point.create({ key, offset: i + 1 }),
-								focus: Point.create({ key, offset: j }),
-								mark: Mark.create({
-									type,
-									data: {
-										href: text.slice(i + 1, j),
-									},
-								}),
-							})
-						)
-					} else {
-						decorations.push(
-							Decoration.create({
-								anchor: Point.create({ key, offset: i }),
-								focus: Point.create({ key, offset: j + 1 }),
-								mark: Mark.create({ type }),
-							})
-						)
-					}
-
-					// results.push([i, j + 1, type])
-					i = j // since i will be incremented by the loop
+		console.log("tokens", children)
+		const stack = []
+		children.reduce((offset, token) => {
+			const { attrs, info, type, markup, content } = token
+			if (type === "text") {
+				return offset + content.length
+			} else if (type === "image") {
+				// console.log("image", token)
+				const [[_, src]] = attrs
+				const start = offset + 2 + content.length + 2
+				const end = start + src.length
+				decorations.push(
+					Decoration.create({
+						anchor: Point.create({ key, offset: start }),
+						focus: Point.create({ key, offset: end }),
+						mark: Mark.create({ type: "img", data: Map(attrs) }),
+					})
+				)
+				return end + 1
+			} else if (type === "code_inline") {
+				const nextOffset =
+					offset + markup.length + content.length + markup.length
+				const anchor = Point.create({ key, offset: offset })
+				const focus = Point.create({ key, offset: nextOffset })
+				const mark = Mark.create({ type: "code" })
+				decorations.push(Decoration.create({ anchor, focus, mark }))
+				return nextOffset
+			} else if (type === "math_inline") {
+				const nextOffset = offset + 1 + content.length + 1
+				const anchor = Point.create({ key, offset: offset })
+				const focus = Point.create({ key, offset: nextOffset })
+				const mark = Mark.create({ type: "math" })
+				decorations.push(Decoration.create({ anchor, focus, mark }))
+				return nextOffset
+			} else if (type === "em_open") {
+				stack.push({ markup, offset, type: markup === "*" ? "strong" : "em" })
+				return offset + 1
+			} else if (type === "strong_open") {
+				const type = markup === "**" ? "strong" : "em"
+				stack.push({ markup, offset, type })
+				return offset + 2
+			} else if (type === "link_open") {
+				stack.push({ markup, offset, type: "a", data: Map(attrs) })
+				if (markup === "linkify") {
+					return offset
+				} else {
+					return offset + 1
 				}
+			} else if (
+				type === "em_close" ||
+				type === "strong_close" ||
+				type === "link_close"
+			) {
+				const token = stack.pop()
+				const nextOffset =
+					type === "link_close"
+						? markup === "linkify"
+							? offset
+							: offset + token.data.get("href").length + 3
+						: offset + markup.length
+				if (token.markup === markup) {
+					const anchor = Point.create({ key, offset: token.offset })
+					const focus = Point.create({ key, offset: nextOffset })
+					const mark = Mark.create({ type: token.type, data: token.data })
+					decorations.push(Decoration.create({ anchor, focus, mark }))
+				} else {
+					console.error("Token stack out of sync")
+				}
+				return nextOffset
 			}
+		}, 0)
+		if (stack.length > 0) {
+			console.error("Token stack not empty")
 		}
 	}
-
-	// const { length } = results
-	// if (length === 0) {
-	// 	results.push([0, text.length, "text", text])
-	// } else {
-	// 	const end = results[length - 1][1]
-	// 	if (end < text.length) {
-	// 		results.push([end, text.length, "text", text.slice(end, text.length)])
-	// 	}
-	// 	const start = results[0][0]
-	// 	if (start > 0) {
-	// 		results.splice(0, 0, [0, start, "text", text.slice(0, start)])
-	// 	}
-	// }
-
-	// return results
 }
 
 window.parse = parse

@@ -1,47 +1,47 @@
 @font-face {
-	font-family: "iA Writer MonoS";
+	font-family: "iA Writer Mono";
 	font-weight: normal;
 	font-style: normal;
 	src: url("iAWriterMonoS-Regular.woff2") format("woff2");
 }
 
 @font-face {
-	font-family: "iA Writer MonoS";
+	font-family: "iA Writer Mono";
 	font-weight: bold;
 	font-style: normal;
 	src: url("iAWriterMonoS-Bold.woff2") format("woff2");
 }
 
 @font-face {
-	font-family: "iA Writer QuattroS";
+	font-family: "iA Writer Quattro";
 	font-weight: normal;
 	font-style: normal;
 	src: url("iAWriterQuattroS-Regular.woff2") format("woff2");
 }
 
 @font-face {
-	font-family: "iA Writer QuattroS";
+	font-family: "iA Writer Quattro";
 	font-weight: bold;
 	font-style: normal;
 	src: url("iAWriterQuattroS-Bold.woff2") format("woff2");
 }
 
 @font-face {
-	font-family: "et-book";
+	font-family: "ET Book";
 	font-weight: normal;
 	font-style: normal;
 	src: url("et-book-roman-line-figures.woff") format("woff");
 }
 
 @font-face {
-	font-family: "et-book";
+	font-family: "ET Book";
 	font-weight: normal;
 	font-style: italic;
 	src: url("et-book-display-italic-old-style-figures.woff") format("woff");
 }
 
 @font-face {
-	font-family: "et-book";
+	font-family: "ET Book";
 	font-weight: bold;
 	font-style: normal;
 	src: url("et-book-bold-line-figures.woff") format("woff");
@@ -52,4 +52,32 @@
 	font-weight: normal;
 	font-style: normal;
 	src: url("Go-Regular.ttf") format("truetype");
+}
+
+@font-face {
+	font-family: "Fira Code";
+	src: url("FiraCode-Light.woff2") format("woff2");
+	font-weight: 300;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Fira Code";
+	src: url("FiraCode-Regular.woff2") format("woff2");
+	font-weight: 400;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Fira Code";
+	src: url("FiraCode-Medium.woff2") format("woff2");
+	font-weight: 500;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Fira Code";
+	src: url("FiraCode-Bold.woff2") format("woff2");
+	font-weight: 700;
+	font-style: normal;
 }

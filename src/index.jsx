@@ -29,10 +29,9 @@ const initialText = [
 	"Tad uses a new markup language called Prototype that's designed to be \"rendered as source\", but you don't have to worry about that if you don't want to. Mostly it works like you'd expect.",
 	`Press ${ctrlKey}-Period to open and close the settings panel, where you can set the font and color theme.`,
 	"You can *bold text* by wrapping it with asterisks. This is *different from markdown*, where a single pair of asterisks only buys you italics. If you want italics, _use underscores!_ They're much simpler.",
-	"You can also `format text` inline! Formatted text is always rendered with a fixed-width font.",
+	"If you want to render text in a fixed-width font, `just wrap it in backticks!`",
 	"You can make a horizontal divider with a line of only dashes (at least three in a row).",
 	"---",
-	"------",
 	"> Block quotes start with a single right chevron. You can't have multi-line quotes, but the text will wrap with nice indentation.",
 	"",
 ]
@@ -98,50 +97,48 @@ class Document extends React.Component {
 				area
 			) => {
 				if (area === "sync") {
-					let { value, theme, font, size, settings } = this.state
-					let update = false
+					let { value } = this.state
+					const state = {}
 					if (storage && tab && tab.newValue !== this.props.id) {
 						// ignore local edits
 						const newValue = Value.fromJSON(storage.newValue)
 						// Only update if the _document_ is different
 						if (!is(newValue.document, value.document)) {
-							value = newValue
-							update = true
+							state.value = newValue
 						}
 					}
 
 					if (themeValue && themes.has(themeValue.newValue)) {
 						setTheme(themeValue.newValue)
-						theme = themeValue.newValue
-						update = true
+						state.theme = themeValue.newValue
 					}
 
 					if (fontValue && fonts.hasOwnProperty(fontValue.newValue)) {
 						setFont(fontValue.newValue)
-						font = fontValue.newValue
-						update = true
+						state.font = fontValue.newValue
 					}
 
 					if (sizeValue && sizes.includes(sizeValue.newValue)) {
 						setSize(sizeValue.newValue)
-						size = sizeValue.newValue
-						update = true
+						state.size = sizeValue.newValue
 					}
 
 					if (settingsValue) {
 						if (settingsValue.newValue !== this.state.settings) {
-							settings = settingsValue.newValue
-							update = true
+							state.settings = settingsValue.newValue
 						}
 					}
 
-					if (update) this.setState({ value, theme, font, size, settings })
+					if (Object.keys(state).length > 0) {
+						this.setState(state)
+					}
 				}
 			}
 		)
 	}
 
-	handleValueChange({ value }) {
+	handleValueChange(event) {
+		const { value } = event
 		if (value.document !== this.state.value.document) {
 			if (this.sync) this.save(value)
 			else this.value = value
@@ -205,7 +202,6 @@ let currentFont = defaultFont
 function setFont(font) {
 	if (fonts.hasOwnProperty(font) && font !== currentFont) {
 		currentFont = font
-		// fontElements.forEach(element => (element.checked = element.id === font))
 		document.documentElement.style.setProperty("--h1-offset", offsets[font][0])
 		document.documentElement.style.setProperty("--h2-offset", offsets[font][1])
 		document.documentElement.style.setProperty("--h3-offset", offsets[font][2])
@@ -264,11 +260,14 @@ Promise.all(
 			theme = defaultTheme
 		}
 
+		console.log("????", font, fonts.hasOwnProperty(font))
 		if (fonts.hasOwnProperty(font)) {
 			setFont(font)
 		} else {
 			window.browser.storage.sync.set({ [FONT_KEY]: defaultFont })
 			font = defaultFont
+
+			setFont(font)
 		}
 
 		if (sizes.includes(size)) {
@@ -283,8 +282,19 @@ Promise.all(
 			window.browser.storage.sync.set({ [SETTINGS_KEY]: true })
 		}
 
-		// const value = json ? Value.fromJSON(json) : initialValue
-		const value = initialValue
+		const value = json ? Value.fromJSON(json) : initialValue
+		// const value = initialValue
+
+		// setInterval(() => console.log(document.activeElement.tagName), 1000)
+
+		// document.addEventListener("focus", event => {
+		// 	console.log("focused document!!", document.activeElement)
+		// })
+
+		// document.body.addEventListener("focus", event => {
+		// 	console.log("focused body!!", document.activeElement)
+		// })
+
 		ReactDOM.render(
 			<Document
 				id={id}
