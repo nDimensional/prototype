@@ -46,10 +46,13 @@ main {
 }
 
 #editor {
-	padding: 1em;
-	padding-left: 3em;
-	width: 640px;
+	padding: 1em 1em 1em 3em;
+	width: 1024px;
 	margin: 0 auto;
+}
+
+#editor > div {
+	width: 60%;
 }
 
 #settings {
@@ -192,8 +195,8 @@ li {
 	position: relative;
 	float: right;
 	clear: right;
-	margin-right: -50%;
-	width: 40%;
+	margin-right: calc(-66%);
+	width: 50%;
 }
 
 figcaption {
@@ -289,6 +292,7 @@ body.dark div.divider:after {
 
 div.divider > span {
 	margin-right: 0.5em;
+	min-width: max-content;
 }
 
 .noselect {
