@@ -1,6 +1,6 @@
 import React from "react"
 import ReactDOM from "react-dom"
-import { Value } from "slate"
+import { Value, Selection, Point } from "slate"
 import Prototype from "./prototype"
 import {
 	defaultTheme,
@@ -260,7 +260,6 @@ Promise.all(
 			theme = defaultTheme
 		}
 
-		console.log("????", font, fonts.hasOwnProperty(font))
 		if (fonts.hasOwnProperty(font)) {
 			setFont(font)
 		} else {
@@ -282,29 +281,10 @@ Promise.all(
 			window.browser.storage.sync.set({ [SETTINGS_KEY]: true })
 		}
 
-		const value = json ? Value.fromJSON(json) : initialValue
 		// const value = initialValue
+		const value = json ? Value.fromJSON(json) : initialValue
 
-		// setInterval(() => console.log(document.activeElement.tagName), 1000)
-
-		// document.addEventListener("focus", event => {
-		// 	console.log("focused document!!", document.activeElement)
-		// })
-
-		// document.body.addEventListener("focus", event => {
-		// 	console.log("focused body!!", document.activeElement)
-		// })
-
-		ReactDOM.render(
-			<Document
-				id={id}
-				settings={settings}
-				theme={theme}
-				font={font}
-				size={size}
-				value={value}
-			/>,
-			main
-		)
+		const props = { id, settings, theme, font, size, value }
+		ReactDOM.render(<Document {...props} />, main)
 	}
 )

@@ -24,6 +24,7 @@
 		"katex": "^0.10.1",
 		"markdown-it": "^8.4.2",
 		"markdown-it-katex": "^2.0.3",
+		"mathjax-node": "^2.1.1",
 		"react": "^16.7.0",
 		"react-dom": "^16.7.0",
 		"slate": "^0.44.10",
@@ -37,6 +38,9 @@
 		"@babel/preset-react": "^7.0.0",
 		"babel-loader": "^8.0.5",
 		"babel-preset-minify": "^0.5.0",
+		"css-loader": "^2.1.1",
+		"file-loader": "^3.0.1",
+		"to-string-loader": "^1.1.5",
 		"webpack": "^4.29.1",
 		"webpack-cli": "^3.2.1"
 	}

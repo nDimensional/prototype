@@ -1,25 +1,22 @@
 import { Map } from "immutable"
 import * as MarkdownIt from "markdown-it"
 import * as MarkdownItKatex from "markdown-it-katex"
-import { Text, Inline, Point, Decoration, Mark } from "slate"
+import { Point, Decoration, Mark } from "slate"
 
 const md = new MarkdownIt({ linkify: true })
 
 md.use(MarkdownItKatex)
 
-export default function parse(key, text, decorations, environment) {
+function parse(key, text, decorations, environment) {
 	const tokens = md.parseInline(text, environment)
-	// console.log("environment", environment)
 	if (tokens.length > 0) {
 		const [{ children }] = tokens
-		console.log("tokens", children)
 		const stack = []
 		children.reduce((offset, token) => {
-			const { attrs, info, type, markup, content } = token
+			const { attrs, type, markup, content } = token
 			if (type === "text") {
 				return offset + content.length
 			} else if (type === "image") {
-				// console.log("image", token)
 				const [[_, src]] = attrs
 				const start = offset + 2 + content.length + 2
 				const end = start + src.length
@@ -43,7 +40,7 @@ export default function parse(key, text, decorations, environment) {
 				const nextOffset = offset + 1 + content.length + 1
 				const anchor = Point.create({ key, offset: offset })
 				const focus = Point.create({ key, offset: nextOffset })
-				const mark = Mark.create({ type: "math" })
+				const mark = Mark.create({ type: "math", data: Map({ src: content }) })
 				decorations.push(Decoration.create({ anchor, focus, mark }))
 				return nextOffset
 			} else if (type === "em_open") {
@@ -89,4 +86,26 @@ export default function parse(key, text, decorations, environment) {
 	}
 }
 
-window.parse = parse
+export default function decorateNode(node, editor, next) {
+	if (node.object === "block") {
+		const decorations = []
+		if (node.type === "img") {
+			const { key, text } = node.nodes.get(0)
+			const src = node.data.get("src")
+			const anchor = Point.create({
+				key,
+				offset: text.length - 1 - src.length,
+			})
+			const focus = Point.create({ key, offset: text.length - 1 })
+			const mark = Mark.create({ type: "a", data: Map({ href: src }) })
+			const decoration = Decoration.create({ anchor, focus, mark })
+			decorations.push(decoration)
+		} else {
+			const env = {}
+			node
+				.getTexts()
+				.forEach(({ key, text }) => parse(key, text, decorations, env))
+		}
+		return decorations
+	}
+}

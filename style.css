@@ -7,14 +7,14 @@
 	--dark-text-color: rgba(249, 249, 250, 1);
 	--dark-highlight-color: #363636;
 
-	--main-font-family: "ET Book";
+	--main-font-family: "iA Writer Quattro";
 	--main-font-size: medium;
-	--input-spacing: 0.1em;
-	--quote-spacing: -1em;
+	--input-spacing: 0.05em;
+	--quote-spacing: -1.75ch;
 
-	--h1-offset: -0.94em;
-	--h2-offset: -1.64em;
-	--h3-offset: -2.35em;
+	--h1-offset: -1.75ch;
+	--h2-offset: -2.75ch;
+	--h3-offset: -3.75ch;
 }
 
 body {
@@ -199,14 +199,23 @@ li {
 	width: 50%;
 }
 
+figure {
+	margin: 1em 0;
+}
+
 figcaption {
+	/* margin-left: -40px; */
 	margin-bottom: 1em;
+}
+
+figcaption.math {
+	display: inline;
 }
 
 span.margin {
 	margin-left: 0;
 	margin-top: 0;
-	margin-bottom: 0;
+	margin-bottom: 1em;
 
 	-webkit-touch-callout: none; /* iOS Safari */
 	-webkit-user-select: text; /* Safari */
@@ -220,11 +229,39 @@ img {
 	max-width: 100%;
 }
 
+figure img {
+	display: block;
+	margin: auto;
+}
+
+.math {
+	font-size: 1em;
+	font-family: "Fira Code";
+	border-radius: 2px;
+	padding: 1px;
+	background-color: var(--light-highlight-color);
+}
+
+div.latex {
+	pointer-events: none;
+
+	-webkit-touch-callout: none; /* iOS Safari */
+	-webkit-user-select: text; /* Safari */
+	-khtml-user-select: text; /* Konqueror HTML */
+	-moz-user-select: text; /* Firefox */
+	-ms-user-select: text; /* Internet Explorer/Edge */
+	user-select: text; /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+body.dark .math {
+	background-color: var(--dark-highlight-color);
+}
+
 code {
 	font-size: 1em;
 	font-family: "Fira Code";
 	border-radius: 2px;
-	padding: 0;
+	padding: 1px;
 	background-color: var(--light-highlight-color);
 }
 
@@ -249,6 +286,7 @@ body.cmd a {
 }
 
 body.cmd a:hover {
+	/* opacity: 1; */
 	background: var(--light-highlight-color);
 }
 

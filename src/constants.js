@@ -1,3 +1,7 @@
+const katexStyle = require("katex/dist/katex.min.css")
+export const katexStyleSheet = new CSSStyleSheet()
+katexStyleSheet.replaceSync(katexStyle)
+
 export const defaultTheme = "light"
 export const darkTheme = "dark"
 export const themes = new Set([defaultTheme, darkTheme])
@@ -16,8 +20,8 @@ export const fontProperty = {
 	book: "serif",
 	go: "sans",
 	quattro: "sans",
-	mono: "monospace",
-	fira: "monospace",
+	mono: "mono",
+	fira: "mono",
 }
 
 export const inputSpacing = {

@@ -13,7 +13,7 @@ module.exports = {
 	devtool: false,
 
 	resolve: {
-		extensions: [".js", ".jsx", ".json"],
+		extensions: [".css", ".js", ".jsx", ".json"],
 	},
 
 	module: {
@@ -22,6 +22,14 @@ module.exports = {
 				test: /\.jsx?$/,
 				exclude: /(?:node_modules|\.min\.js$|dist\/)/,
 				use: [{ loader: "babel-loader", options }],
+			},
+			{
+				test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+				use: ["file-loader"],
+			},
+			{
+				test: /\.css$/,
+				use: ["to-string-loader", "css-loader"],
 			},
 		],
 	},

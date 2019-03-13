@@ -29,26 +29,31 @@ export const autoClose = {
 			// enter
 			const { document, selection } = editor.value
 			if (selection.isCollapsed) {
-				const { path } = selection.focus
+				const { path, offset } = selection.focus
 				if (path.size === 3) {
 					// ul -> li -> text
 					const container = document.getDescendant(path.slice(0, 1))
 					if (container.type === "ul") {
-						event.preventDefault()
 						const { text } = document.getDescendant(path)
-						if (text === "- ")
-							editor.withoutNormalizing(() => {
+						if (text === "- ") {
+							event.preventDefault()
+							return editor.withoutNormalizing(() => {
 								editor.splitNodeByKey(container.key, container.nodes.size - 1)
 								editor.unwrapBlock("ul")
 								editor.setBlocks("p")
 								editor.deleteBackward(2)
 							})
-						else
-							editor.withoutNormalizing(() => {
+						} else if (offset > 2) {
+							event.preventDefault()
+							return editor.withoutNormalizing(() => {
 								editor.splitBlock(1)
 								editor.insertText("- ")
 							})
-						return
+						} else if (offset === 2) {
+							event.preventDefault()
+							return editor.deleteBackward(2)
+						}
+						return next()
 					}
 				} else {
 					const { text } = document.getDescendant(path)
@@ -60,8 +65,6 @@ export const autoClose = {
 							editor.splitBlock(1)
 							editor.moveBackward(1)
 						})
-
-						// editor.insertText("\n\n")
 						return
 					}
 				}
@@ -94,8 +97,13 @@ export const autoClose = {
 			const { key, offset } = selection.focus
 			if (offset !== 0) {
 				const { text } = document.getDescendant(key)
-				const previous = text[offset - 1]
-				if (previous !== " " && previous !== "`") return next()
+				if (text[offset] === data) {
+					event.preventDefault()
+					editor.moveForward(1)
+					return
+				} else if (text[offset - 1] !== " " && text[offset - 1] !== "`") {
+					return next()
+				}
 			}
 			event.preventDefault()
 			editor.insertText("``")
@@ -119,10 +127,10 @@ export const autoClose = {
 			const { key, offset } = selection.focus
 			const { text } = document.getDescendant(key)
 			if (
-				offset === 0 ||
-				text[offset - 1] === " " ||
-				(data === "[" && text[offset - 1] === "!") ||
-				(data === "(" && text[offset - 1] === "]")
+				((offset === 0 || text[offset - 1] === " ") &&
+					(offset === text.length || text[offset] === " ")) ||
+				(offset && data === "[" && text[offset - 1] === "!") ||
+				(offset && data === "(" && text[offset - 1] === "]")
 			) {
 				event.preventDefault()
 				editor.insertText(data + openers[data])

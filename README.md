@@ -4,7 +4,7 @@
 
 Tad is a WebExtension that replaces the new tab page with a markdown scratchpad, inspired by [Papier](https://getpapier.com/). It's built with [SlateJS](https://github.com/ianstormtaylor/slate), all dependencies are vendored in, and it doesn't use JSX: `index.js` is ~150 lines and is loaded directly into `index.html`.
 
-Markdown "support" is limited to h1-h4 and blockquotes for now.
+Markdown "support" is limited to h1-h3 and blockquotes for now.
 
 ## Fonts
 
