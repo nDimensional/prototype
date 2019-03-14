@@ -1,38 +1,59 @@
 :root {
-	--light-background-color: #f9f9fa;
+	/* --light-background-color: #f9f9fa;
 	--light-text-color: #0c0c0d;
 	--light-highlight-color: #eaecef;
+	--light-highlight-text-color: darkgray; */
+
+	--light-background-color: #fffff8;
+	--light-text-color: #111;
+	--light-highlight-color: #f3f3f0;
+	--light-highlight-text-color: darkgray;
 
 	--dark-background-color: rgba(42, 42, 46, 1);
 	--dark-text-color: rgba(249, 249, 250, 1);
 	--dark-highlight-color: #363636;
+	--dark-highlight-text-color: dimgray;
+}
 
-	--main-font-family: "iA Writer Quattro";
-	--main-font-size: medium;
-	--input-spacing: 0.05em;
-	--quote-spacing: -1.75ch;
-
-	--h1-offset: -1.75ch;
-	--h2-offset: -2.75ch;
-	--h3-offset: -3.75ch;
+html,
+body,
+main {
+	height: 100%;
+	margin: 0;
 }
 
 body {
-	margin: 0;
-	font-family: var(--main-font-family);
-	font-size: var(--main-font-size);
+	--panel-background-color: var(--light-background-color);
+	--panel-text-color: var(--light-text-color);
+	--panel-highlight-color: var(--light-highlight-color);
+	--panel-highlight-text-color: var(--light-highlight-text-color);
+	--panel-font-family: "iA Writer Quattro";
+	--panel-font-size: medium;
+	--panel-input-spacing: 0.05em;
+	--panel-quote-spacing: -1.75ch;
+	--panel-list-spacing: -1.75ch;
+	--panel-h1-offset: -1.75ch;
+	--panel-h2-offset: -2.75ch;
+	--panel-h3-offset: -3.75ch;
 
-	background-color: var(--light-background-color);
-	color: var(--light-text-color);
+	--background-color: var(--panel-background-color);
+	--text-color: var(--panel-text-color);
+	--highlight-color: var(--panel-highlight-color);
+	--highlight-text-color: var(--panel-highlight-text-color);
+	--font-family: var(--panel-font-family);
+	--font-size: var(--panel-font-size);
+	--input-spacing: var(--panel-input-spacing);
+	--quote-spacing: var(--panel-quote-spacing);
+	--list-spacing: var(--panel-list-spacing);
+	--h1-offset: var(--panel-h1-offset);
+	--h2-offset: var(--panel-h2-offset);
+	--h3-offset: var(--panel-h3-offset);
 }
 
-body.dark {
-	background-color: var(--dark-background-color);
-	color: var(--dark-text-color);
-}
-
-/* Once Firefox implements prefers-color-scheme we'll switch over */
-/* tracking bug at https://bugzilla.mozilla.org/show_bug.cgi?id=1494034 */
+/* Once Firefox & Chrome implement prefers-color-scheme we'll switch over */
+/* https://bugzilla.mozilla.org/show_bug.cgi?id=1494034 */
+/* https://bugs.chromium.org/p/chromium/issues/detail?id=889087 */
+/* https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme */
 /* @media (prefers-color-scheme: dark) {
 	body {
 		background-color: var(--dark-background-color);
@@ -43,30 +64,44 @@ body.dark {
 main {
 	display: flex;
 	width: 100%;
+
+	font-family: var(--font-family);
+	font-size: var(--font-size);
+
+	background-color: var(--background-color);
+	color: var(--text-color);
 }
 
 #editor {
-	padding: 1em 1em 1em 3em;
+	padding: 1em 1em 0 3em;
 	width: 1024px;
 	margin: 0 auto;
+	display: flex;
+	flex-direction: column;
 }
 
 #editor > div {
 	width: 60%;
+	flex: 1;
 }
 
 #settings {
-	min-width: 300px;
+	min-width: fit-content;
 	padding: 1em;
-	border-left: 1px solid var(--light-highlight-color);
+	border-left: 2px solid var(--panel-highlight-color);
+	align-self: baseline;
+
+	background-color: var(--panel-background-color);
+	color: var(--panel-text-color);
+
+	font-size: var(--panel-font-size);
+	font-family: var(--panel-font-family);
 }
 
 #settings h1 {
 	text-indent: initial;
-}
-
-body.dark #settings {
-	border-left: 1px solid var(--dark-highlight-color);
+	color: var(--panel-text-color);
+	border-bottom: 2px solid var(--panel-highlight-color);
 }
 
 #settings.hidden {
@@ -75,20 +110,19 @@ body.dark #settings {
 
 #settings label.heading {
 	display: block;
-	margin-bottom: 4px;
 }
 
 #settings label.noselect {
 	display: block;
-	border-top-left-radius: 2px;
-	border-bottom-left-radius: 2px;
+	border-top-left-radius: 0.1em;
+	border-bottom-left-radius: 0.1em;
 	cursor: pointer;
 	padding-left: 4px;
 	margin-left: -4px;
 }
 
 #settings label.heading + label.noselect {
-	padding-bottom: 2px;
+	padding-bottom: 0.1em;
 }
 
 #settings label.noselect input {
@@ -102,15 +136,11 @@ body.dark #settings {
 }
 
 #settings label.noselect input:after {
-	font-size: initial;
-	font-family: var(--main-font-family);
-	color: var(--light-text-color);
-	letter-spacing: var(--input-spacing);
+	font-size: var(--panel-font-size);
+	font-family: var(--panel-font-family);
+	color: var(--panel-text-color);
+	letter-spacing: var(--panel-input-spacing);
 	content: "[ ]";
-}
-
-body.dark #settings label.noselect input:after {
-	color: var(--dark-text-color);
 }
 
 #settings label.noselect input[type="radio"]:after {
@@ -133,16 +163,12 @@ body.dark #settings label.noselect input:after {
 }
 
 #settings label.noselect:hover {
-	background-color: var(--light-highlight-color);
-}
-
-body.dark #settings label.noselect:hover {
-	background-color: var(--dark-highlight-color);
+	background-color: var(--panel-highlight-color);
 }
 
 blockquote {
 	border-radius: 1px;
-	background-color: var(--light-highlight-color);
+	background-color: var(--highlight-color);
 	text-indent: var(--quote-spacing);
 	margin-left: -0.5em;
 	margin-right: -0.5em;
@@ -153,30 +179,16 @@ blockquote {
 	padding-right: 0.5em;
 }
 
-body.dark blockquote {
-	background-color: var(--dark-highlight-color);
-}
-
 h1 {
 	text-indent: var(--h1-offset);
-	/* margin-left: var(--h1-offset);
-	padding-left: calc(var(--h1-offset) * -1); */
 	padding-bottom: 0;
-	border-bottom: 2px solid var(--light-highlight-color);
-}
-
-body.dark h1 {
-	border-bottom: 2px solid var(--dark-highlight-color);
+	border-bottom: 2px solid var(--highlight-color);
 }
 
 h2 {
 	text-indent: var(--h2-offset);
 	padding-bottom: 2px;
-	border-bottom: 2px solid var(--light-highlight-color);
-}
-
-body.dark h2 {
-	border-bottom: 2px solid var(--dark-highlight-color);
+	border-bottom: 2px solid var(--highlight-color);
 }
 
 h3 {
@@ -184,11 +196,22 @@ h3 {
 }
 
 ul {
-	padding-left: 2ch;
+	padding-left: 2em;
 }
 
 li {
 	display: block;
+	text-indent: var(--list-spacing);
+	/* padding-left: calc(0.5em - var(--quote-spacing)); */
+}
+
+figure {
+	word-break: break-all;
+	margin: 1em 0;
+}
+
+figcaption {
+	margin-bottom: 1em;
 }
 
 .margin {
@@ -197,32 +220,11 @@ li {
 	clear: right;
 	margin-right: calc(-66%);
 	width: 50%;
-}
-
-figure {
-	margin: 1em 0;
-}
-
-figcaption {
-	/* margin-left: -40px; */
-	margin-bottom: 1em;
-}
-
-figcaption.math {
-	display: inline;
-}
-
-span.margin {
 	margin-left: 0;
 	margin-top: 0;
 	margin-bottom: 1em;
 
-	-webkit-touch-callout: none; /* iOS Safari */
-	-webkit-user-select: text; /* Safari */
-	-khtml-user-select: text; /* Konqueror HTML */
-	-moz-user-select: text; /* Firefox */
-	-ms-user-select: text; /* Internet Explorer/Edge */
-	user-select: text; /* Non-prefixed version, currently supported by Chrome and Opera */
+	pointer-events: none;
 }
 
 img {
@@ -234,12 +236,24 @@ figure img {
 	margin: auto;
 }
 
+.open {
+	border-top-left-radius: 0.1em;
+	border-bottom-left-radius: 0.1em;
+	color: var(--highlight-text-color);
+}
+
+.close {
+	border-top-right-radius: 0.1em;
+	border-bottom-right-radius: 0.1em;
+	color: var(--highlight-text-color);
+}
+
+.code,
 .math {
 	font-size: 1em;
 	font-family: "Fira Code";
-	border-radius: 2px;
-	padding: 1px;
-	background-color: var(--light-highlight-color);
+	padding: 0.1em 0;
+	background-color: var(--highlight-color);
 }
 
 div.latex {
@@ -253,46 +267,25 @@ div.latex {
 	user-select: text; /* Non-prefixed version, currently supported by Chrome and Opera */
 }
 
-body.dark .math {
-	background-color: var(--dark-highlight-color);
-}
-
-code {
-	font-size: 1em;
-	font-family: "Fira Code";
-	border-radius: 2px;
-	padding: 1px;
-	background-color: var(--light-highlight-color);
-}
-
-body.dark code {
-	background-color: var(--dark-highlight-color);
-}
+/* Links */
 
 a {
-	border-radius: 1px;
+	word-break: break-all;
+	border-radius: 0.1em;
 	color: inherit;
+	padding: 0 0.1em;
+	margin: 0 -0.1em;
 }
 
 body.cmd a {
 	cursor: pointer;
-
-	-webkit-touch-callout: none; /* iOS Safari */
-	-webkit-user-select: none; /* Safari */
-	-khtml-user-select: none; /* Konqueror HTML */
-	-moz-user-select: none; /* Firefox */
-	-ms-user-select: none; /* Internet Explorer/Edge */
-	user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
 }
 
 body.cmd a:hover {
-	/* opacity: 1; */
-	background: var(--light-highlight-color);
+	background: var(--highlight-color);
 }
 
-body.dark.cmd a:hover {
-	background: var(--dark-highlight-color);
-}
+/* Divider --- */
 
 div.divider {
 	display: flex;
@@ -303,30 +296,13 @@ div.divider:after {
 	background: linear-gradient(
 		180deg,
 		rgba(0, 0, 0, 0) calc(50%),
-		var(--light-highlight-color) calc(50%),
+		var(--highlight-color) calc(50%),
 		rgba(0, 0, 0, 0) calc(50% + 3px)
 	);
 	width: 100%;
 	content: "";
 	pointer-events: none;
 }
-
-body.dark div.divider:after {
-	background: linear-gradient(
-		180deg,
-		rgba(0, 0, 0, 0) calc(50%),
-		var(--dark-highlight-color) calc(50%),
-		rgba(0, 0, 0, 0) calc(50% + 3px)
-	);
-}
-
-/* div.divider:after {
-	border-top: 1px solid #363636;
-	content: "";
-	position: relative;
-	top: 1ch;
-	width: 100%;
-} */
 
 div.divider > span {
 	margin-right: 0.5em;

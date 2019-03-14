@@ -1,21 +1,26 @@
 import React from "react"
 import ReactDOM from "react-dom"
-import { Value, Selection, Point } from "slate"
+import { Value } from "slate"
+import { is } from "immutable"
+
 import Prototype from "./prototype"
 import {
 	defaultTheme,
-	darkTheme,
 	themes,
 	defaultFont,
 	fonts,
 	sizes,
-	inputSpacing,
-	offsets,
-	quoteSpacing,
 	defaultSize,
 	ctrlKey,
+	setTheme,
+	setFont,
+	setSize,
 } from "./constants"
 import Panel from "./panel"
+
+window.browser = window.browser || window.chrome
+const storageAreaName = "local"
+const storageArea = window.browser.storage[storageAreaName]
 
 document
 	.querySelectorAll(".ctrl-key")
@@ -24,15 +29,15 @@ document
 const main = document.querySelector("main")
 
 const initialText = [
-	"# Welcome to Tad!",
-	"Use this space for scratch notes, reminders, and whatever else you want to keep around.",
-	"Tad uses a new markup language called Prototype that's designed to be \"rendered as source\", but you don't have to worry about that if you don't want to. Mostly it works like you'd expect.",
-	`Press ${ctrlKey}-Period to open and close the settings panel, where you can set the font and color theme.`,
-	"You can *bold text* by wrapping it with asterisks. This is *different from markdown*, where a single pair of asterisks only buys you italics. If you want italics, _use underscores!_ They're much simpler.",
-	"If you want to render text in a fixed-width font, `just wrap it in backticks!`",
-	"You can make a horizontal divider with a line of only dashes (at least three in a row).",
+	"# Welcome to Prototype!",
+	"Use this space for scratch notes, links, reminders, and whatever else you want to keep around.",
+	"You make text *bold* and _italic_. `Backticks` render in a fixed-width font, and $\\sum_0^n{math}$ renders in the margin.",
+	"You can also do inline images: ![](https://upload.wikimedia.org/wikipedia/en/3/33/Study_of_Regular_Division_of_the_Plane_with_Reptiles.jpg)",
+	"You can make a horizontal divider with a line of dashes:",
 	"---",
-	"> Block quotes start with a single right chevron. You can't have multi-line quotes, but the text will wrap with nice indentation.",
+	"> Block quotes start with a single right arrow.",
+	"- And there are lists too!",
+	"- We all love lists.",
 	"",
 ]
 
@@ -46,23 +51,25 @@ const initialValue = Value.fromJSON({
 	},
 })
 
-const ID_KEY = "--tad-id--"
-const FONT_KEY = "--tad-font--"
-const SIZE_KEY = "--tad-size--"
-const THEME_KEY = "--tad-theme--"
-const VALUE_KEY = "--tad-storage--"
-const SETTINGS_KEY = "--tad-settings--"
+const ID_KEY = "<--prototype-id-->"
+const FONT_KEY = "<--prototype-font-->"
+const SIZE_KEY = "<--prototype-size-->"
+const THEME_KEY = "<--prototype-theme-->"
+const VALUE_KEY = "<--prototype-value-->"
+const SETTINGS_KEY = "<--prototype-settings-->"
 
 class Document extends React.Component {
 	constructor(props) {
 		super(props)
-		const { value, theme, font, size, settings } = props
+		const { id, value, theme, font, size, settings } = props
 		this.state = { value, theme, font, size, settings }
 		this.sync = true
+		this.tabId = id
 		this.handleValueChange = this.handleValueChange.bind(this)
-		this.handleThemeChange = this.handleThemeChange.bind(this)
 		this.handleFontChange = this.handleFontChange.bind(this)
 		this.handleSizeChange = this.handleSizeChange.bind(this)
+		this.handleKeyDown = this.handleKeyDown.bind(this)
+		this.handleKeyUp = this.handleKeyUp.bind(this)
 	}
 
 	async save(value) {
@@ -70,7 +77,7 @@ class Document extends React.Component {
 		this.value = null
 		const json = value.toJSON()
 		const data = { [VALUE_KEY]: json, [ID_KEY]: this.props.id }
-		await window.browser.storage.sync.set(data)
+		await storageArea.set(data)
 		if (this.value !== null) this.save(this.value)
 		else this.sync = true
 	}
@@ -78,7 +85,7 @@ class Document extends React.Component {
 	componentDidMount() {
 		window.browser.commands.onCommand.addListener(command => {
 			if (command === "toggle-settings") {
-				window.browser.storage.sync.set({
+				storageArea.set({
 					[SETTINGS_KEY]: !this.state.settings,
 				})
 			}
@@ -87,7 +94,7 @@ class Document extends React.Component {
 		window.browser.storage.onChanged.addListener(
 			(
 				{
-					[VALUE_KEY]: storage,
+					[VALUE_KEY]: json,
 					[ID_KEY]: tab,
 					[THEME_KEY]: themeValue,
 					[FONT_KEY]: fontValue,
@@ -96,12 +103,13 @@ class Document extends React.Component {
 				},
 				area
 			) => {
-				if (area === "sync") {
+				if (area === storageAreaName) {
 					let { value } = this.state
 					const state = {}
-					if (storage && tab && tab.newValue !== this.props.id) {
+					if (tab) this.tabId = tab.newValue
+					if (json && this.tabId !== this.props.id) {
 						// ignore local edits
-						const newValue = Value.fromJSON(storage.newValue)
+						const newValue = Value.fromJSON(json.newValue)
 						// Only update if the _document_ is different
 						if (!is(newValue.document, value.document)) {
 							state.value = newValue
@@ -109,17 +117,17 @@ class Document extends React.Component {
 					}
 
 					if (themeValue && themes.has(themeValue.newValue)) {
-						setTheme(themeValue.newValue)
+						setTheme(themeValue.newValue, false)
 						state.theme = themeValue.newValue
 					}
 
 					if (fontValue && fonts.hasOwnProperty(fontValue.newValue)) {
-						setFont(fontValue.newValue)
+						setFont(fontValue.newValue, false)
 						state.font = fontValue.newValue
 					}
 
-					if (sizeValue && sizes.includes(sizeValue.newValue)) {
-						setSize(sizeValue.newValue)
+					if (sizeValue && sizes.hasOwnProperty(sizeValue.newValue)) {
+						setSize(sizeValue.newValue, false)
 						state.size = sizeValue.newValue
 					}
 
@@ -137,6 +145,9 @@ class Document extends React.Component {
 		)
 	}
 
+	handleFontChange = font => storageArea.set({ [FONT_KEY]: font })
+	handleSizeChange = size => storageArea.set({ [SIZE_KEY]: size })
+	handleThemeChange = theme => storageArea.set({ [THEME_KEY]: theme })
 	handleValueChange(event) {
 		const { value } = event
 		if (value.document !== this.state.value.document) {
@@ -146,16 +157,24 @@ class Document extends React.Component {
 		this.setState({ value })
 	}
 
-	handleThemeChange(theme) {
-		window.browser.storage.sync.set({ [THEME_KEY]: theme })
+	handleKeyDown(event) {
+		const { metaKey, keyCode, shiftKey } = event
+		// Intercept Cmd-S
+		if (metaKey && keyCode === 83) {
+			event.preventDefault()
+			if (shiftKey) {
+				// Do stuff
+			}
+		} else if (keyCode === 224 || keyCode === 91 || keyCode === 93) {
+			document.body.classList.add("cmd")
+		}
 	}
 
-	handleFontChange(font) {
-		window.browser.storage.sync.set({ [FONT_KEY]: font })
-	}
-
-	handleSizeChange(size) {
-		window.browser.storage.sync.set({ [SIZE_KEY]: size })
+	handleKeyUp(event) {
+		const { keyCode } = event
+		if (keyCode === 224 || keyCode === 91 || keyCode === 93) {
+			document.body.classList.remove("cmd")
+		}
 	}
 
 	renderPanel() {
@@ -177,7 +196,13 @@ class Document extends React.Component {
 	render() {
 		return (
 			<React.Fragment>
-				<div id="editor">
+				<div
+					id="editor"
+					onFocus={() => document.body.classList.remove("cmd")}
+					onBlur={() => document.body.classList.add("cmd")}
+					onKeyDown={this.handleKeyDown}
+					onKeyUp={this.handleKeyUp}
+				>
 					<Prototype
 						value={this.state.value}
 						onChange={this.handleValueChange}
@@ -189,59 +214,17 @@ class Document extends React.Component {
 	}
 }
 
-let currentTheme = defaultTheme
-function setTheme(theme) {
-	if (theme !== currentTheme) {
-		if (theme === defaultTheme) document.body.classList.remove(darkTheme)
-		else document.body.classList.add(darkTheme)
-		currentTheme = theme
-	}
-}
-
-let currentFont = defaultFont
-function setFont(font) {
-	if (fonts.hasOwnProperty(font) && font !== currentFont) {
-		currentFont = font
-		document.documentElement.style.setProperty("--h1-offset", offsets[font][0])
-		document.documentElement.style.setProperty("--h2-offset", offsets[font][1])
-		document.documentElement.style.setProperty("--h3-offset", offsets[font][2])
-		document.documentElement.style.setProperty(
-			"--quote-spacing",
-			quoteSpacing[font]
-		)
-		document.documentElement.style.setProperty(
-			"--input-spacing",
-			inputSpacing[font]
-		)
-		document.documentElement.style.setProperty(
-			"--main-font-family",
-			fonts[font]
-		)
-	}
-}
-
-let currentSize = defaultSize
-function setSize(size) {
-	if (sizes.includes(size) && size !== currentSize) {
-		currentSize = size
-		// sizeElements.forEach(element => (element.checked = element.id === size))
-		document.documentElement.style.setProperty("--main-font-size", size)
-	}
-}
-
 // Get tab id & data from browser storage
-window.browser = window.browser || window.chrome
 const storageKeys = [VALUE_KEY, THEME_KEY, FONT_KEY, SIZE_KEY, SETTINGS_KEY]
 Promise.all(
 	window.chrome
 		? [
 				new Promise(resolve => chrome.tabs.getCurrent(resolve)),
-				new Promise(resolve => chrome.storage.sync.get(storageKeys, resolve)),
+				new Promise(resolve =>
+					chrome.storage[storageAreaName].get(storageKeys, resolve)
+				),
 		  ]
-		: [
-				window.browser.tabs.getCurrent(),
-				window.browser.storage.sync.get(storageKeys),
-		  ]
+		: [window.browser.tabs.getCurrent(), storageArea.get(storageKeys)]
 ).then(
 	([
 		{ id },
@@ -254,35 +237,35 @@ Promise.all(
 		},
 	]) => {
 		if (themes.has(theme)) {
-			setTheme(theme)
+			setTheme(theme, false)
 		} else {
-			window.browser.storage.sync.set({ [THEME_KEY]: defaultTheme })
+			storageArea.set({ [THEME_KEY]: defaultTheme })
 			theme = defaultTheme
 		}
 
 		if (fonts.hasOwnProperty(font)) {
-			setFont(font)
+			setFont(font, false)
 		} else {
-			window.browser.storage.sync.set({ [FONT_KEY]: defaultFont })
+			storageArea.set({ [FONT_KEY]: defaultFont })
 			font = defaultFont
 
-			setFont(font)
+			setFont(font, false)
 		}
 
-		if (sizes.includes(size)) {
-			setSize(size)
+		if (sizes.hasOwnProperty(size)) {
+			setSize(size, false)
 		} else {
-			window.browser.storage.sync.set({ [SIZE_KEY]: defaultSize })
+			storageArea.set({ [SIZE_KEY]: defaultSize })
 			size = defaultSize
 		}
 
 		if (settings !== true && settings !== false) {
 			settings = true
-			window.browser.storage.sync.set({ [SETTINGS_KEY]: true })
+			storageArea.set({ [SETTINGS_KEY]: true })
 		}
 
-		// const value = initialValue
-		const value = json ? Value.fromJSON(json) : initialValue
+		const value = initialValue
+		// const value = json ? Value.fromJSON(json) : initialValue
 
 		const props = { id, settings, theme, font, size, value }
 		ReactDOM.render(<Document {...props} />, main)

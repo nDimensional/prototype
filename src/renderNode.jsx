@@ -22,9 +22,7 @@ export default function renderNode(props, editor, next) {
 			const src = props.node.data.get("src")
 			return (
 				<figure {...props.attributes}>
-					<figcaption className="math" spellCheck={false}>
-						{props.children}
-					</figcaption>
+					{props.children}
 					<div
 						className="latex"
 						ref={div => {
@@ -40,6 +38,18 @@ export default function renderNode(props, editor, next) {
 						}}
 					/>
 				</figure>
+			)
+		} else if (props.node.type === "table") {
+			return (
+				<div className="table" {...props.attributes}>
+					{props.children}
+				</div>
+			)
+		} else if (props.node.type === "tr") {
+			return (
+				<div className="row" {...props.attributes}>
+					{props.children}
+				</div>
 			)
 		} else {
 			return React.createElement(

@@ -4,8 +4,16 @@ import katex from "katex/dist/katex.min.js"
 import { katexStyleSheet } from "./constants"
 
 export default function renderMark(props, editor, next) {
-	if (props.mark.type === "math") {
-		const src = props.mark.data.get("src")
+	if (props.mark.type === "class") {
+		const className = props.mark.data.get("className")
+		return (
+			<span className={className} {...props.attributes}>
+				{props.children}
+			</span>
+		)
+	} else if (props.mark.type === "math") {
+		// const src = props.mark.data.get("src")
+		const src = props.children.props.children // lol what
 		return (
 			<span className="math" spellCheck={false} {...props.attributes}>
 				<span
@@ -18,7 +26,8 @@ export default function renderMark(props, editor, next) {
 						}
 						katex.render(src, span.shadowRoot, {
 							throwOnError: false,
-							displayMode: false,
+							displayMode: false, // can't decide what's best here
+							// displayMode: true,
 						})
 					}}
 				/>
@@ -38,15 +47,22 @@ export default function renderMark(props, editor, next) {
 	} else if (props.mark.type === "a") {
 		const href = props.mark.data.get("href")
 		return (
-			<React.Fragment>
-				<a href={href} {...props.attributes}>
-					{props.children}
-				</a>
-			</React.Fragment>
+			<a
+				href={href}
+				{...props.attributes}
+				onClick={event => {
+					if (event.metaKey) {
+						const target = event.shiftKey ? "_self" : "_blank"
+						window.open(href, target)
+					}
+				}}
+			>
+				{props.children}
+			</a>
 		)
 	} else if (props.mark.type === "code") {
 		return (
-			<code spellCheck={false} {...props.attributes}>
+			<code className="code" spellCheck={false} {...props.attributes}>
 				{props.children}
 			</code>
 		)

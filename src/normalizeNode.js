@@ -10,11 +10,11 @@ const blockTypes = new Set([
 	"math",
 ])
 
-const blockContainerTypes = new Set(["ul", "ol"])
+const blockContainerTypes = new Set(["ul"])
 
 const headerTest = /^(#{1,4})(?: |$)/
 const imageTest = /^!\[[^\[\]]*\]\(([^\[\]\(\) ]+)\)$/
-const latexTest = /^\$\$(.+)\$\$$/
+const latexTest = /^\$(.+)\$$/
 const blockQuoteTest = /^>(?: |$)/
 const dividerTest = /^-{3,}$/
 const listElementTest = /^- /
