@@ -8,9 +8,9 @@
 		"newtab": "index.html"
 	},
 	"icons": {
-		"48": "tad-48.png",
-		"96": "tad-96.png",
-		"192": "tad-192.png"
+		"48": "icon-48.png",
+		"96": "icon-96.png",
+		"192": "icon-192.png"
 	},
 	"permissions": ["storage"],
 	"applications": {
