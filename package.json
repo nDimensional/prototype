@@ -10,14 +10,14 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/joeltg/prototype.git"
+		"url": "git+https://github.com/nDimensional/prototype.git"
 	},
 	"author": "Joel Gustafson",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/joeltg/prototype/issues"
+		"url": "https://github.com/nDimensional/prototype/issues"
 	},
-	"homepage": "https://github.com/joeltg/prototype#readme",
+	"homepage": "https://github.com/nDimensional/prototype#readme",
 	"dependencies": {
 		"@babel/polyfill": "^7.2.5",
 		"immutable": "^3.8.2",

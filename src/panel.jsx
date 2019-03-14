@@ -106,7 +106,7 @@ export default class Panel extends React.Component {
 				</p>
 				<p>
 					Complain &#38; contribute on{" "}
-					<a href="http://github.com/joeltg/tad">GitHub</a>.
+					<a href="http://github.com/nDimensional/prototype">GitHub</a>.
 				</p>
 				<p>Close this panel with {ctrlKey}-Period.</p>
 			</React.Fragment>
