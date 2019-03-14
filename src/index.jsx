@@ -31,13 +31,14 @@ const main = document.querySelector("main")
 const initialText = [
 	"# Welcome to Prototype!",
 	"Use this space for scratch notes, links, reminders, and whatever else you want to keep around.",
-	"You make text *bold* and _italic_. `Backticks` render in a fixed-width font, and $\\sum_0^n{math}$ renders in the margin.",
-	"You can also do inline images: ![](https://upload.wikimedia.org/wikipedia/en/3/33/Study_of_Regular_Division_of_the_Plane_with_Reptiles.jpg)",
-	"You can make a horizontal divider with a line of dashes:",
+	"You can make text *bold* and _italic_. `Backticks` render in a fixed-width font, and $\\sum_0^n{math}$ renders in the margin.",
+	"You can also do ![inline images](https://upload.wikimedia.org/wikipedia/en/3/33/Study_of_Regular_Division_of_the_Plane_with_Reptiles.jpg).",
+	"Horizontal dividers are a line of dashes:",
 	"---",
 	"> Block quotes start with a single right arrow.",
 	"- And there are lists too!",
 	"- We all love lists.",
+	"- Lists are a lot of fun.",
 	"",
 ]
 
@@ -264,8 +265,8 @@ Promise.all(
 			storageArea.set({ [SETTINGS_KEY]: true })
 		}
 
-		const value = initialValue
-		// const value = json ? Value.fromJSON(json) : initialValue
+		// const value = initialValue
+		const value = json ? Value.fromJSON(json) : initialValue
 
 		const props = { id, settings, theme, font, size, value }
 		ReactDOM.render(<Document {...props} />, main)

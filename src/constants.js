@@ -12,7 +12,7 @@ export const sizes = {
 	large: "Large",
 	// ["x-large"]: "Extra Large",
 }
-export const defaultFont = "book"
+export const defaultFont = "quattro"
 export const fonts = {
 	book: "ET Book",
 	go: "Go Regular",
