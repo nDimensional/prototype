@@ -1,6 +1,6 @@
 # prototype
 
-> A scratch space for notes, reminders, and whatever else you want to keep around
+> A scratch space for notes, links, reminders, and whatever else you want to keep around
 
 Prototype is a WebExtension that replaces the new tab page with a self-styling scratchpad. It's built with [SlateJS](https://github.com/ianstormtaylor/slate).
 
