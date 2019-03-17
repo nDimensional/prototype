@@ -1,7 +1,11 @@
 import React from "react"
-import katex from "katex/dist/katex.min.js"
 
-import { katexStyleSheet } from "./constants"
+function handleLinkClick(event, href) {
+	if (event.metaKey) {
+		const target = event.shiftKey ? "_self" : "_blank"
+		window.open(href, target)
+	}
+}
 
 export default function renderMark(props, editor, next) {
 	if (props.mark.type === "class") {
@@ -11,33 +15,14 @@ export default function renderMark(props, editor, next) {
 				{props.children}
 			</span>
 		)
-	} else if (props.mark.type === "math") {
-		// const src = props.mark.data.get("src")
-		const src = props.children.props.children // lol what
-		return (
-			<span className="math" spellCheck={false} {...props.attributes}>
-				<span
-					className="margin noselect latex"
-					ref={span => {
-						if (!span) return
-						if (!span.shadowRoot) {
-							const root = span.attachShadow({ mode: "open" })
-							root.adoptedStyleSheets = [katexStyleSheet]
-						}
-						katex.render(src, span.shadowRoot, {
-							throwOnError: false,
-							displayMode: false, // can't decide what's best here
-							// displayMode: true,
-						})
-					}}
-				/>
-				{props.children}
-			</span>
-		)
 	} else if (props.mark.type === "img") {
 		const src = props.mark.data.get("src")
 		return (
-			<a href={src} {...props.attributes}>
+			<a
+				href={src}
+				onClick={event => handleLinkClick(event, src)}
+				{...props.attributes}
+			>
 				<span className="margin noselect">
 					<img src={src} />
 				</span>
@@ -49,13 +34,8 @@ export default function renderMark(props, editor, next) {
 		return (
 			<a
 				href={href}
+				onClick={event => handleLinkClick(event, href)}
 				{...props.attributes}
-				onClick={event => {
-					if (event.metaKey) {
-						const target = event.shiftKey ? "_self" : "_blank"
-						window.open(href, target)
-					}
-				}}
 			>
 				{props.children}
 			</a>

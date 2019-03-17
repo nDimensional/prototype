@@ -1,15 +1,14 @@
 // Parse styles
 
-"use strict"
-
-const tags = {
-	$: ["math", "math_inline"],
+export const tags = {
 	_: ["em", "em_inline"],
 	"*": ["strong", "strong_inline"],
 	"`": ["code", "code_inline"],
 }
 
-module.exports = function styles(state, silent) {
+const chars = new Set(Object.keys(tags).map(tag => tag.charCodeAt(0)))
+
+export default function style(state, silent) {
 	var start,
 		max,
 		marker,
@@ -19,12 +18,7 @@ module.exports = function styles(state, silent) {
 		pos = state.pos,
 		ch = state.src.charCodeAt(pos)
 
-	if (
-		ch !== 0x60 /* ` */ &&
-		ch !== 0x5f /* _ */ &&
-		ch !== 0x2a /* * */ &&
-		ch !== 0x24 /* $ */
-	) {
+	if (!chars.has(ch)) {
 		return false
 	}
 
@@ -43,10 +37,7 @@ module.exports = function styles(state, silent) {
 	while ((matchStart = state.src.indexOf(marker, matchEnd)) !== -1) {
 		matchEnd = matchStart + 1
 
-		while (
-			matchEnd < max &&
-			state.src.charCodeAt(matchEnd) === ch /* ` _ * $ */
-		) {
+		while (matchEnd < max && state.src.charCodeAt(matchEnd) === ch) {
 			matchEnd++
 		}
 

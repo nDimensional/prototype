@@ -7,8 +7,6 @@ pairs.forEach(pair => {
 	closers[pair[1]] = pair[0]
 })
 
-const codeBlockTest = /^```([a-z]*)```$/
-
 export function onKeyDown(event, editor, next) {
 	if (event.keyCode === 8) {
 		// delete
@@ -36,12 +34,19 @@ export function onKeyDown(event, editor, next) {
 					const { text } = document.getDescendant(path)
 					if (text === "- ") {
 						event.preventDefault()
-						return editor.withoutNormalizing(() => {
-							editor.splitNodeByKey(container.key, container.nodes.size - 1)
-							editor.unwrapBlock("ul")
-							editor.setBlocks("p")
-							editor.deleteBackward(2)
-						})
+						if (event.shiftKey) {
+							return editor.withoutNormalizing(() => {
+								editor.splitBlock()
+								editor.insertText("- ")
+							})
+						} else {
+							return editor.withoutNormalizing(() => {
+								editor.splitNodeByKey(container.key, container.nodes.size - 1)
+								editor.unwrapBlock("ul")
+								editor.setBlocks("p")
+								editor.deleteBackward(2)
+							})
+						}
 					} else if (offset > 2) {
 						event.preventDefault()
 						return editor.withoutNormalizing(() => {
@@ -53,18 +58,6 @@ export function onKeyDown(event, editor, next) {
 						return editor.deleteBackward(2)
 					}
 					return next()
-				}
-			} else {
-				const { text } = document.getDescendant(path)
-				const match = codeBlockTest.exec(text)
-				if (match) {
-					event.preventDefault()
-					editor.withoutNormalizing(() => {
-						editor.splitBlock(1)
-						editor.splitBlock(1)
-						editor.moveBackward(1)
-					})
-					return
 				}
 			}
 		} else {

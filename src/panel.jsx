@@ -1,17 +1,12 @@
 import React from "react"
-import {
-	defaultTheme,
-	fonts,
-	fontProperty,
-	sizes,
-	darkTheme,
-	ctrlKey,
-	properties,
-	computedStyle,
-	setTheme,
-	setFont,
-	setSize,
-} from "./constants"
+
+const fontProperty = {
+	book: "serif",
+	go: "sans",
+	quattro: "sans",
+	mono: "mono",
+	fira: "mono",
+}
 
 export default class Panel extends React.Component {
 	constructor(props) {
@@ -24,7 +19,7 @@ export default class Panel extends React.Component {
 		this.editor = document.getElementById("editor")
 	}
 	handleThemeChange({ target: { checked } }) {
-		this.props.onThemeChange(checked ? darkTheme : defaultTheme)
+		this.props.onThemeChange(checked ? DARK_THEME : DEFAULT_THEME)
 	}
 	handleFontChange({ target: { value } }) {
 		this.props.onFontChange(value)
@@ -38,21 +33,12 @@ export default class Panel extends React.Component {
 			<React.Fragment>
 				<h1>Settings</h1>
 				<p>
-					<label
-						className="noselect"
-						// onMouseEnter={() =>
-						// 	setTheme(
-						// 		this.props.theme === defaultTheme ? darkTheme : defaultTheme,
-						// 		true
-						// 	)
-						// }
-						// onMouseLeave={() => setTheme(null, true)}
-					>
+					<label className="noselect">
 						Dark theme:
 						<input
 							id="theme"
 							type="checkbox"
-							checked={theme !== defaultTheme}
+							checked={theme !== DEFAULT_THEME}
 							onChange={this.handleThemeChange}
 						/>
 					</label>
@@ -60,13 +46,13 @@ export default class Panel extends React.Component {
 
 				<p>
 					<label className="heading">Font Family:</label>
-					{Object.keys(fonts).map(key => (
+					{Object.keys(FONTS).map(key => (
 						<label
 							key={key}
 							className="noselect"
 							name="font"
-							onMouseEnter={() => setFont(key, true)}
-							onMouseLeave={() => setFont(null, true)}
+							onMouseEnter={() => SET_FONT(key, true)}
+							onMouseLeave={() => SET_FONT(null, true)}
 						>
 							<input
 								type="radio"
@@ -76,20 +62,20 @@ export default class Panel extends React.Component {
 								checked={key === font}
 								onChange={this.handleFontChange}
 							/>
-							{fonts[key]}
+							{FONTS[key]}
 							<span className="label">{fontProperty[key]}</span>
 						</label>
 					))}
 				</p>
 				<p>
 					<label className="heading">Font Size:</label>
-					{Object.keys(sizes).map(key => (
+					{Object.keys(SIZES).map(key => (
 						<label
 							key={key}
 							className="noselect"
 							name="size"
-							onMouseEnter={() => setSize(key, true)}
-							onMouseLeave={() => setSize(null, true)}
+							onMouseEnter={() => SET_SIZE(key, true)}
+							onMouseLeave={() => SET_SIZE(null, true)}
 						>
 							<input
 								className="capitalize"
@@ -100,7 +86,7 @@ export default class Panel extends React.Component {
 								checked={key === size}
 								onChange={this.handleSizeChange}
 							/>
-							{sizes[key]}
+							{SIZES[key]}
 						</label>
 					))}
 				</p>
@@ -108,7 +94,7 @@ export default class Panel extends React.Component {
 					Complain &#38; contribute on{" "}
 					<a href="http://github.com/nDimensional/prototype">GitHub</a>.
 				</p>
-				<p>Close this panel with {ctrlKey}-Period.</p>
+				<p>Close this panel with {CTRL_KEY}-Period.</p>
 			</React.Fragment>
 		)
 	}

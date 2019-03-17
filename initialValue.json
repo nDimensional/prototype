@@ -1,0 +1,174 @@
+{
+	"object": "value",
+	"document": {
+		"object": "document",
+		"data": {},
+		"nodes": [
+			{
+				"object": "block",
+				"type": "h1",
+				"data": {},
+				"nodes": [
+					{
+						"object": "text",
+						"leaves": [
+							{
+								"object": "leaf",
+								"text": "# Welcome to Prototype!",
+								"marks": []
+							}
+						]
+					}
+				]
+			},
+			{
+				"object": "block",
+				"type": "p",
+				"data": {},
+				"nodes": [
+					{
+						"object": "text",
+						"leaves": [
+							{
+								"object": "leaf",
+								"text": "Use this space for scratch notes, links, reminders, and whatever else you want to keep around.",
+								"marks": []
+							}
+						]
+					}
+				]
+			},
+			{
+				"object": "block",
+				"type": "p",
+				"data": {},
+				"nodes": [
+					{
+						"object": "text",
+						"leaves": [
+							{
+								"object": "leaf",
+								"text": "You can make text *bold* and _italic_. `Backticks` render in a fixed-width font with fancy ligatures that turn things like \"->>\" into `->>` and other silly nonsense.",
+								"marks": []
+							}
+						]
+					}
+				]
+			},
+			{
+				"object": "block",
+				"type": "p",
+				"data": {},
+				"nodes": [
+					{
+						"object": "text",
+						"leaves": [
+							{
+								"object": "leaf",
+								"text": "A line of dashes makes a horizontal divider:",
+								"marks": []
+							}
+						]
+					}
+				]
+			},
+			{
+				"object": "block",
+				"type": "hr",
+				"data": {},
+				"nodes": [
+					{
+						"object": "text",
+						"leaves": [{ "object": "leaf", "text": "---", "marks": [] }]
+					}
+				]
+			},
+			{
+				"object": "block",
+				"type": "blockquote",
+				"data": {},
+				"nodes": [
+					{
+						"object": "text",
+						"leaves": [
+							{
+								"object": "leaf",
+								"text": "> Block quotes start with a single right arrow.",
+								"marks": []
+							}
+						]
+					}
+				]
+			},
+			{
+				"object": "block",
+				"type": "ul",
+				"data": {},
+				"nodes": [
+					{
+						"object": "block",
+						"type": "li",
+						"data": {},
+						"nodes": [
+							{
+								"object": "text",
+								"leaves": [
+									{
+										"object": "leaf",
+										"text": "- And there are lists too!",
+										"marks": []
+									}
+								]
+							}
+						]
+					},
+					{
+						"object": "block",
+						"type": "li",
+						"data": {},
+						"nodes": [
+							{
+								"object": "text",
+								"leaves": [
+									{
+										"object": "leaf",
+										"text": "- We all love lists.",
+										"marks": []
+									}
+								]
+							}
+						]
+					},
+					{
+						"object": "block",
+						"type": "li",
+						"data": {},
+						"nodes": [
+							{
+								"object": "text",
+								"leaves": [
+									{
+										"object": "leaf",
+										"text": "- Lists are a lot of fun.",
+										"marks": []
+									}
+								]
+							}
+						]
+					}
+				]
+			},
+			{
+				"object": "block",
+				"type": "p",
+				"data": {},
+				"nodes": [
+					{
+						"object": "text",
+						"leaves": [{ "object": "leaf", "text": "", "marks": [] }]
+					}
+				]
+			}
+		]
+	}
+}

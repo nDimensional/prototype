@@ -1,74 +1,56 @@
 import React from "react"
 import ReactDOM from "react-dom"
-import { Value } from "slate"
+import ReactDOMServer from "react-dom/server"
+import { Value, KeyUtils } from "slate"
 import { is } from "immutable"
 
-import Prototype from "./prototype"
-import {
-	defaultTheme,
-	themes,
-	defaultFont,
-	fonts,
-	sizes,
-	defaultSize,
-	ctrlKey,
-	setTheme,
-	setFont,
-	setSize,
-} from "./constants"
+import { Editor } from "slate-react"
+
+import { onKeyDown, onBeforeInput } from "./events"
+import renderNode from "./renderNode"
+import renderMark from "./renderMark"
+
+import normalizeNode from "./normalizeNode"
+import decorateNode from "./decorateNode"
+
 import Panel from "./panel"
 
 window.browser = window.browser || window.chrome
 const storageAreaName = "local"
 const storageArea = window.browser.storage[storageAreaName]
 
-document
-	.querySelectorAll(".ctrl-key")
-	.forEach(node => (node.textContent = ctrlKey))
-
-const main = document.querySelector("main")
-
-const initialText = [
-	"# Welcome to Prototype!",
-	"Use this space for scratch notes, links, reminders, and whatever else you want to keep around.",
-	"You can make text *bold* and _italic_. `Backticks` render in a fixed-width font, and $\\sum_0^n{math}$ renders in the margin.",
-	"You can also do ![inline images](https://upload.wikimedia.org/wikipedia/en/3/33/Study_of_Regular_Division_of_the_Plane_with_Reptiles.jpg).",
-	"Horizontal dividers are a line of dashes:",
-	"---",
-	"> Block quotes start with a single right arrow.",
-	"- And there are lists too!",
-	"- We all love lists.",
-	"- Lists are a lot of fun.",
-	"",
-]
-
-const initialValue = Value.fromJSON({
-	document: {
-		nodes: initialText.map(text => ({
-			object: "block",
-			type: "p",
-			nodes: [{ object: "text", leaves: [{ text }] }],
-		})),
-	},
-})
-
-const ID_KEY = "<--prototype-id-->"
-const FONT_KEY = "<--prototype-font-->"
-const SIZE_KEY = "<--prototype-size-->"
-const THEME_KEY = "<--prototype-theme-->"
-const VALUE_KEY = "<--prototype-value-->"
-const SETTINGS_KEY = "<--prototype-settings-->"
+function createGenerator() {
+	let key = 0
+	return function generator() {
+		key++
+		return key.toString()
+	}
+}
 
 class Document extends React.Component {
+	static setStyle(key, value) {
+		storageArea.set({ [key]: value })
+		localStorage.setItem(key, value)
+	}
+
+	static plugins = [
+		{
+			normalizeNode,
+			decorateNode,
+			onKeyDown,
+			onBeforeInput,
+		},
+	]
+
 	constructor(props) {
 		super(props)
-		const { id, value, theme, font, size, settings } = props
-		this.state = { value, theme, font, size, settings }
+		const { id, value, settings, theme, font, size } = props
+		this.state = { value, settings, theme, font, size }
 		this.sync = true
 		this.tabId = id
+		this.syncHtml = false
+
 		this.handleValueChange = this.handleValueChange.bind(this)
-		this.handleFontChange = this.handleFontChange.bind(this)
-		this.handleSizeChange = this.handleSizeChange.bind(this)
 		this.handleKeyDown = this.handleKeyDown.bind(this)
 		this.handleKeyUp = this.handleKeyUp.bind(this)
 	}
@@ -83,7 +65,31 @@ class Document extends React.Component {
 		else this.sync = true
 	}
 
+	saveSnapshot() {
+		const { id, generator } = this.props
+		const { settings, theme, font, size } = this.state
+		const snapshotGenerator = createGenerator()
+		KeyUtils.setGenerator(snapshotGenerator)
+		const value = Value.fromJSON(this.state.value.toJSON())
+		const props = { id, value, settings, theme, font, size }
+		const html = ReactDOMServer.renderToString(<Document {...props} />)
+		localStorage.setItem(SNAPSHOT_KEY, html)
+		localStorage.setItem(THEME_KEY, theme)
+		localStorage.setItem(FONT_KEY, font)
+		localStorage.setItem(SIZE_KEY, size)
+		KeyUtils.setGenerator(generator)
+	}
+
 	componentDidMount() {
+		setInterval(() => {
+			if (this.syncHtml) {
+				this.syncHtml = false
+				this.saveSnapshot()
+			}
+		}, 2000)
+
+		window.addEventListener("beforeunload", () => this.saveSnapshot())
+
 		window.browser.commands.onCommand.addListener(command => {
 			if (command === "toggle-settings") {
 				storageArea.set({
@@ -117,23 +123,24 @@ class Document extends React.Component {
 						}
 					}
 
-					if (themeValue && themes.has(themeValue.newValue)) {
-						setTheme(themeValue.newValue, false)
+					if (themeValue && THEMES.has(themeValue.newValue)) {
+						SET_THEME(themeValue.newValue, false)
 						state.theme = themeValue.newValue
 					}
 
-					if (fontValue && fonts.hasOwnProperty(fontValue.newValue)) {
-						setFont(fontValue.newValue, false)
+					if (fontValue && FONTS.hasOwnProperty(fontValue.newValue)) {
+						SET_FONT(fontValue.newValue, false)
 						state.font = fontValue.newValue
 					}
 
-					if (sizeValue && sizes.hasOwnProperty(sizeValue.newValue)) {
-						setSize(sizeValue.newValue, false)
+					if (sizeValue && SIZES.hasOwnProperty(sizeValue.newValue)) {
+						SET_SIZE(sizeValue.newValue, false)
 						state.size = sizeValue.newValue
 					}
 
 					if (settingsValue) {
 						if (settingsValue.newValue !== this.state.settings) {
+							this.syncHtml = true
 							state.settings = settingsValue.newValue
 						}
 					}
@@ -146,12 +153,16 @@ class Document extends React.Component {
 		)
 	}
 
-	handleFontChange = font => storageArea.set({ [FONT_KEY]: font })
-	handleSizeChange = size => storageArea.set({ [SIZE_KEY]: size })
-	handleThemeChange = theme => storageArea.set({ [THEME_KEY]: theme })
-	handleValueChange(event) {
+	handleFontChange = font => Document.setStyle(FONT_KEY, font)
+
+	handleSizeChange = size => Document.setStyle(SIZE_KEY, size)
+
+	handleThemeChange = theme => Document.setStyle(THEME_KEY, theme)
+
+	handleValueChange(event, editor, next) {
 		const { value } = event
 		if (value.document !== this.state.value.document) {
+			this.syncHtml = true
 			if (this.sync) this.save(value)
 			else this.value = value
 		}
@@ -163,9 +174,7 @@ class Document extends React.Component {
 		// Intercept Cmd-S
 		if (metaKey && keyCode === 83) {
 			event.preventDefault()
-			if (shiftKey) {
-				// Do stuff
-			}
+			this.handleSave(shiftKey)
 		} else if (keyCode === 224 || keyCode === 91 || keyCode === 93) {
 			document.body.classList.add("cmd")
 		}
@@ -176,6 +185,10 @@ class Document extends React.Component {
 		if (keyCode === 224 || keyCode === 91 || keyCode === 93) {
 			document.body.classList.remove("cmd")
 		}
+	}
+
+	handleSave(shiftKey) {
+		this.saveSnapshot()
 	}
 
 	renderPanel() {
@@ -204,9 +217,14 @@ class Document extends React.Component {
 					onKeyDown={this.handleKeyDown}
 					onKeyUp={this.handleKeyUp}
 				>
-					<Prototype
+					<Editor
+						autoFocus={true}
 						value={this.state.value}
+						plugins={Document.plugins}
 						onChange={this.handleValueChange}
+						renderNode={renderNode}
+						renderMark={renderMark}
+						onFocus={() => {}}
 					/>
 				</div>
 				{this.state.settings && this.renderPanel()}
@@ -227,7 +245,7 @@ Promise.all(
 		  ]
 		: [window.browser.tabs.getCurrent(), storageArea.get(storageKeys)]
 ).then(
-	([
+	async ([
 		{ id },
 		{
 			[VALUE_KEY]: json,
@@ -237,27 +255,19 @@ Promise.all(
 			[SETTINGS_KEY]: settings,
 		},
 	]) => {
-		if (themes.has(theme)) {
-			setTheme(theme, false)
-		} else {
-			storageArea.set({ [THEME_KEY]: defaultTheme })
-			theme = defaultTheme
+		if (!THEMES.has(theme)) {
+			storageArea.set({ [THEME_KEY]: DEFAULT_THEME })
+			theme = DEFAULT_THEME
 		}
 
-		if (fonts.hasOwnProperty(font)) {
-			setFont(font, false)
-		} else {
-			storageArea.set({ [FONT_KEY]: defaultFont })
-			font = defaultFont
-
-			setFont(font, false)
+		if (!FONTS.hasOwnProperty(font)) {
+			storageArea.set({ [FONT_KEY]: DEFAULT_FONT })
+			font = DEFAULT_FONT
 		}
 
-		if (sizes.hasOwnProperty(size)) {
-			setSize(size, false)
-		} else {
-			storageArea.set({ [SIZE_KEY]: defaultSize })
-			size = defaultSize
+		if (!SIZES.hasOwnProperty(size)) {
+			storageArea.set({ [SIZE_KEY]: DEFAULT_SIZE })
+			size = DEFAULT_SIZE
 		}
 
 		if (settings !== true && settings !== false) {
@@ -265,10 +275,20 @@ Promise.all(
 			storageArea.set({ [SETTINGS_KEY]: true })
 		}
 
-		// const value = initialValue
-		const value = json ? Value.fromJSON(json) : initialValue
+		const generator = createGenerator()
+		KeyUtils.setGenerator(generator)
+		const value = Value.fromJSON(
+			json ? json : await fetch("initialValue.json").then(res => res.json())
+		)
 
-		const props = { id, settings, theme, font, size, value }
-		ReactDOM.render(<Document {...props} />, main)
+		const props = { id, generator, settings, theme, font, size, value }
+		if (window.hydrated) {
+			const main = document.querySelector("main")
+			ReactDOM.hydrate(<Document {...props} />, main)
+		} else {
+			const main = document.createElement("main")
+			document.body.appendChild(main)
+			ReactDOM.render(<Document {...props} />, main)
+		}
 	}
 )

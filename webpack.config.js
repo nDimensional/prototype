@@ -10,10 +10,8 @@ module.exports = {
 		path: __dirname + "/dist",
 	},
 
-	devtool: false,
-
 	resolve: {
-		extensions: [".css", ".js", ".jsx", ".json"],
+		extensions: [".js", ".jsx"],
 	},
 
 	module: {
@@ -23,14 +21,32 @@ module.exports = {
 				exclude: /(?:node_modules|\.min\.js$|dist\/)/,
 				use: [{ loader: "babel-loader", options }],
 			},
-			{
-				test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-				use: ["file-loader"],
-			},
-			{
-				test: /\.css$/,
-				use: ["to-string-loader", "css-loader"],
-			},
 		],
+	},
+
+	optimization: {
+		usedExports: true,
+
+		// splitChunks: {
+		// 	chunks: "async",
+		// 	minSize: 30000,
+		// 	maxSize: 0,
+		// 	minChunks: 1,
+		// 	maxAsyncRequests: 5,
+		// 	maxInitialRequests: 3,
+		// 	automaticNameDelimiter: "~",
+		// 	name: true,
+		// 	cacheGroups: {
+		// 		vendors: {
+		// 			test: /[\\/]node_modules[\\/]/,
+		// 			priority: -10,
+		// 		},
+		// 		default: {
+		// 			minChunks: 2,
+		// 			priority: -20,
+		// 			reuseExistingChunk: true,
+		// 		},
+		// 	},
+		// },
 	},
 }

@@ -7,14 +7,12 @@ const blockTypes = new Set([
 	"hr",
 	"li",
 	"img",
-	"math",
 ])
 
 const blockContainerTypes = new Set(["ul"])
 
 const headerTest = /^(#{1,4})(?: |$)/
 const imageTest = /^!\[[^\[\]]*\]\(([^\[\]\(\) ]+)\)$/
-const latexTest = /^\$(.+)\$$/
 const blockQuoteTest = /^>(?: |$)/
 const dividerTest = /^-{3,}$/
 const listElementTest = /^- /
@@ -25,24 +23,26 @@ export default function normalizeNode(node, editor, next) {
 			const { text } = node.getFirstText()
 			const headerMatch = headerTest.exec(text)
 			const imageMatch = imageTest.exec(text)
-			const latexMatch = latexTest.exec(text)
 			if (headerMatch && headerMatch[1].length < 4) {
 				const type = "h" + headerMatch[1].length.toString()
 				if (node.type !== type) {
-					return () => editor.setNodeByKey(node.key, type)
+					return () => editor.setNodeByKey(node.key, { type, data: {} })
 				}
 			} else if (blockQuoteTest.test(text)) {
 				if (node.type !== "blockquote") {
-					return () => editor.setNodeByKey(node.key, "blockquote")
+					return () =>
+						editor.setNodeByKey(node.key, { type: "blockquote", data: {} })
 				}
 			} else if (dividerTest.test(text)) {
 				if (node.type !== "hr") {
-					return () => editor.setNodeByKey(node.key, "hr")
+					return () => editor.setNodeByKey(node.key, { type: "hr", data: {} })
 				}
 			} else if (listElementTest.test(text)) {
 				if (node.type !== "li") {
 					return () =>
-						editor.setNodeByKey(node.key, "li").wrapBlockByKey(node.key, "ul")
+						editor
+							.setNodeByKey(node.key, { type: "li", data: {} })
+							.wrapBlockByKey(node.key, "ul")
 				} else if (editor.value.document.getDepth(node.key) === 1) {
 					return () => editor.wrapBlockByKey(node.key, "ul")
 				}
@@ -53,15 +53,8 @@ export default function normalizeNode(node, editor, next) {
 				} else if (node.data.get("src") !== data.src) {
 					return () => editor.setNodeByKey(node.key, { data })
 				}
-			} else if (latexMatch && latexMatch[1]) {
-				const data = { src: latexMatch[1] }
-				if (node.type !== "math") {
-					return () => editor.setNodeByKey(node.key, { type: "math", data })
-				} else if (node.data.get("src") !== data.src) {
-					return () => editor.setNodeByKey(node.key, { data })
-				}
 			} else if (node.type !== "p") {
-				return () => editor.setNodeByKey(node.key, "p")
+				return () => editor.setNodeByKey(node.key, { type: "p", data: {} })
 			}
 		} else if (blockContainerTypes.has(node.type)) {
 			if (node.type === "ul") {

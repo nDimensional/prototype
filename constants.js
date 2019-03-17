@@ -1,19 +1,28 @@
-const katexStyle = require("katex/dist/katex.min.css")
-export const katexStyleSheet = new CSSStyleSheet()
-katexStyleSheet.replaceSync(katexStyle)
+const ID_KEY = "<--prototype-id-->"
+const KIKI = "<--prototype-key-->"
+const FONT_KEY = "<--prototype-font-->"
+const SIZE_KEY = "<--prototype-size-->"
+const THEME_KEY = "<--prototype-theme-->"
+const VALUE_KEY = "<--prototype-value-->"
+const SETTINGS_KEY = "<--prototype-settings-->"
+const SNAPSHOT_KEY = "<- -prototype-snapshot-->"
 
-export const defaultTheme = "light"
-export const darkTheme = "dark"
-export const themes = new Set([defaultTheme, darkTheme])
-export const defaultSize = "medium"
-export const sizes = {
+const CTRL_KEY = navigator.platform === "MacIntel" ? "⌘" : "Ctrl"
+
+const DEFAULT_THEME = "light"
+const DARK_THEME = "dark"
+const THEMES = new Set([DEFAULT_THEME, DARK_THEME])
+
+const DEFAULT_SIZE = "medium"
+const SIZES = {
 	small: "Small",
 	medium: "Medium",
 	large: "Large",
 	// ["x-large"]: "Extra Large",
 }
-export const defaultFont = "quattro"
-export const fonts = {
+
+const DEFAULT_FONT = "quattro"
+const FONTS = {
 	book: "ET Book",
 	go: "Go Regular",
 	quattro: "iA Writer Quattro",
@@ -21,15 +30,7 @@ export const fonts = {
 	fira: "Fira Code",
 }
 
-export const fontProperty = {
-	book: "serif",
-	go: "sans",
-	quattro: "sans",
-	mono: "mono",
-	fira: "mono",
-}
-
-export const inputSpacing = {
+const inputSpacing = {
 	quattro: "0.05em",
 	mono: "0",
 	fira: "0",
@@ -37,7 +38,7 @@ export const inputSpacing = {
 	go: "0.1em",
 }
 
-export const quoteSpacing = {
+const quoteSpacing = {
 	quattro: "-1.75ch",
 	mono: "-2ch",
 	fira: "-2ch",
@@ -45,7 +46,7 @@ export const quoteSpacing = {
 	go: "-0.87em",
 }
 
-export const listSpacing = {
+const listSpacing = {
 	quattro: "-1.75ch",
 	mono: "-2ch",
 	fira: "-2ch",
@@ -53,7 +54,7 @@ export const listSpacing = {
 	go: "-0.87em",
 }
 
-export const offsets = {
+const offsets = {
 	quattro: ["-1.75ch", "-2.75ch", "-3.75ch"],
 	mono: ["-2ch", "-3ch", "-4ch"],
 	fira: ["-2ch", "-3ch", "-4ch"],
@@ -61,13 +62,11 @@ export const offsets = {
 	go: ["-0.87em", "-1.44em", "-2.05em"],
 }
 
-export const ctrlKey = navigator.platform === "MacIntel" ? "⌘" : "Ctrl"
+const computedStyle = getComputedStyle(document.documentElement)
+const style = document.documentElement.style
 
-export const computedStyle = getComputedStyle(document.documentElement)
-const style = document.body.style
-
-export const properties = ["text", "highlight", "background", "highlight-text"]
-export function setTheme(theme, temp) {
+const properties = ["text", "highlight", "background", "highlight-text"]
+function SET_THEME(theme, temp) {
 	properties.forEach(property => {
 		const variable = `--panel-${property}-color`
 		const reference = `var(${variable})`
@@ -84,7 +83,7 @@ export function setTheme(theme, temp) {
 	})
 }
 
-export function setFont(font, temp) {
+function SET_FONT(font, temp) {
 	if (temp) {
 		if (font === null) {
 			style.setProperty("--h1-offset", "var(--panel-h1-offset)")
@@ -98,7 +97,7 @@ export function setFont(font, temp) {
 			style.setProperty("--h1-offset", offsets[font][0])
 			style.setProperty("--h2-offset", offsets[font][1])
 			style.setProperty("--h3-offset", offsets[font][2])
-			style.setProperty("--font-family", fonts[font])
+			style.setProperty("--font-family", FONTS[font])
 			style.setProperty("--quote-spacing", quoteSpacing[font])
 			style.setProperty("--input-spacing", inputSpacing[font])
 			style.setProperty("--list-spacing", listSpacing[font])
@@ -107,7 +106,7 @@ export function setFont(font, temp) {
 		style.setProperty("--panel-h1-offset", offsets[font][0])
 		style.setProperty("--panel-h2-offset", offsets[font][1])
 		style.setProperty("--panel-h3-offset", offsets[font][2])
-		style.setProperty("--panel-font-family", fonts[font])
+		style.setProperty("--panel-font-family", FONTS[font])
 		style.setProperty("--panel-quote-spacing", quoteSpacing[font])
 		style.setProperty("--panel-input-spacing", inputSpacing[font])
 		style.setProperty("--panel-list-spacing", listSpacing[font])
@@ -121,7 +120,7 @@ export function setFont(font, temp) {
 	}
 }
 
-export function setSize(size, temp) {
+function SET_SIZE(size, temp) {
 	if (temp) {
 		if (size === null) {
 			style.setProperty("--font-size", "var(--panel-font-size)")
@@ -130,5 +129,22 @@ export function setSize(size, temp) {
 	} else {
 		style.setProperty("--panel-font-size", size)
 		style.setProperty("--font-size", "var(--panel-font-size)")
+	}
+}
+
+{
+	const font = localStorage.getItem(FONT_KEY)
+	if (font && FONTS.hasOwnProperty(font)) {
+		SET_FONT(font, false)
+	}
+
+	const size = localStorage.getItem(SIZE_KEY)
+	if (size && SIZES.hasOwnProperty(size)) {
+		SET_SIZE(size, false)
+	}
+
+	const theme = localStorage.getItem(THEME_KEY)
+	if (theme && THEMES.has(theme)) {
+		SET_THEME(theme, false)
 	}
 }

@@ -13,16 +13,8 @@
 	--dark-text-color: rgba(249, 249, 250, 1);
 	--dark-highlight-color: #363636;
 	--dark-highlight-text-color: dimgray;
-}
 
-html,
-body,
-main {
-	height: 100%;
-	margin: 0;
-}
-
-body {
+	/* stuff */
 	--panel-background-color: var(--light-background-color);
 	--panel-text-color: var(--light-text-color);
 	--panel-highlight-color: var(--light-highlight-color);
@@ -48,6 +40,13 @@ body {
 	--h1-offset: var(--panel-h1-offset);
 	--h2-offset: var(--panel-h2-offset);
 	--h3-offset: var(--panel-h3-offset);
+
+	/* things */
+	font-family: var(--font-family);
+	font-size: var(--font-size);
+
+	background-color: var(--background-color);
+	color: var(--text-color);
 }
 
 /* Once Firefox & Chrome implement prefers-color-scheme we'll switch over */
@@ -55,21 +54,27 @@ body {
 /* https://bugs.chromium.org/p/chromium/issues/detail?id=889087 */
 /* https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme */
 /* @media (prefers-color-scheme: dark) {
-	body {
+	html {
 		background-color: var(--dark-background-color);
-		color: var(--dark-color);
+		color: var(--dark-text-color);
 	}
 } */
+
+html,
+body,
+main {
+	height: 100%;
+	margin: 0;
+}
+
+body {
+	font-size: inherit;
+	font-family: inherit;
+}
 
 main {
 	display: flex;
 	width: 100%;
-
-	font-family: var(--font-family);
-	font-size: var(--font-size);
-
-	background-color: var(--background-color);
-	color: var(--text-color);
 }
 
 #editor {
