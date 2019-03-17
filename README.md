@@ -4,7 +4,7 @@
 
 Prototype is a WebExtension that replaces the new tab page with a self-styling scratchpad. It's built with [SlateJS](https://github.com/ianstormtaylor/slate).
 
-It's Chrome-only for now, since it depends on [Constructable Stylesheets](https://developers.google.com/web/updates/2019/02/constructable-stylesheets) for scoping the [KaTeX](https://github.com/KaTeX/KaTeX) CSS styles. Firefox has [indicated](https://github.com/mozilla/standards-positions/issues/103) that they're open to implementing it as well, so go bug them over there if that's what you want.
+The `master` branch is organized as a WebExtension that writes to `storage.local`; the `gh-pages` branch is organized as a single-page application that writes to `localStorage`. You can play with it at http://prototypical.xyz.
 
 ## Install
 
@@ -14,7 +14,7 @@ cd prototype
 npm install
 ```
 
-Then `Load unpacked` at chrome://extensions/.
+Then load the unpacked extension in your favorite browser.
 
 ## Fonts
 
