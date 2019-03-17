@@ -1,9 +1,4 @@
 :root {
-	/* --light-background-color: #f9f9fa;
-	--light-text-color: #0c0c0d;
-	--light-highlight-color: #eaecef;
-	--light-highlight-text-color: darkgray; */
-
 	--light-background-color: #fffff8;
 	--light-text-color: #111;
 	--light-highlight-color: #f3f3f0;
@@ -258,7 +253,7 @@ figure img {
 .math {
 	font-size: 1em;
 	font-family: "Fira Code";
-	padding: 0.1em 0;
+	padding-top: 0.1em;
 	background-color: var(--highlight-color);
 }
 

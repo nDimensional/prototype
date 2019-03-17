@@ -3,6 +3,7 @@ import * as MarkdownIt from "markdown-it"
 import { Point, Decoration, Mark } from "slate"
 
 import styles, { tags } from "./parser"
+import { onKeyDown } from "./events"
 
 const md = new MarkdownIt({ linkify: true })
 window.md = md
@@ -95,16 +96,37 @@ function parse(key, text, decorations, environment) {
 			} else if (type === "link_close") {
 				const token = stack.pop()
 				const anchor = Point.create({ key, offset: token.offset })
-				const mark = Mark.create({ type: token.type, data: token.data })
 				if (markup === "linkify") {
 					const focus = Point.create({ key, offset })
-					decorations.push(Decoration.create({ anchor, focus, mark }))
+					if (token.offset > 0 && text[token.offset - 1] === "!") {
+						decorations.push(
+							Decoration.create({
+								anchor: Point.create({ key, offset: token.offset - 1 }),
+								focus: anchor,
+								mark: makeClass("open"),
+							})
+						)
+						decorations.push(
+							Decoration.create({
+								anchor,
+								focus,
+								mark: Mark.create({
+									type: "img",
+									data: { src: token.data.get("href"), raw: true },
+								}),
+							})
+						)
+					} else {
+						const mark = Mark.create({ type: token.type, data: token.data })
+						decorations.push(Decoration.create({ anchor, focus, mark }))
+					}
 					return offset
 				} else {
 					const { length } = token.data.get("href")
 					const nextOffset = offset + length + 3
 					const pivot = Point.create({ key, offset: offset + 2 })
 					const focus = Point.create({ key, offset: nextOffset - 1 })
+					const mark = Mark.create({ type: token.type, data: token.data })
 					decorations.push(
 						Decoration.create({
 							anchor,
@@ -143,43 +165,62 @@ export default function decorateNode(node, editor, next) {
 		if (node.type === "img") {
 			const { key, text } = node.nodes.get(0)
 			const src = node.data.get("src")
-			decorations.push(
-				Decoration.create({
-					anchor: Point.create({ key, offset: 0 }),
-					focus: Point.create({ key, offset: 2 }),
-					mark: makeClass("open"),
-				})
-			)
-			decorations.push(
-				Decoration.create({
-					anchor: Point.create({
-						key,
-						offset: text.length - 1 - src.length - 2,
-					}),
-					focus: Point.create({ key, offset: text.length - 1 - src.length }),
-					mark: makeClass("open"),
-				})
-			)
-			decorations.push(
-				Decoration.create({
-					anchor: Point.create({
-						key,
-						offset: text.length - 1 - src.length,
-					}),
-					focus: Point.create({ key, offset: text.length - 1 }),
-					mark: Mark.create({ type: "a", data: Map({ href: src }) }),
-				})
-			)
-			decorations.push(
-				Decoration.create({
-					anchor: Point.create({
-						key,
-						offset: text.length - 1,
-					}),
-					focus: Point.create({ key, offset: text.length }),
-					mark: makeClass("close"),
-				})
-			)
+			const raw = node.data.get("raw")
+			if (raw) {
+				const pivot = Point.create({ key, offset: 1 })
+				decorations.push(
+					Decoration.create({
+						anchor: Point.create({ key, offset: 0 }),
+						focus: pivot,
+						mark: makeClass("open"),
+					})
+				)
+				decorations.push(
+					Decoration.create({
+						anchor: pivot,
+						focus: Point.create({ key, offset: text.length }),
+						mark: Mark.create({ type: "a", data: Map({ href: src }) }),
+					})
+				)
+			} else {
+				decorations.push(
+					Decoration.create({
+						anchor: Point.create({ key, offset: 0 }),
+						focus: Point.create({ key, offset: 2 }),
+						mark: makeClass("open"),
+					})
+				)
+				decorations.push(
+					Decoration.create({
+						anchor: Point.create({
+							key,
+							offset: text.length - 1 - src.length - 2,
+						}),
+						focus: Point.create({ key, offset: text.length - 1 - src.length }),
+						mark: makeClass("open"),
+					})
+				)
+				decorations.push(
+					Decoration.create({
+						anchor: Point.create({
+							key,
+							offset: text.length - 1 - src.length,
+						}),
+						focus: Point.create({ key, offset: text.length - 1 }),
+						mark: Mark.create({ type: "a", data: Map({ href: src }) }),
+					})
+				)
+				decorations.push(
+					Decoration.create({
+						anchor: Point.create({
+							key,
+							offset: text.length - 1,
+						}),
+						focus: Point.create({ key, offset: text.length }),
+						mark: makeClass("close"),
+					})
+				)
+			}
 		} else {
 			const env = {}
 			node

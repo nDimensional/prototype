@@ -13,6 +13,7 @@ const blockContainerTypes = new Set(["ul"])
 
 const headerTest = /^(#{1,4})(?: |$)/
 const imageTest = /^!\[[^\[\]]*\]\(([^\[\]\(\) ]+)\)$/
+const rawImageTest = /^!(https?:\/\/[^\[\]\(\) ]+)$/
 const blockQuoteTest = /^>(?: |$)/
 const dividerTest = /^-{3,}$/
 const listElementTest = /^- /
@@ -21,23 +22,32 @@ export default function normalizeNode(node, editor, next) {
 	if (node.object === "block") {
 		if (blockTypes.has(node.type)) {
 			const { text } = node.getFirstText()
+
 			const headerMatch = headerTest.exec(text)
-			const imageMatch = imageTest.exec(text)
 			if (headerMatch && headerMatch[1].length < 4) {
 				const type = "h" + headerMatch[1].length.toString()
 				if (node.type !== type) {
 					return () => editor.setNodeByKey(node.key, { type, data: {} })
 				}
-			} else if (blockQuoteTest.test(text)) {
+				return
+			}
+
+			if (blockQuoteTest.test(text)) {
 				if (node.type !== "blockquote") {
 					return () =>
 						editor.setNodeByKey(node.key, { type: "blockquote", data: {} })
 				}
-			} else if (dividerTest.test(text)) {
+				return
+			}
+
+			if (dividerTest.test(text)) {
 				if (node.type !== "hr") {
 					return () => editor.setNodeByKey(node.key, { type: "hr", data: {} })
 				}
-			} else if (listElementTest.test(text)) {
+				return
+			}
+
+			if (listElementTest.test(text)) {
 				if (node.type !== "li") {
 					return () =>
 						editor
@@ -46,14 +56,32 @@ export default function normalizeNode(node, editor, next) {
 				} else if (editor.value.document.getDepth(node.key) === 1) {
 					return () => editor.wrapBlockByKey(node.key, "ul")
 				}
-			} else if (imageMatch && imageMatch[1]) {
-				const data = { src: imageMatch[1] }
+				return
+			}
+
+			const imageMatch = imageTest.exec(text)
+			if (imageMatch && imageMatch[1]) {
+				const data = { src: imageMatch[1], raw: false }
 				if (node.type !== "img") {
 					return () => editor.setNodeByKey(node.key, { type: "img", data })
-				} else if (node.data.get("src") !== data.src) {
+				} else if (node.data.get("src") !== data.src || node.data.get("raw")) {
 					return () => editor.setNodeByKey(node.key, { data })
 				}
-			} else if (node.type !== "p") {
+				return
+			}
+
+			const rawImageMatch = rawImageTest.exec(text)
+			if (rawImageMatch && rawImageMatch[1]) {
+				const data = { src: rawImageMatch[1], raw: true }
+				if (node.type !== "img") {
+					return () => editor.setNodeByKey(node.key, { type: "img", data })
+				} else if (node.data.get("src") !== data.src || !node.data.get("raw")) {
+					return () => editor.setNodeByKey(node.key, { data })
+				}
+				return
+			}
+
+			if (node.type !== "p") {
 				return () => editor.setNodeByKey(node.key, { type: "p", data: {} })
 			}
 		} else if (blockContainerTypes.has(node.type)) {
