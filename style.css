@@ -92,6 +92,7 @@ main {
 
 #settings {
 	min-width: fit-content;
+	min-width: -moz-fit-content;
 	padding: 1em;
 	border-left: 2px solid var(--panel-highlight-color);
 	align-self: baseline;
