@@ -44,11 +44,11 @@ Images can be embedded either with `![alt text](http://web.site)` or just with `
 
 **Inline tables as TSVs**. This is spiritually pure interpretation of the tab character, and is vastly superior to Markdown's ASCII-art approach. This means single-column tables won't be possible, and that any line with a tab character will be rendered as a table row. There are lots of edges cases around cursor & selection behavior to iron out first.
 
-**Inline LaTeX**. This is on hold mostly for performance reasons. [Katex](https://github.com/KaTeX/KaTeX) is large and requires its own CSS stylesheet; ideally the library could be loaded dynamically (only if necessary) and each instance of `$inline latex$` would render in a shadow root with a single global instance of the Katex CSS attached as a [constructable stylesheet](https://developers.google.com/web/updates/2019/02/constructable-stylesheets).
+**Inline LaTeX**. This is on hold mostly for performance reasons. [KaTeX](https://github.com/KaTeX/KaTeX) is large and requires its own CSS stylesheet; ideally the library could be loaded dynamically (only if necessary) and each instance of `$inline latex$` would render in a shadow root with a single global instance of the KaTeX CSS attached as a [constructable stylesheet](https://developers.google.com/web/updates/2019/02/constructable-stylesheets).
 
-**Definitions**. Allow arbitrary URI "terms" to be defined with `[text of term]: http://web.site`, and then used as inline links (`[text of term]`), inline images (`![text of term]`), This continues the generalization of Markdown's handling of images described earlier, where the `[link text](http://web.site)` construction is interpreted as an "inline definition" (also allowing `[link text]` to be re-used further on). This sort of retcons an object model onto Markdown's syntax.
+**Definitions**. Allow arbitrary URI "terms" to be defined with `[text of term]: http://web.site`, and then used as inline links (`[text of term]`), inline images (`![text of term]`), This continues the generalization of Markdown's handling of images described earlier, where the `[link text](http://web.site)` construction is interpreted as an "inline definition" (also allowing `[link text]` to be re-used further on). This sort of retcons an object model onto Markdown's link syntax.
 
-**Margin notes**. Re-use the term definition syntax for unstructured text: `[text of term]: some unstructured text as a margin note`, and render `some unstructured text as a margin note` in the margin wherever `[text of term]` is invoked.
+**Margin notes**. Re-use the term definition syntax for unstructured text: `[text of term]: some unstructured text as a margin note`, and render `some unstructured text as a margin note` in the margin wherever `[text of term]` is invoked. Consider limiting margin notes to numeric terms.
 
 **Transclusion by content hash**. Why not?
 
