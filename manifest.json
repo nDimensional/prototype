@@ -4,9 +4,14 @@
 	"version": "0.4.0",
 	"description": "A scratch space for notes, links, reminders, and whatever else you want to keep around.",
 	"author": "Joel Gustafson",
+	"developer": {
+		"name": "nDimensional Studios",
+		"url": "https://en.wikipedia.org/wiki/Walt_Whitman"
+	},
 	"chrome_url_overrides": {
 		"newtab": "index.html"
 	},
+	"homepage_url": "https://github.com/nDimensional/prototype",
 	"icons": {
 		"48": "icon-48.png",
 		"96": "icon-96.png",
