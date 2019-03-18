@@ -12,6 +12,7 @@ The `master` branch is organized as a WebExtension that writes to `storage.local
 git clone https://github.com/nDimensional/prototype.git
 cd prototype
 npm install
+npm run build
 ```
 
 Then load the unpacked extension in your favorite browser.
@@ -20,7 +21,7 @@ Then load the unpacked extension in your favorite browser.
 
 **See the whole state**. The page is "rendered as source" - there are no menus or buttons or [invisible formatting](https://xkcd.com/2109/) or any hidden state whatsoever. Every piece of style is a pure function of the _visible text_. This makes it easy to learn, easy to manipulate, easy to copy & paste, and grounds reading & writing in the same shared environment.
 
-Ctrl-B and Ctrl-I keyboard shortcuts are deliberately excluded.
+Ctrl-B and Ctrl-I keyboard shortcuts are deliberately excluded. 🙃
 
 ## Relation to Markdown
 
@@ -28,7 +29,7 @@ The Prototype editor does not use Markdown. It uses its own markup language, als
 
 The most symbolic difference is using a single pair of asterisks for bold and a single pair of underscores for italics. This is what Slack and Facebook Messenger use for styling; it makes more sense to most people and two-character style directives look atrocious and waste space.
 
-There are no ordered lists, and only `-` (not `*`) makes unordered lists.
+There are no ordered lists, and only `-` makes unordered lists (not `*`).
 
 There's no way to esacpe style characters.
 
