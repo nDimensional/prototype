@@ -2,9 +2,7 @@ import React from "react"
 
 const fontProperty = {
 	book: "serif",
-	go: "sans",
 	quattro: "sans",
-	mono: "mono",
 	fira: "mono",
 }
 

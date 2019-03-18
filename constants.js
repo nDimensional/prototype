@@ -18,48 +18,37 @@ const SIZES = {
 	small: "Small",
 	medium: "Medium",
 	large: "Large",
-	// ["x-large"]: "Extra Large",
 }
 
 const DEFAULT_FONT = "quattro"
 const FONTS = {
 	book: "ET Book",
-	go: "Go Regular",
 	quattro: "iA Writer Quattro",
-	mono: "iA Writer Mono",
 	fira: "Fira Code",
 }
 
 const inputSpacing = {
-	quattro: "0.05em",
-	mono: "0",
-	fira: "0",
 	book: "0.1em",
-	go: "0.1em",
+	quattro: "0.05em",
+	fira: "0",
 }
 
 const quoteSpacing = {
-	quattro: "-1.75ch",
-	mono: "-2ch",
-	fira: "-2ch",
 	book: "-1em",
-	go: "-0.87em",
+	quattro: "-1.75ch",
+	fira: "-2ch",
 }
 
 const listSpacing = {
-	quattro: "-1.75ch",
-	mono: "-2ch",
-	fira: "-2ch",
 	book: "-0.68em",
-	go: "-0.87em",
+	quattro: "-1.75ch",
+	fira: "-2ch",
 }
 
 const offsets = {
-	quattro: ["-1.75ch", "-2.75ch", "-3.75ch"],
-	mono: ["-2ch", "-3ch", "-4ch"],
-	fira: ["-2ch", "-3ch", "-4ch"],
 	book: ["-0.94em", "-1.64em", "-2.35em"],
-	go: ["-0.87em", "-1.44em", "-2.05em"],
+	quattro: ["-1.75ch", "-2.75ch", "-3.75ch"],
+	fira: ["-2ch", "-3ch", "-4ch"],
 }
 
 const computedStyle = getComputedStyle(document.documentElement)

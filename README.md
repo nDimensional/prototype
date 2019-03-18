@@ -55,7 +55,6 @@ Images can be embedded either with `![alt text](http://web.site)` or just with `
 
 ## Fonts
 
-- [iA Writer Quatto](https://github.com/iaolo/iA-Fonts/tree/master/iA%20Writer%20Quattro) and [iA Writer Mono](https://github.com/iaolo/iA-Fonts/tree/master/iA%20Writer%20Mono), which are themselves both forks of [IBM Plex](https://github.com/IBM/plex)
-- [Go Regular](https://blog.golang.org/go-fonts) by Bigelow & Holmes
+- [iA Writer Quatto](https://github.com/iaolo/iA-Fonts/tree/master/iA%20Writer%20Quattro), a fork of [IBM Plex](https://github.com/IBM/plex)
 - [ET Book](https://edwardtufte.github.io/et-book/) by Dmitry Krasny, Bonnie Scranton, and Edward Tufte
 - [Fira Code](https://github.com/tonsky/FiraCode), an extension of Fira Mono by Carrois Apostrophe with programming ligatures
