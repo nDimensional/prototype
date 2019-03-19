@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Prototype",
-	"version": "0.4.0",
+	"version": "0.4.1",
 	"description": "A scratch space for notes, links, reminders, and whatever else you want to keep around.",
 	"author": "Joel Gustafson",
 	"developer": {
@@ -13,8 +13,10 @@
 	},
 	"homepage_url": "https://github.com/nDimensional/prototype",
 	"icons": {
+		"16": "icon-16.png",
 		"48": "icon-48.png",
 		"96": "icon-96.png",
+		"128": "icon-128.png",
 		"192": "icon-192.png"
 	},
 	"permissions": ["storage"],
@@ -22,14 +24,6 @@
 		"gecko": {
 			"id": "{4c6d75f6-cdad-4947-aec4-90a071b7fb81}",
 			"strict_min_version": "55.0"
-		}
-	},
-	"commands": {
-		"toggle-settings": {
-			"suggested_key": {
-				"default": "Ctrl+Period"
-			},
-			"description": "Toggle the settings panel"
 		}
 	}
 }

@@ -89,9 +89,8 @@ class Document extends React.Component {
 		}, 2000)
 
 		window.addEventListener("beforeunload", () => this.saveSnapshot())
-
-		window.browser.commands.onCommand.addListener(command => {
-			if (command === "toggle-settings") {
+		window.addEventListener("keydown", ({ metaKey, keyCode }) => {
+			if (metaKey && keyCode === 190) {
 				storageArea.set({
 					[SETTINGS_KEY]: !this.state.settings,
 				})
