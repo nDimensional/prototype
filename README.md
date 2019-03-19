@@ -9,6 +9,7 @@ The `master` branch is organized as a WebExtension that writes to `storage.local
 ## Install
 
 - [Chrome Web Store](https://chrome.google.com/webstore/detail/prototype/mcfikpkmjbdlfjdlmbeodbfkenhpieam)
+- Firefox won't publish this because it uses `document.write`, but you can still install it yourself:
 
 ```
 git clone https://github.com/nDimensional/prototype.git
@@ -17,7 +18,7 @@ npm install
 npm run build
 ```
 
-Then load the unpacked extension in your favorite browser.
+Then load the unpacked extension.
 
 ## Philosophy
 
