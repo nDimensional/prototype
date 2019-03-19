@@ -8,6 +8,8 @@ The `master` branch is organized as a WebExtension that writes to `storage.local
 
 ## Install
 
+- [Chrome Web Store](https://chrome.google.com/webstore/detail/prototype/mcfikpkmjbdlfjdlmbeodbfkenhpieam)
+
 ```
 git clone https://github.com/nDimensional/prototype.git
 cd prototype
