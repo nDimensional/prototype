@@ -74,7 +74,6 @@ export function onKeyDown(event, editor, next) {
 			const { start, end } = editor.value.selection
 			const { shiftKey } = event
 			const ul = editor.value.document.nodes.get(anchor.path.get(0))
-			console.log(ul)
 			return editor.withoutNormalizing(() => {
 				const [s, e] = [start.path.get(1), end.path.get(1)]
 				for (let i = s; i <= e; i++) {
@@ -89,8 +88,6 @@ export function onKeyDown(event, editor, next) {
 				}
 			})
 		}
-		console.log(anchor.path.toJS(), focus.path.toJS())
-		// editor.insertText("\t")
 		return
 	}
 	return next()
