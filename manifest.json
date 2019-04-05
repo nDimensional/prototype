@@ -6,7 +6,7 @@
 	"author": "Joel Gustafson",
 	"developer": {
 		"name": "nDimensional Studios",
-		"url": "https://en.wikipedia.org/wiki/Walt_Whitman"
+		"url": "https://ndimensional.studio/"
 	},
 	"chrome_url_overrides": {
 		"newtab": "index.html"
