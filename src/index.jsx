@@ -89,8 +89,8 @@ class Document extends React.Component {
 		}, 2000)
 
 		window.addEventListener("beforeunload", () => this.saveSnapshot())
-		window.addEventListener("keydown", ({ metaKey, keyCode }) => {
-			if (metaKey && keyCode === 190) {
+		window.addEventListener("keydown", event => {
+			if (CTRL_TEST(event) && event.keyCode === 190) {
 				storageArea.set({
 					[SETTINGS_KEY]: !this.state.settings,
 				})
@@ -169,9 +169,9 @@ class Document extends React.Component {
 	}
 
 	handleKeyDown(event) {
-		const { metaKey, keyCode, shiftKey } = event
+		const { keyCode, shiftKey } = event
 		// Intercept Cmd-S
-		if (metaKey && keyCode === 83) {
+		if (CTRL_TEST(event) && keyCode === 83) {
 			event.preventDefault()
 			this.handleSave(shiftKey)
 		} else if (keyCode === 224 || keyCode === 91 || keyCode === 93) {

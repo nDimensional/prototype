@@ -16,7 +16,7 @@ const imageTest = /^!\[[^\[\]]*\]\(([^\[\]\(\) ]+)\)$/
 const rawImageTest = /^!(https?:\/\/[^\[\]\(\) ]+)$/
 const blockQuoteTest = /^>(?: |$)/
 const dividerTest = /^-{3,}$/
-const listElementTest = /^- /
+const listElementTest = /^\t*- /
 
 export default function normalizeNode(node, editor, next) {
 	if (node.object === "block") {

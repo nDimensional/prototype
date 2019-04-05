@@ -1,7 +1,7 @@
 import React from "react"
 
 function handleLinkClick(event, href) {
-	if (event.metaKey) {
+	if (CTRL_TEST(event)) {
 		event.preventDefault()
 		const target = event.shiftKey ? "_self" : "_blank"
 		window.open(href, target)

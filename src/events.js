@@ -65,6 +65,31 @@ export function onKeyDown(event, editor, next) {
 	} else if (event.keyCode === 9) {
 		// tab
 		event.preventDefault()
+		const { anchor, focus } = editor.value.selection
+		if (
+			anchor.path.size === 3 &&
+			focus.path.size === 3 &&
+			anchor.path.get(0) === focus.path.get(0)
+		) {
+			const { start, end } = editor.value.selection
+			const { shiftKey } = event
+			const ul = editor.value.document.nodes.get(anchor.path.get(0))
+			console.log(ul)
+			return editor.withoutNormalizing(() => {
+				const [s, e] = [start.path.get(1), end.path.get(1)]
+				for (let i = s; i <= e; i++) {
+					if (shiftKey) {
+						const text = ul.nodes.get(i).nodes.get(0)
+						if (text.leaves.get(0).text[0] === "\t") {
+							editor.removeTextByKey(text.key, 0, 1)
+						}
+					} else {
+						editor.insertTextByPath(anchor.path.set(1, i), 0, "\t")
+					}
+				}
+			})
+		}
+		console.log(anchor.path.toJS(), focus.path.toJS())
 		// editor.insertText("\t")
 		return
 	}

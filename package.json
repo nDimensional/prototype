@@ -1,12 +1,13 @@
 {
 	"name": "prototype",
-	"version": "0.4.3",
+	"version": "0.4.4",
 	"description": "A scratch space for notes, reminders, and whatever else you want to keep around",
 	"main": "manifest.json",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"watch": "webpack --mode development --watch",
-		"build": "webpack --mode production"
+		"build": "webpack --mode production",
+		"publish": "zip -r -FS protptype.zip manifest.json index.html style.css constants.js hydrate.js initialValue.json favicon.png icon-* Webfonts/* dist/*"
 	},
 	"repository": {
 		"type": "git",

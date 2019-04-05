@@ -5,9 +5,11 @@ const SIZE_KEY = "<--prototype-size-->"
 const THEME_KEY = "<--prototype-theme-->"
 const VALUE_KEY = "<--prototype-value-->"
 const SETTINGS_KEY = "<--prototype-settings-->"
-const SNAPSHOT_KEY = "<- -prototype-snapshot-->"
+const SNAPSHOT_KEY = "<--prototype-snapshot-->"
 
-const CTRL_KEY = navigator.platform === "MacIntel" ? "⌘" : "Ctrl"
+const isMac = navigator.platform === "MacIntel"
+const CTRL_KEY = isMac ? "⌘" : "Ctrl"
+const CTRL_TEST = isMac ? event => event.metaKey : event => event.ctrlKey
 
 const DEFAULT_THEME = "light"
 const DARK_THEME = "dark"
