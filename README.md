@@ -18,7 +18,7 @@ npm install
 npm run build
 ```
 
-Then load the unpacked extension.
+Then pack & install the extension yourself.
 
 ## Philosophy
 
