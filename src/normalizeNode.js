@@ -49,12 +49,8 @@ export default function normalizeNode(node, editor, next) {
 
 			if (listElementTest.test(text)) {
 				if (node.type !== "li") {
-					return () =>
-						editor
-							.setNodeByKey(node.key, { type: "li", data: {} })
-							.wrapBlockByKey(node.key, "ul")
-				} else if (editor.value.document.getDepth(node.key) === 1) {
-					return () => editor.wrapBlockByKey(node.key, "ul")
+					return editor =>
+						editor.setNodeByKey(node.key, { type: "li", data: {} })
 				}
 				return
 			}
@@ -99,13 +95,26 @@ export default function normalizeNode(node, editor, next) {
 	} else if (node.object === "inline") {
 	} else if (node.object === "document") {
 		let previous = false
+		let previousNode = null
 		for (let i = 0; i < node.nodes.size; i++) {
 			const child = node.nodes.get(i)
 			const next = child.type === "ul"
 			if (previous && next) {
 				return () => editor.mergeNodeByKey(child.key)
+			} else if (child.type === "li") {
+				if (previous) {
+					return () =>
+						editor.moveNodeByKey(
+							child.key,
+							previousNode.key,
+							previousNode.nodes.size
+						)
+				} else {
+					return () => editor.wrapBlockByKey(child.key, "ul")
+				}
 			}
 			previous = next
+			previousNode = child
 		}
 	}
 }
