@@ -142,7 +142,7 @@ main {
 	font-size: var(--panel-font-size);
 	font-family: var(--panel-font-family);
 	color: var(--panel-text-color);
-	letter-spacing: var(--panel-check-spacing);
+	letter-spacing: var(--panel-input-spacing);
 	content: "[ ]";
 }
 
@@ -205,9 +205,6 @@ ul {
 li {
 	display: block;
 	text-indent: var(--list-spacing);
-}
-
-li > .open {
 	tab-size: 2;
 	-moz-tab-size: 2;
 }

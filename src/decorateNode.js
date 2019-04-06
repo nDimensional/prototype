@@ -166,7 +166,7 @@ export default function decorateNode(node, editor, next) {
 			const offset = text.indexOf("-")
 			decorations.push(
 				Decoration.create({
-					anchor: Point.create({ key, offset: 0 }),
+					anchor: Point.create({ key, offset }),
 					focus: Point.create({ key, offset: offset + 1 }),
 					mark: makeClass("open"),
 				})
