@@ -1,4 +1,4 @@
-const blockTypes = new Set([
+export const blockTypes = new Set([
 	"p",
 	"h1",
 	"h2",
@@ -6,23 +6,24 @@ const blockTypes = new Set([
 	"blockquote",
 	"hr",
 	"li",
+	"ci",
 	"img",
 ])
 
-const blockContainerTypes = new Set(["ul"])
+export const blockContainerTypes = new Set(["ul", "cl"])
 
 const headerTest = /^(#{1,4})(?: |$)/
 const imageTest = /^!\[[^\[\]]*\]\(([^\[\]\(\) ]+)\)$/
 const rawImageTest = /^!(https?:\/\/[^\[\]\(\) ]+)$/
 const blockQuoteTest = /^>(?: |$)/
 const dividerTest = /^-{3,}$/
-const listElementTest = /^\t*- /
+export const listElementTest = /^\t*- /
+export const checkboxElementTest = /^\t*\[( |x)\] /
 
 export default function normalizeNode(node, editor, next) {
 	if (node.object === "block") {
 		if (blockTypes.has(node.type)) {
 			const { text } = node.getFirstText()
-
 			const headerMatch = headerTest.exec(text)
 			if (headerMatch && headerMatch[1].length < 4) {
 				const type = "h" + headerMatch[1].length.toString()
@@ -49,8 +50,14 @@ export default function normalizeNode(node, editor, next) {
 
 			if (listElementTest.test(text)) {
 				if (node.type !== "li") {
-					return editor =>
-						editor.setNodeByKey(node.key, { type: "li", data: {} })
+					return () => editor.setNodeByKey(node.key, { type: "li", data: {} })
+				}
+				return
+			}
+
+			if (checkboxElementTest.test(text)) {
+				if (node.type !== "ci") {
+					return () => editor.setNodeByKey(node.key, { type: "ci", data: {} })
 				}
 				return
 			}
@@ -89,32 +96,47 @@ export default function normalizeNode(node, editor, next) {
 				if (split) {
 					return () => editor.unwrapNodeByKey(split.key)
 				}
+			} else if (node.type === "cl") {
+				if (node.nodes.size === 0) {
+					return () => editor.removeNodeByKey(node.key)
+				}
+				const split = node.nodes.find(node => node.type !== "ci")
+				if (split) {
+					return () => editor.unwrapNodeByKey(split.key)
+				}
 			}
 		}
 	} else if (node.object === "text") {
 	} else if (node.object === "inline") {
 	} else if (node.object === "document") {
-		let previous = false
-		let previousNode = null
+		let pl = false
+		let pc = false
+		let previous = null
 		for (let i = 0; i < node.nodes.size; i++) {
 			const child = node.nodes.get(i)
-			const next = child.type === "ul"
-			if (previous && next) {
-				return () => editor.mergeNodeByKey(child.key)
+			const nl = child.type === "ul"
+			const nc = child.type === "cl"
+			if ((pl && nl) || (pc && nc)) {
+				return editor => editor.mergeNodeByKey(child.key)
 			} else if (child.type === "li") {
-				if (previous) {
-					return () =>
-						editor.moveNodeByKey(
-							child.key,
-							previousNode.key,
-							previousNode.nodes.size
-						)
+				if (pl) {
+					return editor =>
+						editor.moveNodeByKey(child.key, previous.key, previous.nodes.size)
 				} else {
 					return () => editor.wrapBlockByKey(child.key, "ul")
 				}
+			} else if (child.type === "ci") {
+				if (pc) {
+					return editor =>
+						editor.moveNodeByKey(child.key, previous.key, previous.nodes.size)
+				} else {
+					return editor => editor.wrapBlockByKey(child.key, "cl")
+				}
 			}
-			previous = next
-			previousNode = child
+
+			pl = nl
+			pc = nc
+			previous = child
 		}
 	}
 }

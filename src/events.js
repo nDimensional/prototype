@@ -1,3 +1,9 @@
+import {
+	blockContainerTypes,
+	listElementTest,
+	checkboxElementTest,
+} from "./normalizeNode"
+
 const pairs = ["()", "[]", "**", "__", "``", '""', "''", "{}"]
 
 const openers = {}
@@ -6,6 +12,22 @@ pairs.forEach(pair => {
 	openers[pair[0]] = pair[1]
 	closers[pair[1]] = pair[0]
 })
+
+const getDefaultText = {
+	ul: text => text,
+	cl: text => `${"\t".repeat(text.length - 4)}[ ] `,
+}
+
+function isContainerSelection(selection) {
+	const { anchor, focus } = selection
+	if (anchor.path.size === 3 && focus.path.size === 3) {
+		const a = anchor.path.get(0)
+		if (a === focus.path.get(0)) {
+			return a + 1
+		}
+	}
+	return 0
+}
 
 export function onKeyDown(event, editor, next) {
 	if (event.keyCode === 8) {
@@ -25,37 +47,72 @@ export function onKeyDown(event, editor, next) {
 	} else if (event.keyCode === 13) {
 		// enter
 		const { document, selection } = editor.value
-		if (selection.isCollapsed) {
+		if (CTRL_TEST(event)) {
+			event.preventDefault()
+			const index = isContainerSelection(selection)
+			if (index) {
+				const container = document.nodes.get(index - 1)
+				if (container.type === "cl") {
+					const { start, end } = selection
+					const [s, e] = [start.path.get(1), end.path.get(1)]
+					return editor.withoutNormalizing(() => {
+						let empty = true
+						for (let i = s; i <= e; i++) {
+							const textNode = container.nodes.get(i).nodes.get(0)
+							const { text } = textNode.leaves.get(0)
+							const offset = text.indexOf("[")
+							if (text[offset + 1] === " ") {
+								empty = false
+								editor.removeTextByKey(textNode.key, offset + 1, 1)
+								editor.insertTextByKey(textNode.key, offset + 1, "x")
+							}
+						}
+						if (empty) {
+							for (let i = s; i <= e; i++) {
+								const textNode = container.nodes.get(i).nodes.get(0)
+								const { text } = textNode.leaves.get(0)
+								const offset = text.indexOf("[")
+								editor.removeTextByKey(textNode.key, offset + 1, 1)
+								editor.insertTextByKey(textNode.key, offset + 1, " ")
+							}
+						}
+					})
+				}
+			}
+		} else if (selection.isCollapsed) {
 			const { path, offset } = selection.focus
 			if (path.size === 3) {
 				// ul -> li -> text
 				const container = document.getDescendant(path.slice(0, 1))
-				if (container.type === "ul") {
+				if (blockContainerTypes.has(container.type)) {
 					const { text } = document.getDescendant(path)
-					if (text === "- ") {
+					const test =
+						container.type === "ul" ? listElementTest : checkboxElementTest
+					const [match] = test.exec(text)
+					if (match.length === text.length) {
 						event.preventDefault()
 						if (event.shiftKey) {
 							return editor.withoutNormalizing(() => {
 								editor.splitBlock()
-								editor.insertText("- ")
+								editor.insertText(getDefaultText[container.type](match))
 							})
 						} else {
 							return editor.withoutNormalizing(() => {
 								editor.splitNodeByKey(container.key, container.nodes.size - 1)
-								editor.unwrapBlock("ul")
+								editor.unwrapBlock(container.type)
 								editor.setBlocks("p")
-								editor.deleteBackward(2)
+								editor.deleteBackward(match.length)
 							})
 						}
-					} else if (offset > 2) {
+					} else if (match && offset === match.length && !event.shiftKey) {
+						event.preventDefault()
+						return editor.deleteBackward(match.length)
+					} else if (offset >= match.length) {
 						event.preventDefault()
 						return editor.withoutNormalizing(() => {
 							editor.splitBlock(1)
-							editor.insertText("- ")
+							editor.insertText(getDefaultText[container.type](match))
 						})
-					} else if (offset === 2) {
-						event.preventDefault()
-						return editor.deleteBackward(2)
 					}
 					return next()
 				}
@@ -65,15 +122,12 @@ export function onKeyDown(event, editor, next) {
 	} else if (event.keyCode === 9) {
 		// tab
 		event.preventDefault()
-		const { anchor, focus } = editor.value.selection
-		if (
-			anchor.path.size === 3 &&
-			focus.path.size === 3 &&
-			anchor.path.get(0) === focus.path.get(0)
-		) {
-			const { start, end } = editor.value.selection
+		const { document, selection } = editor.value
+		const index = isContainerSelection(selection)
+		if (index) {
+			const { start, end } = selection
 			const { shiftKey } = event
-			const ul = editor.value.document.nodes.get(anchor.path.get(0))
+			const ul = document.nodes.get(index - 1)
 			return editor.withoutNormalizing(() => {
 				const [s, e] = [start.path.get(1), end.path.get(1)]
 				for (let i = s; i <= e; i++) {
@@ -83,7 +137,7 @@ export function onKeyDown(event, editor, next) {
 							editor.removeTextByKey(text.key, 0, 1)
 						}
 					} else {
-						editor.insertTextByPath(anchor.path.set(1, i), 0, "\t")
+						editor.insertTextByPath(start.path.set(1, i), 0, "\t")
 					}
 				}
 			})

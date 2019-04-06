@@ -41,6 +41,12 @@ const quoteSpacing = {
 	fira: "-2ch",
 }
 
+const checkSpacing = {
+	book: "0.275em",
+	quattro: "0.15em",
+	fira: "0",
+}
+
 const listSpacing = {
 	book: "-0.68em",
 	quattro: "-1.75ch",
@@ -83,6 +89,7 @@ function SET_FONT(font, temp) {
 			style.setProperty("--font-family", "var(--panel-font-family)")
 			style.setProperty("--quote-spacing", "var(--panel-quote-spacing)")
 			style.setProperty("--input-spacing", "var(--panel-input-spacing)")
+			style.setProperty("--check-spacing", "var(--panel-check-spacing)")
 			style.setProperty("--list-spacing", "var(--panel-list-spacing)")
 		} else {
 			style.setProperty("--h1-offset", offsets[font][0])
@@ -91,6 +98,7 @@ function SET_FONT(font, temp) {
 			style.setProperty("--font-family", FONTS[font])
 			style.setProperty("--quote-spacing", quoteSpacing[font])
 			style.setProperty("--input-spacing", inputSpacing[font])
+			style.setProperty("--check-spacing", checkSpacing[font])
 			style.setProperty("--list-spacing", listSpacing[font])
 		}
 	} else {
@@ -100,6 +108,7 @@ function SET_FONT(font, temp) {
 		style.setProperty("--panel-font-family", FONTS[font])
 		style.setProperty("--panel-quote-spacing", quoteSpacing[font])
 		style.setProperty("--panel-input-spacing", inputSpacing[font])
+		style.setProperty("--panel-check-spacing", checkSpacing[font])
 		style.setProperty("--panel-list-spacing", listSpacing[font])
 		style.setProperty("--h1-offset", "var(--panel-h1-offset)")
 		style.setProperty("--h2-offset", "var(--panel-h2-offset)")
@@ -107,6 +116,7 @@ function SET_FONT(font, temp) {
 		style.setProperty("--font-family", "var(--panel-font-family)")
 		style.setProperty("--quote-spacing", "var(--panel-quote-spacing)")
 		style.setProperty("--input-spacing", "var(--panel-input-spacing)")
+		style.setProperty("--check-spacing", "var(--panel-check-spacing)")
 		style.setProperty("--list-spacing", "var(--panel-list-spacing)")
 	}
 }

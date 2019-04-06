@@ -15,17 +15,17 @@ export default function renderNode(props, editor, next) {
 					<img src={props.node.data.get("src")} />
 				</figure>
 			)
-		} else if (props.node.type === "table") {
+		} else if (props.node.type === "cl") {
 			return (
-				<div className="table" {...props.attributes}>
+				<ul className="checklist" {...props.attributes}>
 					{props.children}
-				</div>
+				</ul>
 			)
-		} else if (props.node.type === "tr") {
+		} else if (props.node.type === "ci") {
 			return (
-				<div className="row" {...props.attributes}>
+				<li className="checkitem" {...props.attributes}>
 					{props.children}
-				</div>
+				</li>
 			)
 		} else {
 			return React.createElement(

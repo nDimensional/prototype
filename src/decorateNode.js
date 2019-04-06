@@ -3,7 +3,6 @@ import * as MarkdownIt from "markdown-it"
 import { Point, Decoration, Mark } from "slate"
 
 import styles, { tags } from "./parser"
-import { onKeyDown } from "./events"
 
 const md = new MarkdownIt({ linkify: true })
 window.md = md
@@ -15,7 +14,7 @@ md.inline.ruler2.enableOnly(["text_collapse"])
 
 const inlines = new Set(Object.keys(tags).map(tag => tags[tag][1]))
 
-const makeClass = className =>
+export const makeClass = className =>
 	Mark.create({ type: "class", data: { className } })
 
 function parse(key, text, decorations, environment) {
@@ -162,7 +161,41 @@ function parse(key, text, decorations, environment) {
 export default function decorateNode(node, editor, next) {
 	if (node.object === "block") {
 		const decorations = []
-		if (node.type === "img") {
+		if (node.type === "li") {
+			const { key, text } = node.nodes.get(0)
+			const offset = text.indexOf("-")
+			decorations.push(
+				Decoration.create({
+					anchor: Point.create({ key, offset: 0 }),
+					focus: Point.create({ key, offset: offset + 1 }),
+					mark: makeClass("open"),
+				})
+			)
+		} else if (node.type === "ci") {
+			const { key, text } = node.nodes.get(0)
+			const offset = text.indexOf("[")
+			const anchor = Point.create({ key, offset: offset + 1 })
+			const focus = Point.create({ key, offset: offset + 2 })
+			decorations.push(
+				Decoration.create({
+					anchor: Point.create({ key, offset }),
+					focus: anchor,
+					mark: makeClass("open"),
+				})
+			)
+			if (text[offset + 1] === " ") {
+				decorations.push(
+					Decoration.create({ anchor, focus, mark: makeClass("check") })
+				)
+			}
+			decorations.push(
+				Decoration.create({
+					anchor: focus,
+					focus: Point.create({ key, offset: offset + 3 }),
+					mark: makeClass("close"),
+				})
+			)
+		} else if (node.type === "img") {
 			const { key, text } = node.nodes.get(0)
 			const src = node.data.get("src")
 			const raw = node.data.get("raw")
@@ -221,12 +254,12 @@ export default function decorateNode(node, editor, next) {
 					})
 				)
 			}
-		} else {
-			const env = {}
-			node
-				.getTexts()
-				.forEach(({ key, text }) => parse(key, text, decorations, env))
+			return decorations
 		}
+		const env = {}
+		node
+			.getTexts()
+			.forEach(({ key, text }) => parse(key, text, decorations, env))
 
 		return decorations
 	}
