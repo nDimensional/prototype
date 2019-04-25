@@ -1,8 +1,4 @@
-import {
-	blockContainerTypes,
-	listElementTest,
-	checkboxElementTest,
-} from "./normalizeNode"
+import { blockContainerTypes, listTest, checkTest } from "./normalizeNode"
 
 const pairs = ["()", "[]", "**", "__", "``", '""', "''", "{}"]
 
@@ -86,8 +82,7 @@ export function onKeyDown(event, editor, next) {
 				const container = document.getDescendant(path.slice(0, 1))
 				if (blockContainerTypes.has(container.type)) {
 					const { text } = document.getDescendant(path)
-					const test =
-						container.type === "ul" ? listElementTest : checkboxElementTest
+					const test = container.type === "ul" ? listTest : checkTest
 					const [match] = test.exec(text)
 					if (match.length === text.length) {
 						event.preventDefault()

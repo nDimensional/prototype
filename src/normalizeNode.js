@@ -17,8 +17,8 @@ const imageTest = /^!\[[^\[\]]*\]\(([^\[\]\(\) ]+)\)$/
 const rawImageTest = /^!(https?:\/\/[^\[\]\(\) ]+)$/
 const blockQuoteTest = /^>(?: |$)/
 const dividerTest = /^-{3,}$/
-export const listElementTest = /^\t*- /
-export const checkboxElementTest = /^\t*\[( |x)\] /
+export const listTest = /^(\t*)- /
+export const checkTest = /^(\t*)\[( |x)\] /
 
 export default function normalizeNode(node, editor, next) {
 	if (node.object === "block") {
@@ -48,16 +48,30 @@ export default function normalizeNode(node, editor, next) {
 				return
 			}
 
-			if (listElementTest.test(text)) {
+			const listMatch = listTest.exec(text)
+			if (listMatch) {
+				const data = { depth: listMatch[1].length }
 				if (node.type !== "li") {
-					return () => editor.setNodeByKey(node.key, { type: "li", data: {} })
+					return () => editor.setNodeByKey(node.key, { type: "li", data })
+				} else if (node.data.get("depth") !== data.depth) {
+					return () => editor.setNodeByKey(node.key, { data })
 				}
 				return
 			}
 
-			if (checkboxElementTest.test(text)) {
+			const checkMatch = checkTest.exec(text)
+			if (checkMatch) {
+				const data = {
+					depth: checkMatch[1].length,
+					checked: checkMatch[2] === "x",
+				}
 				if (node.type !== "ci") {
-					return () => editor.setNodeByKey(node.key, { type: "ci", data: {} })
+					return () => editor.setNodeByKey(node.key, { type: "ci", data })
+				} else if (
+					node.data.get("checked") !== data.checked ||
+					node.data.get("depth") !== data.depth
+				) {
+					return () => editor.setNodeByKey(node.key, { data })
 				}
 				return
 			}

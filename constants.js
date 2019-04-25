@@ -23,41 +23,44 @@ const SIZES = {
 }
 
 const DEFAULT_FONT = "quattro"
+
 const FONTS = {
-	book: "ET Book",
-	quattro: "iA Writer Quattro",
-	fira: "Fira Code",
+	book: {
+		"font-family": "ET Book",
+		"h1-offset": "-0.94em",
+		"h2-offset": "-1.64em",
+		"h3-offset": "-2.35em",
+		"list-indent": "-0.68em",
+		"check-indent": "-1.44em",
+		"quote-indent": "-1em",
+		"input-spacing": "0.25em",
+		"check-spacing": "0.275em",
+	},
+	quattro: {
+		"font-family": "iA Writer Quattro",
+		"h1-offset": "-1.75ch",
+		"h2-offset": "-2.75ch",
+		"h3-offset": "-3.75ch",
+		"list-indent": "-1.75ch",
+		"check-indent": "-3.75ch",
+		"quote-indent": "-1.75ch",
+		"input-spacing": "0.25ch",
+		"check-spacing": "0.25ch",
+	},
+	fira: {
+		"font-family": "Fira Code",
+		"h1-offset": "-2",
+		"h2-offset": "-3",
+		"h3-offset": "-4",
+		"list-indent": "-2ch",
+		"check-indent": "-4ch",
+		"quote-indent": "-2ch",
+		"input-spacing": "0",
+		"check-spacing": "0",
+	},
 }
 
-const inputSpacing = {
-	book: "0.1em",
-	quattro: "0.05em",
-	fira: "0",
-}
-
-const quoteSpacing = {
-	book: "-1em",
-	quattro: "-1.75ch",
-	fira: "-2ch",
-}
-
-const checkSpacing = {
-	book: "0.275em",
-	quattro: "0.15em",
-	fira: "0",
-}
-
-const listSpacing = {
-	book: "-0.68em",
-	quattro: "-1.75ch",
-	fira: "-2ch",
-}
-
-const offsets = {
-	book: ["-0.94em", "-1.64em", "-2.35em"],
-	quattro: ["-1.75ch", "-2.75ch", "-3.75ch"],
-	fira: ["-2ch", "-3ch", "-4ch"],
-}
+const fontKeys = Object.keys(FONTS[DEFAULT_FONT])
 
 const computedStyle = getComputedStyle(document.documentElement)
 const style = document.documentElement.style
@@ -83,41 +86,17 @@ function SET_THEME(theme, temp) {
 function SET_FONT(font, temp) {
 	if (temp) {
 		if (font === null) {
-			style.setProperty("--h1-offset", "var(--panel-h1-offset)")
-			style.setProperty("--h2-offset", "var(--panel-h2-offset)")
-			style.setProperty("--h3-offset", "var(--panel-h3-offset)")
-			style.setProperty("--font-family", "var(--panel-font-family)")
-			style.setProperty("--quote-spacing", "var(--panel-quote-spacing)")
-			style.setProperty("--input-spacing", "var(--panel-input-spacing)")
-			style.setProperty("--check-spacing", "var(--panel-check-spacing)")
-			style.setProperty("--list-spacing", "var(--panel-list-spacing)")
+			fontKeys.forEach(key =>
+				style.setProperty(`--${key}`, `var(--panel-${key})`)
+			)
 		} else {
-			style.setProperty("--h1-offset", offsets[font][0])
-			style.setProperty("--h2-offset", offsets[font][1])
-			style.setProperty("--h3-offset", offsets[font][2])
-			style.setProperty("--font-family", FONTS[font])
-			style.setProperty("--quote-spacing", quoteSpacing[font])
-			style.setProperty("--input-spacing", inputSpacing[font])
-			style.setProperty("--check-spacing", checkSpacing[font])
-			style.setProperty("--list-spacing", listSpacing[font])
+			fontKeys.forEach(key => style.setProperty(`--${key}`, FONTS[font][key]))
 		}
 	} else {
-		style.setProperty("--panel-h1-offset", offsets[font][0])
-		style.setProperty("--panel-h2-offset", offsets[font][1])
-		style.setProperty("--panel-h3-offset", offsets[font][2])
-		style.setProperty("--panel-font-family", FONTS[font])
-		style.setProperty("--panel-quote-spacing", quoteSpacing[font])
-		style.setProperty("--panel-input-spacing", inputSpacing[font])
-		style.setProperty("--panel-check-spacing", checkSpacing[font])
-		style.setProperty("--panel-list-spacing", listSpacing[font])
-		style.setProperty("--h1-offset", "var(--panel-h1-offset)")
-		style.setProperty("--h2-offset", "var(--panel-h2-offset)")
-		style.setProperty("--h3-offset", "var(--panel-h3-offset)")
-		style.setProperty("--font-family", "var(--panel-font-family)")
-		style.setProperty("--quote-spacing", "var(--panel-quote-spacing)")
-		style.setProperty("--input-spacing", "var(--panel-input-spacing)")
-		style.setProperty("--check-spacing", "var(--panel-check-spacing)")
-		style.setProperty("--list-spacing", "var(--panel-list-spacing)")
+		fontKeys.forEach(key => {
+			style.setProperty(`--panel-${key}`, FONTS[font][key])
+			style.setProperty(`--${key}`, `var(--panel-${key})`)
+		})
 	}
 }
 

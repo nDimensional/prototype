@@ -22,8 +22,26 @@ export default function renderNode(props, editor, next) {
 				</ul>
 			)
 		} else if (props.node.type === "ci") {
+			const className = ["checkitem"]
+			if (props.node.data.get("checked")) {
+				className.push("checked")
+			}
+			const depth = props.node.data.get("depth")
+			const paddingLeft = `calc(-${depth} * var(--check-indent))`
 			return (
-				<li className="checkitem" {...props.attributes}>
+				<li
+					className={className.join(" ")}
+					style={{ paddingLeft }}
+					{...props.attributes}
+				>
+					{props.children}
+				</li>
+			)
+		} else if (props.node.type === "li") {
+			const depth = props.node.data.get("depth")
+			const paddingLeft = `calc(-${depth} * var(--list-indent))`
+			return (
+				<li style={{ paddingLeft }} {...props.attributes}>
 					{props.children}
 				</li>
 			)

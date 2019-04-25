@@ -3,6 +3,7 @@ import * as MarkdownIt from "markdown-it"
 import { Point, Decoration, Mark } from "slate"
 
 import styles, { tags } from "./parser"
+import { blockTypes, blockContainerTypes } from "./normalizeNode"
 
 const md = new MarkdownIt({ linkify: true })
 window.md = md
@@ -161,13 +162,24 @@ function parse(key, text, decorations, environment) {
 export default function decorateNode(node, editor, next) {
 	if (node.object === "block") {
 		const decorations = []
-		if (node.type === "li") {
+		if (blockContainerTypes.has(node.type)) {
+			return decorations
+		} else if (node.type === "blockquote") {
+			const { key } = node.nodes.get(0)
+			decorations.push(
+				Decoration.create({
+					anchor: Point.create({ key, offset: 0 }),
+					focus: Point.create({ key, offset: 2 }),
+					mark: makeClass("open"),
+				})
+			)
+		} else if (node.type === "li") {
 			const { key, text } = node.nodes.get(0)
 			const offset = text.indexOf("-")
 			decorations.push(
 				Decoration.create({
 					anchor: Point.create({ key, offset }),
-					focus: Point.create({ key, offset: offset + 1 }),
+					focus: Point.create({ key, offset: offset + 2 }),
 					mark: makeClass("open"),
 				})
 			)
@@ -191,7 +203,7 @@ export default function decorateNode(node, editor, next) {
 			decorations.push(
 				Decoration.create({
 					anchor: focus,
-					focus: Point.create({ key, offset: offset + 3 }),
+					focus: Point.create({ key, offset: offset + 4 }),
 					mark: makeClass("close"),
 				})
 			)

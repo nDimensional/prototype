@@ -17,9 +17,9 @@
 	--panel-font-family: "iA Writer Quattro";
 	--panel-font-size: medium;
 	--panel-input-spacing: 0.05em;
-	--panel-quote-spacing: -1.75ch;
+	--panel-quote-indent: -1.75ch;
 	--panel-check-spacing: 0.15em;
-	--panel-list-spacing: -1.75ch;
+	--panel-list-indent: -1.75ch;
 	--panel-h1-offset: -1.75ch;
 	--panel-h2-offset: -2.75ch;
 	--panel-h3-offset: -3.75ch;
@@ -31,9 +31,9 @@
 	--font-family: var(--panel-font-family);
 	--font-size: var(--panel-font-size);
 	--input-spacing: var(--panel-input-spacing);
-	--quote-spacing: var(--panel-quote-spacing);
+	--quote-indent: var(--panel-quote-indent);
 	--check-spacing: var(--panel-check-spacing);
-	--list-spacing: var(--panel-list-spacing);
+	--list-indent: var(--panel-list-indent);
 	--h1-offset: var(--panel-h1-offset);
 	--h2-offset: var(--panel-h2-offset);
 	--h3-offset: var(--panel-h3-offset);
@@ -135,29 +135,52 @@ main {
 
 #settings label.noselect input {
 	-webkit-appearance: none;
-	margin: 0 1ch;
+	margin: 0;
 }
 
-#settings label.noselect input:after {
+#settings label.noselect.checkbox .open {
+	margin-left: 1ch;
+}
+
+#settings label.noselect.radio .close {
+	margin-right: 1ch;
+}
+
+#settings label.noselect > input:checked + .open:after {
 	font-size: var(--panel-font-size);
 	font-family: var(--panel-font-family);
 	color: var(--panel-text-color);
+}
+
+#settings label.noselect.checkbox > input + .open:after {
+	letter-spacing: var(--panel-check-spacing);
+	content: " ";
+}
+
+#settings label.noselect.checkbox > input:checked + .open:after {
+	letter-spacing: 0;
+	content: "x";
+}
+
+#settings label.noselect.radio > input + .open:after {
 	letter-spacing: var(--panel-input-spacing);
-	content: "[ ]";
+	content: " ";
 }
 
-#settings label.noselect input[type="radio"]:after {
-	content: "( )";
+#settings label.noselect.radio > input:checked + .open:after {
+	letter-spacing: 0;
+	content: "o";
 }
 
-#settings label.noselect input:checked:after {
+/* #settings label.noselect input:checked:after {
 	letter-spacing: 0;
 	content: "[x]";
-}
+} */
 
-#settings label.noselect input[type="radio"]:checked:after {
+/* #settings label.noselect.radio:checked:after {
+	letter-spacing: 0;
 	content: "(o)";
-}
+} */
 
 #settings label.noselect span.label {
 	float: right;
@@ -172,10 +195,10 @@ main {
 blockquote {
 	border-radius: 1px;
 	background-color: var(--highlight-color);
-	text-indent: var(--quote-spacing);
-	margin-left: -0.5em;
-	margin-right: -0.5em;
-	padding-left: calc(0.5em - var(--quote-spacing));
+	text-indent: var(--quote-indent);
+	margin-left: 0;
+	margin-right: 0;
+	padding-left: calc(-1 * var(--check-indent));
 
 	padding-top: 0.5em;
 	padding-bottom: 0.5em;
@@ -199,14 +222,21 @@ h3 {
 }
 
 ul {
-	padding-left: 2em;
+	padding-left: calc(-1 * var(--check-indent));
+	text-indent: var(--list-indent);
+}
+
+ul.checklist {
+	text-indent: var(--check-indent);
 }
 
 li {
 	display: block;
-	text-indent: var(--list-spacing);
-	tab-size: 2;
-	-moz-tab-size: 2;
+}
+
+li > span > span > span {
+	tab-size: 0;
+	-moz-tab-size: 0;
 }
 
 figure {

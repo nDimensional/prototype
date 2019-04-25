@@ -31,7 +31,7 @@ export default class Panel extends React.Component {
 			<React.Fragment>
 				<h1>Settings</h1>
 				<p>
-					<label className="noselect">
+					<label className="noselect checkbox">
 						Dark theme:
 						<input
 							id="theme"
@@ -39,6 +39,8 @@ export default class Panel extends React.Component {
 							checked={theme !== DEFAULT_THEME}
 							onChange={this.handleThemeChange}
 						/>
+						<span className="open">[</span>
+						<span className="close">]</span>
 					</label>
 				</p>
 
@@ -47,7 +49,7 @@ export default class Panel extends React.Component {
 					{Object.keys(FONTS).map(key => (
 						<label
 							key={key}
-							className="noselect"
+							className="noselect radio"
 							name="font"
 							onMouseEnter={() => SET_FONT(key, true)}
 							onMouseLeave={() => SET_FONT(null, true)}
@@ -60,7 +62,9 @@ export default class Panel extends React.Component {
 								checked={key === font}
 								onChange={this.handleFontChange}
 							/>
-							{FONTS[key]}
+							<span className="open">(</span>
+							<span className="close">)</span>
+							{FONTS[key]["font-family"]}
 							<span className="label">{fontProperty[key]}</span>
 						</label>
 					))}
@@ -70,7 +74,7 @@ export default class Panel extends React.Component {
 					{Object.keys(SIZES).map(key => (
 						<label
 							key={key}
-							className="noselect"
+							className="noselect radio"
 							name="size"
 							onMouseEnter={() => SET_SIZE(key, true)}
 							onMouseLeave={() => SET_SIZE(null, true)}
@@ -84,6 +88,8 @@ export default class Panel extends React.Component {
 								checked={key === size}
 								onChange={this.handleSizeChange}
 							/>
+							<span className="open">(</span>
+							<span className="close">)</span>
 							{SIZES[key]}
 						</label>
 					))}
