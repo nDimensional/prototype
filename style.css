@@ -16,9 +16,10 @@
 	--panel-highlight-text-color: var(--light-highlight-text-color);
 	--panel-font-family: "iA Writer Quattro";
 	--panel-font-size: medium;
-	--panel-input-spacing: 0.05em;
+	--panel-input-spacing: 0.25ch;
+	--panel-check-spacing: 0.25ch;
 	--panel-quote-indent: -1.75ch;
-	--panel-check-spacing: 0.15em;
+	--panel-check-indent: -3.75ch;
 	--panel-list-indent: -1.75ch;
 	--panel-h1-offset: -1.75ch;
 	--panel-h2-offset: -2.75ch;
@@ -31,8 +32,9 @@
 	--font-family: var(--panel-font-family);
 	--font-size: var(--panel-font-size);
 	--input-spacing: var(--panel-input-spacing);
-	--quote-indent: var(--panel-quote-indent);
 	--check-spacing: var(--panel-check-spacing);
+	--quote-indent: var(--panel-quote-indent);
+	--check-indent: var(--panel-check-indent);
 	--list-indent: var(--panel-list-indent);
 	--h1-offset: var(--panel-h1-offset);
 	--h2-offset: var(--panel-h2-offset);
@@ -222,12 +224,12 @@ h3 {
 }
 
 ul {
-	padding-left: calc(-1 * var(--check-indent));
+	padding-left: calc(-1 * var(--list-indent));
 	text-indent: var(--list-indent);
 }
 
 ul.checklist {
-	text-indent: var(--check-indent);
+	text-indent: var(--list-indent);
 }
 
 li {
