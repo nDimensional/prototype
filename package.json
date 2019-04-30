@@ -1,6 +1,6 @@
 {
 	"name": "prototype",
-	"version": "0.4.6",
+	"version": "0.4.7",
 	"description": "A scratch space for notes, reminders, and whatever else you want to keep around",
 	"main": "manifest.json",
 	"scripts": {

@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Prototype",
-	"version": "0.4.6",
+	"version": "0.4.7",
 	"description": "A scratch space for notes, links, reminders, and whatever else you want to keep around.",
 	"author": "Joel Gustafson",
 	"developer": {
