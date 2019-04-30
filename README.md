@@ -8,7 +8,8 @@ The `master` branch is organized as a WebExtension that writes to `storage.local
 
 ## Install
 
-- [Chrome Web Store](https://chrome.google.com/webstore/detail/prototype/mcfikpkmjbdlfjdlmbeodbfkenhpieam)
+- [Chrome](https://chrome.google.com/webstore/detail/prototype/mcfikpkmjbdlfjdlmbeodbfkenhpieam)
+- [Firefox](https://addons.mozilla.org/en-US/firefox/addon/prototypical/)
 
 Or build and package the ZIP yourself:
 
