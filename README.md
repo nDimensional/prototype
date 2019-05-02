@@ -4,7 +4,12 @@
 
 Prototype is a WebExtension that replaces the new tab page with a self-styling scratchpad. It's built with [SlateJS](https://github.com/ianstormtaylor/slate).
 
-The `master` branch is organized as a WebExtension that writes to `storage.local`; the `gh-pages` branch is organized as a single-page application that writes to `localStorage`. You can play with it at http://prototypical.xyz.
+There are three branches that correspond to three platform targets.
+- `gh-pages` is a single-page application that auto-saves serialized JSON to `localStorage`
+- `firefox` is a WebExtension that auto-saves JSON to `storage.local`
+- `master` is a WebExtension that auto-saves JSON to `storage.local`, and also does this "local sever-side rendering" step where it writes rendered HTML snapshots to `localStorage` that it retrieves, renders, and hydrates on page load. Firefox won't distribute add-ons that use `document.write`, but Chrome does. This branch is perceptibly faster to render initial text.
+
+You can play with it at https://prototypical.xyz.
 
 ## Install
 
@@ -33,19 +38,21 @@ The Prototype editor does not use Markdown. It uses its own markup language, als
 
 The most symbolic difference is using a single pair of asterisks for bold and a single pair of underscores for italics. This is what Slack and Facebook Messenger use for styling; it makes more sense to most people and two-character style directives look atrocious and waste space.
 
-There are no ordered lists, and only `-` makes unordered lists (not `*`).
+There are no ordered lists, and only `-` makes unordered lists (not `*`). List elements are indented with tab characters, not spaces.
 
-There's no way to esacpe style characters.
+There are checklists, which start with `[ ] ` or `[x] `. Their checked state can be toggled with Ctrl-Enter or Cmd-Enter.
+
+There's no way to escape style characters.
 
 There are only H1-H3 headers.
 
-There are no newlines within paragraphs. With the exeption of unordered lists (which are conceptually grouped as a single "list" block) and code blocks (eventually), every newline character begins an independent, self-contained block.
+There are no newlines within paragraphs. With the exeption of lists (which are conceptually grouped as a single "list" block) and code blocks (eventually), every newline character begins an independent, self-contained block.
 
 Images can be embedded either with `![alt text](http://web.site)` or just with `!http://web.site`. This mirrors links, which can be inlined like Markdown's `[text](http://web.site)`, but also auto-link when pasted directly as `http://web.site`.
 
 ## Roadmap
 
-**Code blocks**. These are straightforward and just need implementation.
+**Code blocks**. These are straightforward and just need implementation. They're identified by an opening line matching `/^```[-a-z]*$/` and extend to a closing line matching `/^```$/`.
 
 **Inline tables as TSVs**. This is spiritually pure interpretation of the tab character, and is vastly superior to Markdown's ASCII-art approach. This means single-column tables won't be possible, and that any line with a tab character will be rendered as a table row. There are lots of edges cases around cursor & selection behavior to iron out first.
 
