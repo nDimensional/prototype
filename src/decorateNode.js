@@ -169,7 +169,7 @@ export default function decorateNode(node, editor, next) {
 			decorations.push(
 				Decoration.create({
 					anchor: Point.create({ key, offset: 0 }),
-					focus: Point.create({ key, offset: 2 }),
+					focus: Point.create({ key, offset: 1 }),
 					mark: makeClass("open"),
 				})
 			)
@@ -179,7 +179,7 @@ export default function decorateNode(node, editor, next) {
 			decorations.push(
 				Decoration.create({
 					anchor: Point.create({ key, offset }),
-					focus: Point.create({ key, offset: offset + 2 }),
+					focus: Point.create({ key, offset: offset + 1 }),
 					mark: makeClass("open"),
 				})
 			)
@@ -203,7 +203,7 @@ export default function decorateNode(node, editor, next) {
 			decorations.push(
 				Decoration.create({
 					anchor: focus,
-					focus: Point.create({ key, offset: offset + 4 }),
+					focus: Point.create({ key, offset: offset + 3 }),
 					mark: makeClass("close"),
 				})
 			)

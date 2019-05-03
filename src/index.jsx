@@ -44,8 +44,8 @@ class Document extends React.Component {
 
 	constructor(props) {
 		super(props)
-		const { id, value, settings, theme, font, size } = props
-		this.state = { value, settings, theme, font, size }
+		const { id, value, settings, spellCheck, width, theme, font, size } = props
+		this.state = { value, settings, spellCheck, width, theme, font, size }
 		this.sync = true
 		this.tabId = id
 		this.syncHtml = false
@@ -67,13 +67,15 @@ class Document extends React.Component {
 
 	saveSnapshot() {
 		const { id, generator } = this.props
-		const { settings, theme, font, size } = this.state
+		const { settings, spellCheck, width, theme, font, size } = this.state
 		const snapshotGenerator = createGenerator()
 		KeyUtils.setGenerator(snapshotGenerator)
 		const value = Value.fromJSON(this.state.value.toJSON())
 		const props = { id, value, settings, theme, font, size }
 		const html = ReactDOMServer.renderToString(<Document {...props} />)
 		localStorage.setItem(SNAPSHOT_KEY, html)
+		localStorage.setItem(SPELLCHECK_KEY, spellCheck)
+		localStorage.setItem(WIDTH_KEY, width)
 		localStorage.setItem(THEME_KEY, theme)
 		localStorage.setItem(FONT_KEY, font)
 		localStorage.setItem(SIZE_KEY, size)
@@ -91,9 +93,7 @@ class Document extends React.Component {
 		window.addEventListener("beforeunload", () => this.saveSnapshot())
 		window.addEventListener("keydown", event => {
 			if (CTRL_TEST(event) && event.keyCode === 190) {
-				storageArea.set({
-					[SETTINGS_KEY]: !this.state.settings,
-				})
+				Document.setStyle(SETTINGS_KEY, !this.state.settings)
 			}
 		})
 
@@ -105,6 +105,8 @@ class Document extends React.Component {
 					[THEME_KEY]: themeValue,
 					[FONT_KEY]: fontValue,
 					[SIZE_KEY]: sizeValue,
+					[WIDTH_KEY]: widthValue,
+					[SPELLCHECK_KEY]: spellCheckValue,
 					[SETTINGS_KEY]: settingsValue,
 				},
 				area
@@ -137,6 +139,17 @@ class Document extends React.Component {
 						state.size = sizeValue.newValue
 					}
 
+					if (widthValue && WIDTHS.hasOwnProperty(widthValue.newValue)) {
+						SET_WIDTH(widthValue.newValue, false)
+						state.width = widthValue.newValue
+					}
+
+					if (spellCheckValue) {
+						if (spellCheckValue.newValue !== this.state.spellCheck) {
+							state.spellCheck = spellCheckValue.newValue
+						}
+					}
+
 					if (settingsValue) {
 						if (settingsValue.newValue !== this.state.settings) {
 							this.syncHtml = true
@@ -151,6 +164,11 @@ class Document extends React.Component {
 			}
 		)
 	}
+
+	handleSpellCheckChange = spellCheck =>
+		Document.setStyle(SPELLCHECK_KEY, spellCheck)
+
+	handleWidthChange = width => Document.setStyle(WIDTH_KEY, width)
 
 	handleFontChange = font => Document.setStyle(FONT_KEY, font)
 
@@ -191,22 +209,25 @@ class Document extends React.Component {
 	}
 
 	renderPanel() {
-		const { theme, font, size } = this.state
+		const { spellCheck, width, theme, font, size } = this.state
 		return (
-			<div id="settings">
-				<Panel
-					theme={theme}
-					font={font}
-					size={size}
-					onThemeChange={this.handleThemeChange}
-					onFontChange={this.handleFontChange}
-					onSizeChange={this.handleSizeChange}
-				/>
-			</div>
+			<Panel
+				spellCheck={spellCheck}
+				theme={theme}
+				width={width}
+				font={font}
+				size={size}
+				onSpellCheckChange={this.handleSpellCheckChange}
+				onWidthChange={this.handleWidthChange}
+				onThemeChange={this.handleThemeChange}
+				onFontChange={this.handleFontChange}
+				onSizeChange={this.handleSizeChange}
+			/>
 		)
 	}
 
 	render() {
+		const { settings, value, spellCheck } = this.state
 		return (
 			<React.Fragment>
 				<div
@@ -217,8 +238,9 @@ class Document extends React.Component {
 					onKeyUp={this.handleKeyUp}
 				>
 					<Editor
+						spellCheck={spellCheck}
 						autoFocus={true}
-						value={this.state.value}
+						value={value}
 						plugins={Document.plugins}
 						onChange={this.handleValueChange}
 						renderNode={renderNode}
@@ -226,14 +248,23 @@ class Document extends React.Component {
 						onFocus={() => {}}
 					/>
 				</div>
-				{this.state.settings && this.renderPanel()}
+				{settings && this.renderPanel()}
 			</React.Fragment>
 		)
 	}
 }
 
 // Get tab id & data from browser storage
-const storageKeys = [VALUE_KEY, THEME_KEY, FONT_KEY, SIZE_KEY, SETTINGS_KEY]
+const storageKeys = [
+	VALUE_KEY,
+	THEME_KEY,
+	FONT_KEY,
+	SIZE_KEY,
+	WIDTH_KEY,
+	SPELLCHECK_KEY,
+	SETTINGS_KEY,
+]
+
 Promise.all(
 	window.chrome
 		? [
@@ -251,6 +282,8 @@ Promise.all(
 			[THEME_KEY]: theme,
 			[FONT_KEY]: font,
 			[SIZE_KEY]: size,
+			[WIDTH_KEY]: width,
+			[SPELLCHECK_KEY]: spellCheck,
 			[SETTINGS_KEY]: settings,
 		},
 	]) => {
@@ -269,6 +302,16 @@ Promise.all(
 			size = DEFAULT_SIZE
 		}
 
+		if (!WIDTHS.hasOwnProperty(width)) {
+			storageArea.set({ [WIDTH_KEY]: DEFAULT_WIDTH })
+			width = DEFAULT_WIDTH
+		}
+
+		if (spellCheck !== true && spellCheck !== false) {
+			spellCheck = true
+			storageArea.set({ [SPELLCHECK_KEY]: true })
+		}
+
 		if (settings !== true && settings !== false) {
 			settings = true
 			storageArea.set({ [SETTINGS_KEY]: true })
@@ -277,10 +320,22 @@ Promise.all(
 		const generator = createGenerator()
 		KeyUtils.setGenerator(generator)
 		const value = Value.fromJSON(
-			json ? json : await fetch("initialValue.json").then(res => res.json())
+			json ? json : await fetch("value.json").then(res => res.json())
 		)
 
-		const props = { id, generator, settings, theme, font, size, value }
+		const props = {
+			id,
+			generator,
+			settings,
+			spellCheck,
+			theme,
+			font,
+			size,
+			value,
+			width,
+		}
+
+		console.log("hydrate:", window.hydrated)
 		if (window.hydrated) {
 			const main = document.querySelector("main")
 			ReactDOM.hydrate(<Document {...props} />, main)

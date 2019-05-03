@@ -6,46 +6,55 @@ const fontProperty = {
 	fira: "mono",
 }
 
+function Checkbox({ name, id, checked, onChange }) {
+	return (
+		<label className="noselect checkbox">
+			{name}:
+			<input id={id} type="checkbox" checked={checked} onChange={onChange} />
+			<span className="close">]</span>
+			<span className="open">[</span>
+		</label>
+	)
+}
+
 export default class Panel extends React.Component {
-	constructor(props) {
-		super(props)
-		this.handleThemeChange = this.handleThemeChange.bind(this)
-		this.handleFontChange = this.handleFontChange.bind(this)
-		this.handleSizeChange = this.handleSizeChange.bind(this)
-	}
-	componentDidMount() {
-		this.editor = document.getElementById("editor")
-	}
-	handleThemeChange({ target: { checked } }) {
+	handleThemeChange = ({ target: { checked } }) => {
 		this.props.onThemeChange(checked ? DARK_THEME : DEFAULT_THEME)
 	}
-	handleFontChange({ target: { value } }) {
+	handleWidthChange = ({ target: { value } }) => {
+		this.props.onWidthChange(value)
+	}
+	handleFontChange = ({ target: { value } }) => {
 		this.props.onFontChange(value)
 	}
-	handleSizeChange({ target: { value } }) {
+	handleSizeChange = ({ target: { value } }) => {
 		this.props.onSizeChange(value)
 	}
+	handleSpellCheckChange = ({ target: { checked } }) => {
+		this.props.onSpellCheckChange(checked)
+	}
 	render() {
-		const { theme, font, size } = this.props
+		const { spellCheck, theme, width, font, size } = this.props
 		return (
-			<React.Fragment>
+			<aside id="settings">
 				<h1>Settings</h1>
-				<p>
-					<label className="noselect checkbox">
-						Dark theme:
-						<input
-							id="theme"
-							type="checkbox"
-							checked={theme !== DEFAULT_THEME}
-							onChange={this.handleThemeChange}
-						/>
-						<span className="open">[</span>
-						<span className="close">]</span>
-					</label>
-				</p>
+				<section>
+					<Checkbox
+						name="Dark theme"
+						id="theme"
+						checked={theme !== DEFAULT_THEME}
+						onChange={this.handleThemeChange}
+					/>
+					<Checkbox
+						name="Spellcheck"
+						id="spellcheck"
+						checked={spellCheck}
+						onChange={this.handleSpellCheckChange}
+					/>
+				</section>
 
-				<p>
-					<label className="heading">Font Family:</label>
+				<section>
+					<div className="heading">Font Family:</div>
 					{Object.keys(FONTS).map(key => (
 						<label
 							key={key}
@@ -68,9 +77,9 @@ export default class Panel extends React.Component {
 							<span className="label">{fontProperty[key]}</span>
 						</label>
 					))}
-				</p>
-				<p>
-					<label className="heading">Font Size:</label>
+				</section>
+				<section>
+					<div className="heading">Font Size:</div>
 					{Object.keys(SIZES).map(key => (
 						<label
 							key={key}
@@ -80,7 +89,6 @@ export default class Panel extends React.Component {
 							onMouseLeave={() => SET_SIZE(null, true)}
 						>
 							<input
-								className="capitalize"
 								type="radio"
 								id={key}
 								name="size"
@@ -90,16 +98,42 @@ export default class Panel extends React.Component {
 							/>
 							<span className="open">(</span>
 							<span className="close">)</span>
-							{SIZES[key]}
+							<span className="capitalize">{key}</span>
 						</label>
 					))}
-				</p>
+				</section>
+
+				<section>
+					<div className="heading">Width:</div>
+					{Object.keys(WIDTHS).map(key => (
+						<label
+							key={key}
+							className="noselect radio"
+							name="width"
+							onMouseEnter={() => SET_WIDTH(key, true)}
+							onMouseLeave={() => SET_WIDTH(null, true)}
+						>
+							<input
+								type="radio"
+								id={key}
+								name="width"
+								value={key}
+								checked={key === width}
+								onChange={this.handleWidthChange}
+							/>
+							<span className="open">(</span>
+							<span className="close">)</span>
+							<span className="capitalize">{key}</span>
+						</label>
+					))}
+				</section>
+
 				<p>
 					Complain &#38; contribute on{" "}
 					<a href="http://github.com/nDimensional/prototype">GitHub</a>.
 				</p>
 				<p>Close this panel with {CTRL_KEY}-Period.</p>
-			</React.Fragment>
+			</aside>
 		)
 	}
 }

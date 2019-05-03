@@ -3,26 +3,34 @@ const options = {
 	plugins: ["@babel/plugin-proposal-class-properties"],
 }
 
-module.exports = {
-	entry: ["@babel/polyfill", "./src/index.jsx"],
-	output: {
-		filename: "bundle.min.js",
-		path: __dirname + "/dist",
-	},
+module.exports = env => {
+	const hydrate =
+		__dirname + "/hydrate/" + (env && env.hydrate ? "hydrate.js" : "null.js")
+	return {
+		entry: {
+			bundle: ["@babel/polyfill", "./src/index.jsx"],
+			hydrate,
+		},
 
-	resolve: {
-		extensions: [".js", ".jsx"],
-	},
+		output: {
+			filename: "[name].min.js",
+			path: __dirname + "/dist",
+		},
 
-	devtool: false,
+		resolve: {
+			extensions: [".js", ".jsx"],
+		},
 
-	module: {
-		rules: [
-			{
-				test: /\.jsx?$/,
-				exclude: /(?:node_modules|\.min\.js$|dist\/)/,
-				use: [{ loader: "babel-loader", options }],
-			},
-		],
-	},
+		devtool: false,
+
+		module: {
+			rules: [
+				{
+					test: /src\/.+\.jsx?$/,
+					exclude: /(?:node_modules|\.min\.js$|dist\/)/,
+					use: { loader: "babel-loader", options },
+				},
+			],
+		},
+	}
 }

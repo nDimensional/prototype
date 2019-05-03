@@ -12,10 +12,15 @@ export const blockTypes = new Set([
 
 export const blockContainerTypes = new Set(["ul", "cl"])
 
+export const blockItemTypes = {
+	ul: "li",
+	cl: "ci",
+}
+
 const headerTest = /^(#{1,4})(?: |$)/
 const imageTest = /^!\[[^\[\]]*\]\(([^\[\]\(\) ]+)\)$/
 const rawImageTest = /^!(https?:\/\/[^\[\]\(\) ]+)$/
-const blockQuoteTest = /^>(?: |$)/
+const blockQuoteTest = /^(<|>)(?: |$)/
 const dividerTest = /^-{3,}$/
 export const listTest = /^(\t*)- /
 export const checkTest = /^(\t*)\[( |x)\] /
@@ -29,122 +34,136 @@ export default function normalizeNode(node, editor, next) {
 				const type = "h" + headerMatch[1].length.toString()
 				if (node.type !== type) {
 					return () => editor.setNodeByKey(node.key, { type, data: {} })
+				} else {
+					return
 				}
-				return
-			}
-
-			if (blockQuoteTest.test(text)) {
-				if (node.type !== "blockquote") {
-					return () =>
-						editor.setNodeByKey(node.key, { type: "blockquote", data: {} })
-				}
-				return
 			}
 
 			if (dividerTest.test(text)) {
 				if (node.type !== "hr") {
 					return () => editor.setNodeByKey(node.key, { type: "hr", data: {} })
+				} else {
+					return
 				}
-				return
+			}
+
+			const quoteMatch = blockQuoteTest.exec(text)
+			if (quoteMatch) {
+				const align = quoteMatch[1] === "<"
+				if (node.type !== "blockquote" || node.data.get("align") !== align) {
+					return () =>
+						editor.setNodeByKey(node.key, {
+							type: "blockquote",
+							data: { align },
+						})
+				} else {
+					return
+				}
 			}
 
 			const listMatch = listTest.exec(text)
 			if (listMatch) {
-				const data = { depth: listMatch[1].length }
-				if (node.type !== "li") {
-					return () => editor.setNodeByKey(node.key, { type: "li", data })
-				} else if (node.data.get("depth") !== data.depth) {
-					return () => editor.setNodeByKey(node.key, { data })
+				const depth = listMatch[1].length
+				if (node.type !== "li" || node.data.get("depth") !== depth) {
+					return () =>
+						editor.setNodeByKey(node.key, { type: "li", data: { depth } })
+				} else {
+					return
 				}
-				return
 			}
 
 			const checkMatch = checkTest.exec(text)
 			if (checkMatch) {
-				const data = {
-					depth: checkMatch[1].length,
-					checked: checkMatch[2] === "x",
-				}
-				if (node.type !== "ci") {
-					return () => editor.setNodeByKey(node.key, { type: "ci", data })
-				} else if (
-					node.data.get("checked") !== data.checked ||
-					node.data.get("depth") !== data.depth
+				const depth = checkMatch[1].length
+				const checked = checkMatch[2] === "x"
+				if (
+					node.type !== "ci" ||
+					node.data.get("depth") !== depth ||
+					node.data.get("checked") !== checked
 				) {
-					return () => editor.setNodeByKey(node.key, { data })
+					return () =>
+						editor.setNodeByKey(node.key, {
+							type: "ci",
+							data: { depth, checked },
+						})
+				} else {
+					return
 				}
-				return
 			}
 
 			const imageMatch = imageTest.exec(text)
 			if (imageMatch && imageMatch[1]) {
-				const data = { src: imageMatch[1], raw: false }
-				if (node.type !== "img") {
-					return () => editor.setNodeByKey(node.key, { type: "img", data })
-				} else if (node.data.get("src") !== data.src || node.data.get("raw")) {
-					return () => editor.setNodeByKey(node.key, { data })
+				const src = imageMatch[1]
+				if (
+					node.type !== "img" ||
+					node.data.get("src") !== src ||
+					node.data.get("raw")
+				) {
+					return () =>
+						editor.setNodeByKey(node.key, {
+							type: "img",
+							data: { src, raw: false },
+						})
+				} else {
+					return
 				}
-				return
 			}
 
 			const rawImageMatch = rawImageTest.exec(text)
 			if (rawImageMatch && rawImageMatch[1]) {
-				const data = { src: rawImageMatch[1], raw: true }
-				if (node.type !== "img") {
-					return () => editor.setNodeByKey(node.key, { type: "img", data })
-				} else if (node.data.get("src") !== data.src || !node.data.get("raw")) {
-					return () => editor.setNodeByKey(node.key, { data })
+				const src = rawImageMatch[1]
+				if (
+					node.type !== "img" ||
+					node.data.get("src") !== src ||
+					!node.data.get("raw")
+				) {
+					return () =>
+						editor.setNodeByKey(node.key, {
+							type: "img",
+							data: { src, raw: true },
+						})
+				} else {
+					return
 				}
-				return
 			}
 
 			if (node.type !== "p") {
 				return () => editor.setNodeByKey(node.key, { type: "p", data: {} })
 			}
 		} else if (blockContainerTypes.has(node.type)) {
-			if (node.type === "ul") {
-				if (node.nodes.size === 0) {
-					return () => editor.removeNodeByKey(node.key)
-				}
-				const split = node.nodes.find(node => node.type !== "li")
-				if (split) {
-					return () => editor.unwrapNodeByKey(split.key)
-				}
-			} else if (node.type === "cl") {
-				if (node.nodes.size === 0) {
-					return () => editor.removeNodeByKey(node.key)
-				}
-				const split = node.nodes.find(node => node.type !== "ci")
-				if (split) {
-					return () => editor.unwrapNodeByKey(split.key)
-				}
+			if (node.nodes.size === 0) {
+				return () => editor.removeNodeByKey(node.key)
+			}
+
+			const itemType = blockItemTypes[node.type]
+			const split = node.nodes.find(node => node.type !== itemType)
+			if (split) {
+				return () => editor.unwrapNodeByKey(split.key)
 			}
 		}
 	} else if (node.object === "text") {
 	} else if (node.object === "inline") {
 	} else if (node.object === "document") {
-		let pl = false
-		let pc = false
 		let previous = null
+		let [pl, pc] = [false, false]
 		for (let i = 0; i < node.nodes.size; i++) {
 			const child = node.nodes.get(i)
-			const nl = child.type === "ul"
-			const nc = child.type === "cl"
+			const [nl, nc] = [child.type === "ul", child.type === "cl"]
 			if ((pl && nl) || (pc && nc)) {
-				return editor => editor.mergeNodeByKey(child.key)
+				return () => editor.mergeNodeByKey(child.key)
 			} else if (child.type === "li") {
 				if (pl) {
-					return editor =>
+					return () =>
 						editor.moveNodeByKey(child.key, previous.key, previous.nodes.size)
 				} else {
 					return () => editor.wrapBlockByKey(child.key, "ul")
 				}
 			} else if (child.type === "ci") {
 				if (pc) {
-					return editor =>
+					return () =>
 						editor.moveNodeByKey(child.key, previous.key, previous.nodes.size)
 				} else {
-					return editor => editor.wrapBlockByKey(child.key, "cl")
+					return () => editor.wrapBlockByKey(child.key, "cl")
 				}
 			}
 

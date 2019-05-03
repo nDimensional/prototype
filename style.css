@@ -9,13 +9,18 @@
 	--dark-highlight-color: #363636;
 	--dark-highlight-text-color: dimgray;
 
-	/* stuff */
+	--border-radius: 0.1em;
+	--border-width: 2px;
+	--max-width: 1024px;
+
+	/* Default panel values (Light, Quattro, Medium) */
 	--panel-background-color: var(--light-background-color);
 	--panel-text-color: var(--light-text-color);
 	--panel-highlight-color: var(--light-highlight-color);
 	--panel-highlight-text-color: var(--light-highlight-text-color);
 	--panel-font-family: "iA Writer Quattro";
 	--panel-font-size: medium;
+	--panel-max-width: 1024px;
 	--panel-input-spacing: 0.25ch;
 	--panel-check-spacing: 0.25ch;
 	--panel-quote-indent: -1.75ch;
@@ -25,12 +30,14 @@
 	--panel-h2-offset: -2.75ch;
 	--panel-h3-offset: -3.75ch;
 
+	/* Default body values */
 	--background-color: var(--panel-background-color);
 	--text-color: var(--panel-text-color);
 	--highlight-color: var(--panel-highlight-color);
 	--highlight-text-color: var(--panel-highlight-text-color);
 	--font-family: var(--panel-font-family);
 	--font-size: var(--panel-font-size);
+	--max-width: var(--panel-max-width);
 	--input-spacing: var(--panel-input-spacing);
 	--check-spacing: var(--panel-check-spacing);
 	--quote-indent: var(--panel-quote-indent);
@@ -39,13 +46,6 @@
 	--h1-offset: var(--panel-h1-offset);
 	--h2-offset: var(--panel-h2-offset);
 	--h3-offset: var(--panel-h3-offset);
-
-	/* things */
-	font-family: var(--font-family);
-	font-size: var(--font-size);
-
-	background-color: var(--background-color);
-	color: var(--text-color);
 }
 
 /* Once Firefox & Chrome implement prefers-color-scheme we'll switch over */
@@ -66,9 +66,12 @@ main {
 	margin: 0;
 }
 
-body {
-	font-size: inherit;
-	font-family: inherit;
+html {
+	font-family: var(--font-family);
+	font-size: var(--font-size);
+
+	background-color: var(--background-color);
+	color: var(--text-color);
 }
 
 main {
@@ -78,7 +81,8 @@ main {
 
 #editor {
 	padding: 1em 1em 0 3em;
-	width: 1024px;
+	max-width: var(--max-width);
+	width: inherit;
 	margin: 0 auto;
 	display: flex;
 	flex-direction: column;
@@ -89,11 +93,12 @@ main {
 	flex: 1;
 }
 
+/* Settings panel */
 #settings {
 	min-width: fit-content;
 	min-width: -moz-fit-content;
 	padding: 1em;
-	border-left: 2px solid var(--panel-highlight-color);
+	border-left: var(--border-width) solid var(--panel-highlight-color);
 	align-self: baseline;
 
 	background-color: var(--panel-background-color);
@@ -106,117 +111,87 @@ main {
 #settings h1 {
 	text-indent: initial;
 	color: var(--panel-text-color);
-	border-bottom: 2px solid var(--panel-highlight-color);
+	border-bottom: var(--border-width) solid var(--panel-highlight-color);
 }
 
-#settings.hidden {
-	display: none;
+#settings section {
+	margin: 1em 0;
 }
 
-#settings label.heading {
+#settings label {
 	display: block;
-}
-
-#settings label.noselect {
-	display: block;
-	border-top-left-radius: 0.1em;
-	border-bottom-left-radius: 0.1em;
 	cursor: pointer;
-	padding-left: 4px;
-	margin-left: -4px;
+	padding: 0 0.2em;
+	margin: 0 -0.2em;
+	border-radius: var(--border-radius);
 }
 
-#settings label.heading + label.noselect {
-	padding-bottom: 0.1em;
+#settings label:hover {
+	background-color: var(--panel-highlight-color);
 }
 
-#settings label.noselect input {
-	cursor: pointer;
+#settings label input {
 	outline: none;
-}
-
-#settings label.noselect input {
 	-webkit-appearance: none;
 	margin: 0;
 }
 
-#settings label.noselect.checkbox .open {
-	margin-left: 1ch;
+#settings .checkbox span {
+	float: right;
 }
 
-#settings label.noselect.radio .close {
+#settings .radio .close {
 	margin-right: 1ch;
 }
 
-#settings label.noselect > input:checked + .open:after {
-	font-size: var(--panel-font-size);
-	font-family: var(--panel-font-family);
+#settings .checkbox > input + .close:before {
+	white-space: pre;
 	color: var(--panel-text-color);
-}
-
-#settings label.noselect.checkbox > input + .open:after {
-	letter-spacing: var(--panel-check-spacing);
 	content: " ";
+	letter-spacing: var(--panel-check-spacing);
 }
 
-#settings label.noselect.checkbox > input:checked + .open:after {
+#settings .checkbox > input:checked + .close:before {
 	letter-spacing: 0;
 	content: "x";
 }
 
-#settings label.noselect.radio > input + .open:after {
+#settings .radio > input + .open:after {
+	white-space: pre;
 	letter-spacing: var(--panel-input-spacing);
 	content: " ";
 }
 
-#settings label.noselect.radio > input:checked + .open:after {
+#settings label.radio > input:checked + .open:after {
+	color: var(--panel-text-color);
 	letter-spacing: 0;
 	content: "o";
 }
 
-/* #settings label.noselect input:checked:after {
-	letter-spacing: 0;
-	content: "[x]";
-} */
-
-/* #settings label.noselect.radio:checked:after {
-	letter-spacing: 0;
-	content: "(o)";
-} */
-
-#settings label.noselect span.label {
+#settings .radio span.label {
 	float: right;
 	opacity: 0.4;
-	margin-right: 0.5em;
 }
 
-#settings label.noselect:hover {
-	background-color: var(--panel-highlight-color);
-}
+/* Blocks */
 
 blockquote {
-	border-radius: 1px;
+	border-radius: var(--border-radius);
 	background-color: var(--highlight-color);
 	text-indent: var(--quote-indent);
-	margin-left: 0;
-	margin-right: 0;
-	padding-left: calc(-1 * var(--check-indent));
-
-	padding-top: 0.5em;
-	padding-bottom: 0.5em;
-	padding-right: 0.5em;
+	margin-left: -0.5em;
+	margin-right: -0.5em;
+	padding: 0.5em 0.5em 0.5em calc(0.5em + -1 * var(--quote-indent));
 }
 
 h1 {
 	text-indent: var(--h1-offset);
-	padding-bottom: 0;
-	border-bottom: 2px solid var(--highlight-color);
+	border-bottom: var(--border-width) solid var(--highlight-color);
 }
 
 h2 {
 	text-indent: var(--h2-offset);
-	padding-bottom: 2px;
-	border-bottom: 2px solid var(--highlight-color);
+	border-bottom: var(--border-width) solid var(--highlight-color);
 }
 
 h3 {
@@ -229,7 +204,8 @@ ul {
 }
 
 ul.checklist {
-	text-indent: var(--list-indent);
+	padding-left: calc(-1 * var(--check-indent));
+	text-indent: var(--check-indent);
 }
 
 li {
@@ -247,7 +223,7 @@ figure {
 }
 
 figcaption {
-	margin-bottom: 1em;
+	margin: 1em 0;
 }
 
 .margin {
@@ -277,14 +253,14 @@ figure img {
 }
 
 .open {
-	border-top-left-radius: 0.1em;
-	border-bottom-left-radius: 0.1em;
+	border-top-left-radius: var(--border-radius);
+	border-bottom-left-radius: var(--border-radius);
 	color: var(--highlight-text-color);
 }
 
 .close {
-	border-top-right-radius: 0.1em;
-	border-bottom-right-radius: 0.1em;
+	border-top-right-radius: var(--border-radius);
+	border-bottom-right-radius: var(--border-radius);
 	color: var(--highlight-text-color);
 }
 
@@ -296,22 +272,11 @@ figure img {
 	background-color: var(--highlight-color);
 }
 
-div.latex {
-	pointer-events: none;
-
-	-webkit-touch-callout: none; /* iOS Safari */
-	-webkit-user-select: text; /* Safari */
-	-khtml-user-select: text; /* Konqueror HTML */
-	-moz-user-select: text; /* Firefox */
-	-ms-user-select: text; /* Internet Explorer/Edge */
-	user-select: text; /* Non-prefixed version, currently supported by Chrome and Opera */
-}
-
 /* Links */
 
 a {
 	word-break: break-all;
-	border-radius: 0.1em;
+	border-radius: var(--border-radius);
 	color: inherit;
 	padding: 0 0.1em;
 	margin: 0 -0.1em;
@@ -356,6 +321,11 @@ div.divider > span {
 	-moz-user-select: none; /* Firefox */
 	-ms-user-select: none; /* Internet Explorer/Edge */
 	user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+.capitalize {
+	text-transform: capitalize;
+	display: inline-block;
 }
 
 @media print {

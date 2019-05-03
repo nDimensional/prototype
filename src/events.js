@@ -55,7 +55,7 @@ export function onKeyDown(event, editor, next) {
 						let empty = true
 						for (let i = s; i <= e; i++) {
 							const textNode = container.nodes.get(i).nodes.get(0)
-							const { text } = textNode.leaves.get(0)
+							const text = textNode.text
 							const offset = text.indexOf("[")
 							if (text[offset + 1] === " ") {
 								empty = false
@@ -66,7 +66,7 @@ export function onKeyDown(event, editor, next) {
 						if (empty) {
 							for (let i = s; i <= e; i++) {
 								const textNode = container.nodes.get(i).nodes.get(0)
-								const { text } = textNode.leaves.get(0)
+								const text = textNode.text
 								const offset = text.indexOf("[")
 								editor.removeTextByKey(textNode.key, offset + 1, 1)
 								editor.insertTextByKey(textNode.key, offset + 1, " ")
@@ -128,7 +128,7 @@ export function onKeyDown(event, editor, next) {
 				for (let i = s; i <= e; i++) {
 					if (shiftKey) {
 						const text = ul.nodes.get(i).nodes.get(0)
-						if (text.leaves.get(0).text[0] === "\t") {
+						if (text.text[0] === "\t") {
 							editor.removeTextByKey(text.key, 0, 1)
 						}
 					} else {
@@ -159,20 +159,28 @@ export function onBeforeInput(event, editor, next) {
 	if (data === "`") {
 		const { document, selection } = editor.value
 		const { key, offset } = selection.focus
+		const { text } = document.getDescendant(key)
+
 		if (offset !== 0) {
-			const { text } = document.getDescendant(key)
 			if (text[offset] === data) {
-				event.preventDefault()
-				editor.moveForward(1)
-				return
-			} else if (text[offset - 1] !== " " && text[offset - 1] !== "`") {
+				if (text[offset - 1] !== data) {
+					event.preventDefault()
+					editor.moveForward(1)
+					return
+				}
+			} else if (text[offset - 1] !== " ") {
 				return next()
 			}
 		}
-		event.preventDefault()
-		editor.insertText("``")
-		editor.moveBackward(1)
-		return
+
+		if (text.length > offset && text[offset] !== " " && text[offset] !== data) {
+			return next()
+		} else {
+			event.preventDefault()
+			editor.insertText("``")
+			editor.moveBackward(1)
+			return
+		}
 	}
 
 	if (closers.hasOwnProperty(data)) {

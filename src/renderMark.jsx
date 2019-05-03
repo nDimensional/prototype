@@ -19,16 +19,14 @@ export default function renderMark(props, editor, next) {
 	} else if (props.mark.type === "img") {
 		const src = props.mark.data.get("src")
 		return (
-			<a
-				href={src}
-				onClick={event => handleLinkClick(event, src)}
-				{...props.attributes}
-			>
+			<span {...props.attributes}>
 				<span className="margin noselect">
 					<img src={src} />
 				</span>
-				{props.children}
-			</a>
+				<a href={src} onClick={event => handleLinkClick(event, src)}>
+					{props.children}
+				</a>
+			</span>
 		)
 	} else if (props.mark.type === "a") {
 		const href = props.mark.data.get("href")

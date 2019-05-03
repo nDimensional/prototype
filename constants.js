@@ -3,6 +3,8 @@ const KIKI = "<--prototype-key-->"
 const FONT_KEY = "<--prototype-font-->"
 const SIZE_KEY = "<--prototype-size-->"
 const THEME_KEY = "<--prototype-theme-->"
+const WIDTH_KEY = "<--prototype-width-->"
+const SPELLCHECK_KEY = "<--prototype-spellcheck-->"
 const VALUE_KEY = "<--prototype-value-->"
 const SETTINGS_KEY = "<--prototype-settings-->"
 const SNAPSHOT_KEY = "<--prototype-snapshot-->"
@@ -16,13 +18,22 @@ const DARK_THEME = "dark"
 const THEMES = new Set([DEFAULT_THEME, DARK_THEME])
 
 const DEFAULT_SIZE = "medium"
-const SIZES = {
-	small: "Small",
-	medium: "Medium",
-	large: "Large",
-}
+
+const DEFAULT_WIDTH = "narrow"
 
 const DEFAULT_FONT = "quattro"
+
+const WIDTHS = {
+	narrow: "1024px",
+	wide: "1280px",
+	full: "none",
+}
+
+const SIZES = {
+	small: "small",
+	medium: "medium",
+	large: "large",
+}
 
 const FONTS = {
 	book: {
@@ -49,9 +60,9 @@ const FONTS = {
 	},
 	fira: {
 		"font-family": "Fira Code",
-		"h1-offset": "-2",
-		"h2-offset": "-3",
-		"h3-offset": "-4",
+		"h1-offset": "-2ch",
+		"h2-offset": "-3ch",
+		"h3-offset": "-4ch",
 		"list-indent": "-2ch",
 		"check-indent": "-4ch",
 		"quote-indent": "-2ch",
@@ -65,9 +76,9 @@ const fontKeys = Object.keys(FONTS[DEFAULT_FONT])
 const computedStyle = getComputedStyle(document.documentElement)
 const style = document.documentElement.style
 
-const properties = ["text", "highlight", "background", "highlight-text"]
+const themeProperties = ["text", "highlight", "background", "highlight-text"]
 function SET_THEME(theme, temp) {
-	properties.forEach(property => {
+	themeProperties.forEach(property => {
 		const variable = `--panel-${property}-color`
 		const reference = `var(${variable})`
 		const value =
@@ -104,10 +115,24 @@ function SET_SIZE(size, temp) {
 	if (temp) {
 		if (size === null) {
 			style.setProperty("--font-size", "var(--panel-font-size)")
+		} else {
+			style.setProperty("--font-size", SIZES[size])
 		}
-		style.setProperty("--font-size", size)
 	} else {
-		style.setProperty("--panel-font-size", size)
+		style.setProperty("--panel-font-size", SIZES[size])
+		style.setProperty("--font-size", "var(--panel-font-size)")
+	}
+}
+
+function SET_WIDTH(width, temp) {
+	if (temp) {
+		if (width === null) {
+			style.setProperty("--max-width", "var(--panel-max-width)")
+		} else {
+			style.setProperty("--max-width", WIDTHS[width])
+		}
+	} else {
+		style.setProperty("--panel-max-width", WIDTHS[width])
 		style.setProperty("--font-size", "var(--panel-font-size)")
 	}
 }
@@ -126,5 +151,10 @@ function SET_SIZE(size, temp) {
 	const theme = localStorage.getItem(THEME_KEY)
 	if (theme && THEMES.has(theme)) {
 		SET_THEME(theme, false)
+	}
+
+	const width = localStorage.getItem(WIDTH_KEY)
+	if (width && WIDTHS.hasOwnProperty(width)) {
+		SET_WIDTH(width, false)
 	}
 }

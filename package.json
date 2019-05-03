@@ -1,13 +1,13 @@
 {
 	"name": "prototype",
-	"version": "0.4.7",
+	"version": "0.4.8",
 	"description": "A scratch space for notes, reminders, and whatever else you want to keep around",
 	"main": "manifest.json",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"watch": "webpack --mode development --watch",
 		"build": "webpack --mode production",
-		"package": "zip -r -FS protptype.zip manifest.json index.html style.css constants.js hydrate.js initialValue.json favicon.png icon-* Webfonts/* dist/*"
+		"package": "zip -r -FS protptype.zip manifest.json index.html style.css constants.js value.json favicon.png icon-* Webfonts/* dist/*"
 	},
 	"repository": {
 		"type": "git",
@@ -20,18 +20,18 @@
 	},
 	"homepage": "https://github.com/nDimensional/prototype#readme",
 	"dependencies": {
-		"@babel/polyfill": "^7.4.3",
+		"@babel/polyfill": "^7.4.4",
 		"immutable": "^3.8.2",
 		"markdown-it": "^8.4.2",
 		"react": "^16.8.6",
 		"react-dom": "^16.8.6",
-		"slate": "^0.45.1",
-		"slate-react": "^0.21.21"
+		"slate": "^0.46.1",
+		"slate-react": "^0.21.24"
 	},
 	"devDependencies": {
-		"@babel/core": "^7.4.3",
-		"@babel/plugin-proposal-class-properties": "^7.4.0",
-		"@babel/preset-env": "^7.4.3",
+		"@babel/core": "^7.4.4",
+		"@babel/plugin-proposal-class-properties": "^7.4.4",
+		"@babel/preset-env": "^7.4.4",
 		"@babel/preset-react": "^7.0.0",
 		"babel-loader": "^8.0.5",
 		"babel-preset-minify": "^0.5.0",

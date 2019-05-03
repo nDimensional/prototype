@@ -4,4 +4,6 @@ if (html) {
 	document.open()
 	document.write(`<main>${html}</main>`)
 	document.close()
+} else {
+	window.hydrated = false
 }

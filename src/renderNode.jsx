@@ -45,6 +45,14 @@ export default function renderNode(props, editor, next) {
 					{props.children}
 				</li>
 			)
+		} else if (props.node.type === "blockquote") {
+			const align = props.node.data.get("align")
+			const className = align ? "align" : ""
+			return (
+				<blockquote className={className} {...props.attributes}>
+					{props.children}
+				</blockquote>
+			)
 		} else {
 			return React.createElement(
 				props.node.type,
