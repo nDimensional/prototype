@@ -6,9 +6,15 @@ const options = {
 module.exports = env => {
 	const hydrate =
 		__dirname + "/hydrate/" + (env && env.hydrate ? "hydrate.js" : "null.js")
+	const storage =
+		__dirname + "/storage/" + (env && env.storage ? "storage.js" : "local.js")
+
+	console.log("env", env)
+
 	return {
 		entry: {
 			bundle: ["@babel/polyfill", "./src/index.jsx"],
+			storage,
 			hydrate,
 		},
 

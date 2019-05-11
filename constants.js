@@ -4,8 +4,8 @@ const FONT_KEY = "<--prototype-font-->"
 const SIZE_KEY = "<--prototype-size-->"
 const THEME_KEY = "<--prototype-theme-->"
 const WIDTH_KEY = "<--prototype-width-->"
-const SPELLCHECK_KEY = "<--prototype-spellcheck-->"
 const VALUE_KEY = "<--prototype-value-->"
+const SPELLCHECK_KEY = "<--prototype-spellcheck-->"
 const SETTINGS_KEY = "<--prototype-settings-->"
 const SNAPSHOT_KEY = "<--prototype-snapshot-->"
 
@@ -15,13 +15,17 @@ const CTRL_TEST = isMac ? event => event.metaKey : event => event.ctrlKey
 
 const DEFAULT_THEME = "light"
 const DARK_THEME = "dark"
-const THEMES = new Set([DEFAULT_THEME, DARK_THEME])
 
 const DEFAULT_SIZE = "medium"
 
 const DEFAULT_WIDTH = "narrow"
 
 const DEFAULT_FONT = "quattro"
+
+const THEMES = {
+	light: "light",
+	dark: "dark",
+}
 
 const WIDTHS = {
 	narrow: "1024px",
@@ -84,7 +88,7 @@ function SET_THEME(theme, temp) {
 		const value =
 			theme === null
 				? reference
-				: computedStyle.getPropertyValue(`--${theme}-${property}-color`)
+				: computedStyle.getPropertyValue(`--${THEMES[theme]}-${property}-color`)
 		if (temp) {
 			style.setProperty(`--${property}-color`, value)
 		} else {
@@ -149,7 +153,7 @@ function SET_WIDTH(width, temp) {
 	}
 
 	const theme = localStorage.getItem(THEME_KEY)
-	if (theme && THEMES.has(theme)) {
+	if (theme && THEMES.hasOwnProperty(theme)) {
 		SET_THEME(theme, false)
 	}
 

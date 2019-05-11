@@ -1,1 +1,1 @@
-window.hydrated = false
+window.hydrate = false

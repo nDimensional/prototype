@@ -184,6 +184,25 @@ blockquote {
 	padding: 0.5em 0.5em 0.5em calc(0.5em + -1 * var(--quote-indent));
 }
 
+blockquote.align {
+	text-align: right;
+	text-indent: initial;
+}
+
+blockquote.align > span {
+	display: flex;
+}
+
+blockquote.align > span > span {
+	flex: 1;
+}
+
+blockquote.align > span > span:first-child {
+	flex: 0;
+	text-indent: var(--quote-indent);
+	text-align: initial;
+}
+
 h1 {
 	text-indent: var(--h1-offset);
 	border-bottom: var(--border-width) solid var(--highlight-color);
@@ -272,8 +291,6 @@ figure img {
 	background-color: var(--highlight-color);
 }
 
-/* Links */
-
 a {
 	word-break: break-all;
 	border-radius: var(--border-radius);
@@ -289,8 +306,6 @@ body.cmd a {
 body.cmd a:hover {
 	background: var(--highlight-color);
 }
-
-/* Divider --- */
 
 div.divider {
 	display: flex;

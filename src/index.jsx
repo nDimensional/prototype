@@ -2,7 +2,6 @@ import React from "react"
 import ReactDOM from "react-dom"
 import ReactDOMServer from "react-dom/server"
 import { Value, KeyUtils } from "slate"
-import { is } from "immutable"
 
 import { Editor } from "slate-react"
 
@@ -15,10 +14,6 @@ import decorateNode from "./decorateNode"
 
 import Panel from "./panel"
 
-window.browser = window.browser || window.chrome
-const storageAreaName = "local"
-const storageArea = window.browser.storage[storageAreaName]
-
 function createGenerator() {
 	let key = 0
 	return function generator() {
@@ -28,11 +23,7 @@ function createGenerator() {
 }
 
 class Document extends React.Component {
-	static setStyle(key, value) {
-		storageArea.set({ [key]: value })
-		localStorage.setItem(key, value)
-	}
-
+	static snapshotInterval = 2000
 	static plugins = [
 		{
 			normalizeNode,
@@ -58,14 +49,14 @@ class Document extends React.Component {
 	async save(value) {
 		this.sync = false
 		this.value = null
-		const json = value.toJSON()
-		const data = { [VALUE_KEY]: json, [ID_KEY]: this.props.id }
-		await storageArea.set(data)
+		const data = { [VALUE_KEY]: value.toJSON(), [ID_KEY]: this.props.id }
+		await window.saveData(data)
 		if (this.value !== null) this.save(this.value)
 		else this.sync = true
 	}
 
 	saveSnapshot() {
+		if (!window.hydrate) return
 		const { id, generator } = this.props
 		const { settings, spellCheck, width, theme, font, size } = this.state
 		const snapshotGenerator = createGenerator()
@@ -83,98 +74,55 @@ class Document extends React.Component {
 	}
 
 	componentDidMount() {
-		setInterval(() => {
-			if (this.syncHtml) {
-				this.syncHtml = false
-				this.saveSnapshot()
-			}
-		}, 2000)
+		if (window.hydrate) {
+			setInterval(() => {
+				if (this.syncHtml) {
+					this.syncHtml = false
+					this.saveSnapshot()
+				}
+			}, Document.snapshotInterval)
+		}
 
 		window.addEventListener("beforeunload", () => this.saveSnapshot())
 		window.addEventListener("keydown", event => {
 			if (CTRL_TEST(event) && event.keyCode === 190) {
-				Document.setStyle(SETTINGS_KEY, !this.state.settings)
+				const settings = !this.state.settings
+				window.setProperty(SETTINGS_KEY, settings)
+				this.setState({ settings })
 			}
 		})
 
-		window.browser.storage.onChanged.addListener(
-			(
-				{
-					[VALUE_KEY]: json,
-					[ID_KEY]: tab,
-					[THEME_KEY]: themeValue,
-					[FONT_KEY]: fontValue,
-					[SIZE_KEY]: sizeValue,
-					[WIDTH_KEY]: widthValue,
-					[SPELLCHECK_KEY]: spellCheckValue,
-					[SETTINGS_KEY]: settingsValue,
-				},
-				area
-			) => {
-				if (area === storageAreaName) {
-					let { value } = this.state
-					const state = {}
-					if (tab) this.tabId = tab.newValue
-					if (json && this.tabId !== this.props.id) {
-						// ignore local edits
-						const newValue = Value.fromJSON(json.newValue)
-						// Only update if the _document_ is different
-						if (!is(newValue.document, value.document)) {
-							state.value = newValue
-						}
-					}
-
-					if (themeValue && THEMES.has(themeValue.newValue)) {
-						SET_THEME(themeValue.newValue, false)
-						state.theme = themeValue.newValue
-					}
-
-					if (fontValue && FONTS.hasOwnProperty(fontValue.newValue)) {
-						SET_FONT(fontValue.newValue, false)
-						state.font = fontValue.newValue
-					}
-
-					if (sizeValue && SIZES.hasOwnProperty(sizeValue.newValue)) {
-						SET_SIZE(sizeValue.newValue, false)
-						state.size = sizeValue.newValue
-					}
-
-					if (widthValue && WIDTHS.hasOwnProperty(widthValue.newValue)) {
-						SET_WIDTH(widthValue.newValue, false)
-						state.width = widthValue.newValue
-					}
-
-					if (spellCheckValue) {
-						if (spellCheckValue.newValue !== this.state.spellCheck) {
-							state.spellCheck = spellCheckValue.newValue
-						}
-					}
-
-					if (settingsValue) {
-						if (settingsValue.newValue !== this.state.settings) {
-							this.syncHtml = true
-							state.settings = settingsValue.newValue
-						}
-					}
-
-					if (Object.keys(state).length > 0) {
-						this.setState(state)
-					}
-				}
-			}
-		)
+		window.attachChangeListener(this.props.id, state => this.setState(state))
 	}
 
-	handleSpellCheckChange = spellCheck =>
-		Document.setStyle(SPELLCHECK_KEY, spellCheck)
+	handleFontChange = font => {
+		SET_FONT(font, false)
+		this.setState({ font })
+		window.setProperty(FONT_KEY, font)
+	}
 
-	handleWidthChange = width => Document.setStyle(WIDTH_KEY, width)
+	handleSizeChange = size => {
+		SET_SIZE(size, false)
+		this.setState({ size })
+		window.setProperty(SIZE_KEY, size)
+	}
 
-	handleFontChange = font => Document.setStyle(FONT_KEY, font)
+	handleThemeChange = theme => {
+		SET_THEME(theme, false)
+		this.setState({ theme })
+		window.setProperty(THEME_KEY, theme)
+	}
 
-	handleSizeChange = size => Document.setStyle(SIZE_KEY, size)
+	handleWidthChange = width => {
+		SET_WIDTH(width, false)
+		this.setState({ width })
+		window.setProperty(WIDTH_KEY, width)
+	}
 
-	handleThemeChange = theme => Document.setStyle(THEME_KEY, theme)
+	handleSpellCheckChange = spellCheck => {
+		this.setState({ spellCheck })
+		window.setProperty(SPELLCHECK_KEY, spellCheck)
+	}
 
 	handleValueChange(event, editor, next) {
 		const { value } = event
@@ -254,95 +202,26 @@ class Document extends React.Component {
 	}
 }
 
-// Get tab id & data from browser storage
-const storageKeys = [
-	VALUE_KEY,
-	THEME_KEY,
-	FONT_KEY,
-	SIZE_KEY,
-	WIDTH_KEY,
-	SPELLCHECK_KEY,
-	SETTINGS_KEY,
-]
+window.initialize.then(async props => {
+	const generator = createGenerator()
+	KeyUtils.setGenerator(generator)
 
-Promise.all(
-	window.chrome
-		? [
-				new Promise(resolve => chrome.tabs.getCurrent(resolve)),
-				new Promise(resolve =>
-					chrome.storage[storageAreaName].get(storageKeys, resolve)
-				),
-		  ]
-		: [window.browser.tabs.getCurrent(), storageArea.get(storageKeys)]
-).then(
-	async ([
-		{ id },
-		{
-			[VALUE_KEY]: json,
-			[THEME_KEY]: theme,
-			[FONT_KEY]: font,
-			[SIZE_KEY]: size,
-			[WIDTH_KEY]: width,
-			[SPELLCHECK_KEY]: spellCheck,
-			[SETTINGS_KEY]: settings,
-		},
-	]) => {
-		if (!THEMES.has(theme)) {
-			storageArea.set({ [THEME_KEY]: DEFAULT_THEME })
-			theme = DEFAULT_THEME
-		}
+	const value = Value.fromJSON(
+		props.value
+			? props.value
+			: await fetch("value.json").then(res => res.json())
+	)
 
-		if (!FONTS.hasOwnProperty(font)) {
-			storageArea.set({ [FONT_KEY]: DEFAULT_FONT })
-			font = DEFAULT_FONT
-		}
+	props = Object.assign(props, { generator, value })
 
-		if (!SIZES.hasOwnProperty(size)) {
-			storageArea.set({ [SIZE_KEY]: DEFAULT_SIZE })
-			size = DEFAULT_SIZE
-		}
+	console.log("hydrate", window.hydrate)
 
-		if (!WIDTHS.hasOwnProperty(width)) {
-			storageArea.set({ [WIDTH_KEY]: DEFAULT_WIDTH })
-			width = DEFAULT_WIDTH
-		}
-
-		if (spellCheck !== true && spellCheck !== false) {
-			spellCheck = true
-			storageArea.set({ [SPELLCHECK_KEY]: true })
-		}
-
-		if (settings !== true && settings !== false) {
-			settings = true
-			storageArea.set({ [SETTINGS_KEY]: true })
-		}
-
-		const generator = createGenerator()
-		KeyUtils.setGenerator(generator)
-		const value = Value.fromJSON(
-			json ? json : await fetch("value.json").then(res => res.json())
-		)
-
-		const props = {
-			id,
-			generator,
-			settings,
-			spellCheck,
-			theme,
-			font,
-			size,
-			value,
-			width,
-		}
-
-		console.log("hydrate:", window.hydrated)
-		if (window.hydrated) {
-			const main = document.querySelector("main")
-			ReactDOM.hydrate(<Document {...props} />, main)
-		} else {
-			const main = document.createElement("main")
-			document.body.appendChild(main)
-			ReactDOM.render(<Document {...props} />, main)
-		}
+	if (window.hydrate) {
+		const main = document.querySelector("main")
+		ReactDOM.hydrate(<Document {...props} />, main)
+	} else {
+		const main = document.createElement("main")
+		document.body.appendChild(main)
+		ReactDOM.render(<Document {...props} />, main)
 	}
-)
+})
