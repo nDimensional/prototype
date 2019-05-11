@@ -15,9 +15,12 @@ Or build and package the ZIP yourself:
 
 ```
 npm install
-npm run build -- --env.hydrate
+npm run build -- --env.hydrate --env.storage
 npm run package
 ```
+
+- The `--env.hydrate` flag enables "local sever-side rendering" where an HTML snapshot of the page will get written to localStorage every 2 seconds (and `onbeforeunload`), in addition to the regular JSON representation of the editor's value. The page will check for this snapshot on initial page and render it with `React.hydrate` if it exists.
+- The `--env.storage` flag writes the JSON editor value and page settings to the WebExtension [Storage API](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage) `window.browser.storage` instead of `localStorage`.
 
 ## Philosophy
 
