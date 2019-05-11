@@ -7,7 +7,7 @@
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"watch": "webpack --mode development --watch",
 		"build": "webpack --mode production",
-		"package": "zip -r -FS protptype.zip manifest.json index.html style.css constants.js value.json favicon.png icon-* Webfonts/* dist/*"
+		"package": "zip -r -FS protptype.zip manifest.json index.html style.css constants.js value.json favicon.png icons/* Webfonts/* dist/*"
 	},
 	"repository": {
 		"type": "git",
