@@ -1,4 +1,4 @@
-import { blockContainerTypes, listTest, checkTest } from "./normalizeNode"
+import { listTest, checkTest } from "./normalizeNode"
 
 const pairs = ["()", "[]", "**", "__", "``", '""', "''", "{}"]
 
@@ -9,6 +9,10 @@ pairs.forEach(pair => {
 	closers[pair[1]] = pair[0]
 })
 
+const getContainerTest = {
+	ul: listTest,
+	cl: checkTest,
+}
 const getDefaultText = {
 	ul: text => text,
 	cl: text => `${"\t".repeat(text.length - 4)}[ ] `,
@@ -80,9 +84,9 @@ export function onKeyDown(event, editor, next) {
 			if (path.size === 3) {
 				// ul -> li -> text
 				const container = document.getDescendant(path.slice(0, 1))
-				if (blockContainerTypes.has(container.type)) {
+				if (container.type === "ul" || container.type === "cl") {
 					const { text } = document.getDescendant(path)
-					const test = container.type === "ul" ? listTest : checkTest
+					const test = getContainerTest[container.type]
 					const [match] = test.exec(text)
 					if (match.length === text.length) {
 						event.preventDefault()

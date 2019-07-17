@@ -4,58 +4,59 @@ export const tags = {
 	_: ["em", "em_inline"],
 	"*": ["strong", "strong_inline"],
 	"`": ["code", "code_inline"],
+	"[": ["ref", "ref_inline"],
+	"![": ["ref_image", "ref_image_inline"],
 }
 
-const chars = new Set(Object.keys(tags).map(tag => tag.charCodeAt(0)))
+const chars = new Set(["_", "*", "`"].map(tag => tag.charCodeAt(0)))
 
-export default function style(state, silent) {
-	var start,
-		max,
-		marker,
-		matchStart,
-		matchEnd,
-		token,
-		pos = state.pos,
-		ch = state.src.charCodeAt(pos)
+export default function styles(state, silent) {
+	let pos = state.pos
 
-	if (!chars.has(ch)) {
+	const ch = state.src.charCodeAt(pos)
+
+	let length = 1
+	let target
+	if (chars.has(ch)) {
+		target = String.fromCharCode(ch)
+	} else if (ch === 91) {
+		target = "]"
+	} else if (ch === 33 && state.src.charCodeAt(pos + 1) === 91) {
+		target = "]"
+		length = 2
+	} else {
 		return false
 	}
 
-	if (pos > 0 && state.src[pos - 1] !== " ") {
+	if (pos > 0 && state.src.charCodeAt(pos - 1) !== 32) {
+		return false
+	} else if (
+		pos < state.src.length - 1 &&
+		state.src.charCodeAt(pos + 1) === 32
+	) {
 		return false
 	}
 
-	start = pos
-	pos++
-	max = state.posMax
+	const end = pos + length
+	const marker = state.src.slice(pos, end)
 
-	marker = state.src[start]
+	const index = state.src.indexOf(target, end)
 
-	matchStart = matchEnd = pos
-
-	while ((matchStart = state.src.indexOf(marker, matchEnd)) !== -1) {
-		matchEnd = matchStart + 1
-
-		while (matchEnd < max && state.src.charCodeAt(matchEnd) === ch) {
-			matchEnd++
+	if (index !== -1) {
+		if (!silent) {
+			const [tag, type] = tags[marker]
+			const token = state.push(type, tag, 0)
+			token.markup = marker
+			token.content = state.src.slice(end, index)
 		}
-
-		if (matchEnd - matchStart === 1) {
-			if (!silent) {
-				const [tag, type] = tags[marker]
-				token = state.push(type, tag, 0)
-				token.markup = marker
-				token.content = state.src.slice(pos, matchStart)
-			}
-			state.pos = matchEnd
-			return true
-		}
+		state.pos = index + target.length
+		return true
 	}
 
 	if (!silent) {
 		state.pending += marker
 	}
+
 	state.pos += 1
 	return true
 }

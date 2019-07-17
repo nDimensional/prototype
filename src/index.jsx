@@ -6,8 +6,8 @@ import { Value, KeyUtils } from "slate"
 import { Editor } from "slate-react"
 
 import { onKeyDown, onBeforeInput } from "./events"
-import renderNode from "./renderNode"
-import renderMark from "./renderMark"
+import renderBlock from "./renderBlock"
+import renderDecoration from "./renderDecoration"
 
 import normalizeNode from "./normalizeNode"
 import decorateNode from "./decorateNode"
@@ -191,8 +191,8 @@ class Document extends React.Component {
 						value={value}
 						plugins={Document.plugins}
 						onChange={this.handleValueChange}
-						renderNode={renderNode}
-						renderMark={renderMark}
+						renderBlock={renderBlock}
+						renderDecoration={renderDecoration}
 						onFocus={() => {}}
 					/>
 				</div>

@@ -89,6 +89,7 @@ main {
 }
 
 #editor > div {
+	padding-bottom: 4em;
 	width: 60%;
 	flex: 1;
 }
@@ -267,27 +268,44 @@ figure img {
 	margin: auto;
 }
 
-.check {
-	letter-spacing: var(--check-spacing);
+.token {
+	color: var(--highlight-text-color);
 }
 
 .open {
 	border-top-left-radius: var(--border-radius);
 	border-bottom-left-radius: var(--border-radius);
-	color: var(--highlight-text-color);
 }
 
 .close {
 	border-top-right-radius: var(--border-radius);
 	border-bottom-right-radius: var(--border-radius);
-	color: var(--highlight-text-color);
 }
 
-.code,
-.math {
+.uncheck {
+	letter-spacing: var(--check-spacing);
+}
+
+.check .token {
+	color: inherit;
+}
+
+.ref .token {
+	color: inherit;
+}
+
+.image .token {
+	color: inherit;
+}
+
+.term .token {
+	color: inherit;
+}
+
+.code {
 	font-size: 1em;
 	font-family: "Fira Code";
-	padding-top: 0.1em;
+	/* padding-top: 0.1em; */
 	background-color: var(--highlight-color);
 }
 
