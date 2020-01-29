@@ -2,7 +2,6 @@ const ID_KEY = "<--prototype-id-->"
 const KIKI = "<--prototype-key-->"
 const FONT_KEY = "<--prototype-font-->"
 const SIZE_KEY = "<--prototype-size-->"
-const THEME_KEY = "<--prototype-theme-->"
 const WIDTH_KEY = "<--prototype-width-->"
 const VALUE_KEY = "<--prototype-value-->"
 const SPELLCHECK_KEY = "<--prototype-spellcheck-->"
@@ -13,19 +12,11 @@ const isMac = navigator.platform === "MacIntel"
 const CTRL_KEY = isMac ? "⌘" : "Ctrl"
 const CTRL_TEST = isMac ? event => event.metaKey : event => event.ctrlKey
 
-const DEFAULT_THEME = "light"
-const DARK_THEME = "dark"
-
 const DEFAULT_SIZE = "medium"
 
 const DEFAULT_WIDTH = "narrow"
 
 const DEFAULT_FONT = "quattro"
-
-const THEMES = {
-	light: "light",
-	dark: "dark",
-}
 
 const WIDTHS = {
 	narrow: "1024px",
@@ -80,24 +71,6 @@ const fontKeys = Object.keys(FONTS[DEFAULT_FONT])
 const computedStyle = getComputedStyle(document.documentElement)
 const style = document.documentElement.style
 
-const themeProperties = ["text", "highlight", "background", "highlight-text"]
-function SET_THEME(theme, temp) {
-	themeProperties.forEach(property => {
-		const variable = `--panel-${property}-color`
-		const reference = `var(${variable})`
-		const value =
-			theme === null
-				? reference
-				: computedStyle.getPropertyValue(`--${THEMES[theme]}-${property}-color`)
-		if (temp) {
-			style.setProperty(`--${property}-color`, value)
-		} else {
-			style.setProperty(variable, value)
-			style.setProperty(`--${property}-color`, reference)
-		}
-	})
-}
-
 function SET_FONT(font, temp) {
 	if (temp) {
 		if (font === null) {
@@ -150,11 +123,6 @@ function SET_WIDTH(width, temp) {
 	const size = localStorage.getItem(SIZE_KEY)
 	if (size && SIZES.hasOwnProperty(size)) {
 		SET_SIZE(size, false)
-	}
-
-	const theme = localStorage.getItem(THEME_KEY)
-	if (theme && THEMES.hasOwnProperty(theme)) {
-		SET_THEME(theme, false)
 	}
 
 	const width = localStorage.getItem(WIDTH_KEY)

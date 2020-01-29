@@ -14,10 +14,6 @@
 	--max-width: 1024px;
 
 	/* Default panel values (Light, Quattro, Medium) */
-	--panel-background-color: var(--light-background-color);
-	--panel-text-color: var(--light-text-color);
-	--panel-highlight-color: var(--light-highlight-color);
-	--panel-highlight-text-color: var(--light-highlight-text-color);
 	--panel-font-family: "iA Writer Quattro";
 	--panel-font-size: medium;
 	--panel-max-width: 1024px;
@@ -31,10 +27,6 @@
 	--panel-h3-offset: -3.75ch;
 
 	/* Default body values */
-	--background-color: var(--panel-background-color);
-	--text-color: var(--panel-text-color);
-	--highlight-color: var(--panel-highlight-color);
-	--highlight-text-color: var(--panel-highlight-text-color);
 	--font-family: var(--panel-font-family);
 	--font-size: var(--panel-font-size);
 	--max-width: var(--panel-max-width);
@@ -48,17 +40,6 @@
 	--h3-offset: var(--panel-h3-offset);
 }
 
-/* Once Firefox & Chrome implement prefers-color-scheme we'll switch over */
-/* https://bugzilla.mozilla.org/show_bug.cgi?id=1494034 */
-/* https://bugs.chromium.org/p/chromium/issues/detail?id=889087 */
-/* https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme */
-/* @media (prefers-color-scheme: dark) {
-	html {
-		background-color: var(--dark-background-color);
-		color: var(--dark-text-color);
-	}
-} */
-
 html,
 body,
 main {
@@ -67,11 +48,26 @@ main {
 }
 
 html {
+	--color: var(--light-text-color);
+	--background-color: var(--light-background-color);
+	--highlight-color: var(--light-highlight-color);
+	--highlight-text-color: var(--light-highlight-text-color);
+}
+
+@media (prefers-color-scheme: dark) {
+	html {
+		--color: var(--dark-text-color);
+		--background-color: var(--dark-background-color);
+		--highlight-color: var(--dark-highlight-color);
+		--highlight-text-color: var(--dark-highlight-text-color);
+	}
+}
+
+body {
+	color: var(--color);
+	background-color: var(--background-color);
 	font-family: var(--font-family);
 	font-size: var(--font-size);
-
-	background-color: var(--background-color);
-	color: var(--text-color);
 }
 
 main {
@@ -99,11 +95,11 @@ main {
 	min-width: fit-content;
 	min-width: -moz-fit-content;
 	padding: 1em;
-	border-left: var(--border-width) solid var(--panel-highlight-color);
+	border-left: var(--border-width) solid var(--highlight-color);
 	align-self: baseline;
 
-	background-color: var(--panel-background-color);
-	color: var(--panel-text-color);
+	background-color: var(--background-color);
+	color: var(--text-color);
 
 	font-size: var(--panel-font-size);
 	font-family: var(--panel-font-family);
@@ -111,8 +107,8 @@ main {
 
 #settings h1 {
 	text-indent: initial;
-	color: var(--panel-text-color);
-	border-bottom: var(--border-width) solid var(--panel-highlight-color);
+	color: var(--text-color);
+	border-bottom: var(--border-width) solid var(--highlight-color);
 }
 
 #settings section {
@@ -128,7 +124,7 @@ main {
 }
 
 #settings label:hover {
-	background-color: var(--panel-highlight-color);
+	background-color: var(--highlight-color);
 }
 
 #settings label input {

@@ -8,6 +8,11 @@ export const tags = {
 	"![": ["ref_image", "ref_image_inline"],
 }
 
+/**
+ * As I go *through* the characters in the line
+ * 
+ */
+
 const chars = new Set(["_", "*", "`"].map(tag => tag.charCodeAt(0)))
 
 export default function styles(state, silent) {

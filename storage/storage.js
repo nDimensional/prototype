@@ -8,7 +8,6 @@ const storageArea = browser.storage[storageAreaName]
 const storageKeys = [
 	FONT_KEY,
 	SIZE_KEY,
-	THEME_KEY,
 	WIDTH_KEY,
 	VALUE_KEY,
 	SPELLCHECK_KEY,
@@ -45,7 +44,6 @@ window.initialize = Promise.all(
 		{
 			[FONT_KEY]: font,
 			[SIZE_KEY]: size,
-			[THEME_KEY]: theme,
 			[WIDTH_KEY]: width,
 			[VALUE_KEY]: value,
 			[SPELLCHECK_KEY]: spellCheck,
@@ -60,11 +58,6 @@ window.initialize = Promise.all(
 		if (!SIZES.hasOwnProperty(size)) {
 			window.setProperty(SIZE_KEY, DEFAULT_SIZE)
 			size = DEFAULT_SIZE
-		}
-
-		if (!THEMES.hasOwnProperty(theme)) {
-			window.setProperty(THEME_KEY, DEFAULT_THEME)
-			theme = DEFAULT_THEME
 		}
 
 		if (!WIDTHS.hasOwnProperty(width)) {
@@ -82,7 +75,7 @@ window.initialize = Promise.all(
 			settings = true
 		}
 
-		return { id, value, settings, spellCheck, theme, font, size, width }
+		return { id, value, settings, spellCheck, font, size, width }
 	}
 )
 
@@ -94,7 +87,6 @@ window.attachChangeListener = (id, callback) =>
 				[VALUE_KEY]: json,
 				[FONT_KEY]: fontValue,
 				[SIZE_KEY]: sizeValue,
-				[THEME_KEY]: themeValue,
 				[WIDTH_KEY]: widthValue,
 				[SPELLCHECK_KEY]: spellCheckValue,
 				[SETTINGS_KEY]: settingsValue,
@@ -116,11 +108,6 @@ window.attachChangeListener = (id, callback) =>
 						if (!is(newValue.document, state.value.document)) {
 							newState.value = newValue
 						}
-					}
-
-					if (themeValue && THEMES.hasOwnProperty(themeValue.newValue)) {
-						SET_THEME(themeValue.newValue, false)
-						newState.theme = themeValue.newValue
 					}
 
 					if (fontValue && FONTS.hasOwnProperty(fontValue.newValue)) {

@@ -22,20 +22,20 @@
 	"dependencies": {
 		"@babel/polyfill": "^7.4.4",
 		"immutable": "^3.8.2",
-		"markdown-it": "^8.4.2",
-		"react": "^16.8.6",
-		"react-dom": "^16.8.6",
-		"slate": "^0.47.4",
-		"slate-react": "^0.22.4"
+		"markdown-it": "^9.1.0",
+		"react": "^16.9.0",
+		"react-dom": "^16.9.0",
+		"slate": "^0.47.7",
+		"slate-react": "^0.22.7"
 	},
 	"devDependencies": {
-		"@babel/core": "^7.4.5",
-		"@babel/plugin-proposal-class-properties": "^7.4.4",
-		"@babel/preset-env": "^7.4.5",
+		"@babel/core": "^7.5.5",
+		"@babel/plugin-proposal-class-properties": "^7.5.5",
+		"@babel/preset-env": "^7.5.5",
 		"@babel/preset-react": "^7.0.0",
 		"babel-loader": "^8.0.6",
-		"babel-preset-minify": "^0.5.0",
-		"webpack": "^4.35.0",
-		"webpack-cli": "^3.3.4"
+		"babel-preset-minify": "^0.5.1",
+		"webpack": "^4.39.2",
+		"webpack-cli": "^3.3.7"
 	}
 }

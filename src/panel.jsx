@@ -18,9 +18,6 @@ function Checkbox({ name, id, checked, onChange }) {
 }
 
 export default class Panel extends React.Component {
-	handleThemeChange = ({ target: { checked } }) => {
-		this.props.onThemeChange(checked ? DARK_THEME : DEFAULT_THEME)
-	}
 	handleWidthChange = ({ target: { value } }) => {
 		this.props.onWidthChange(value)
 	}
@@ -34,17 +31,11 @@ export default class Panel extends React.Component {
 		this.props.onSpellCheckChange(checked)
 	}
 	render() {
-		const { spellCheck, theme, width, font, size } = this.props
+		const { spellCheck, width, font, size } = this.props
 		return (
 			<aside id="settings">
 				<h1>Settings</h1>
 				<section>
-					<Checkbox
-						name="Dark theme"
-						id="theme"
-						checked={theme !== DEFAULT_THEME}
-						onChange={this.handleThemeChange}
-					/>
 					<Checkbox
 						name="Spellcheck"
 						id="spellcheck"

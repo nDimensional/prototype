@@ -1,4 +1,4 @@
-import { Map, is } from "immutable"
+import { Map } from "immutable"
 
 const containerItemMap = {
 	ul: "li",
@@ -10,11 +10,17 @@ const blockContainers = Object.keys(containerItemMap)
 const blockItems = Object.values(containerItemMap)
 
 const itemContainerMap = Object.fromEntries(
-	Object.entries(containerItemMap).map(Array.reverse)
+	Object.entries(containerItemMap).map(m => m.reverse())
 )
 
 export const blockItemSet = new Set(blockItems)
 export const blockContainerSet = new Set(blockContainers)
+
+const inlineTests = {
+	em: /_[^_]_/,
+	strong: /\*[^*]\*/,
+	code: /^[^^]^/,
+}
 
 const blockTypes = [
 	"p",
@@ -62,8 +68,9 @@ export const getDocumentData = document =>
 	)
 
 export default function normalizeNode(node, editor, next) {
-	window.editor = editor
-	if (node.object === "block") {
+	if (node.object === "inline") {
+		const { text } = node.getFirstText()
+	} else if (node.object === "block") {
 		const { type, key } = node
 		if (blockTypeSet.has(type)) {
 			const { text } = node.getFirstText()
@@ -194,7 +201,6 @@ export default function normalizeNode(node, editor, next) {
 			}
 		}
 	} else if (node.object === "text") {
-	} else if (node.object === "inline") {
 	} else if (node.object === "document") {
 		let previous = null
 		let previousType = null

@@ -35,8 +35,8 @@ class Document extends React.Component {
 
 	constructor(props) {
 		super(props)
-		const { id, value, settings, spellCheck, width, theme, font, size } = props
-		this.state = { value, settings, spellCheck, width, theme, font, size }
+		const { id, value, settings, spellCheck, width, font, size } = props
+		this.state = { value, settings, spellCheck, width, font, size }
 		this.sync = true
 		this.tabId = id
 		this.syncHtml = false
@@ -58,16 +58,15 @@ class Document extends React.Component {
 	saveSnapshot() {
 		if (!window.hydrate) return
 		const { id, generator } = this.props
-		const { settings, spellCheck, width, theme, font, size } = this.state
+		const { settings, spellCheck, width, font, size } = this.state
 		const snapshotGenerator = createGenerator()
 		KeyUtils.setGenerator(snapshotGenerator)
 		const value = Value.fromJSON(this.state.value.toJSON())
-		const props = { id, value, settings, theme, font, size }
+		const props = { id, value, settings, font, size }
 		const html = ReactDOMServer.renderToString(<Document {...props} />)
 		localStorage.setItem(SNAPSHOT_KEY, html)
 		localStorage.setItem(SPELLCHECK_KEY, spellCheck)
 		localStorage.setItem(WIDTH_KEY, width)
-		localStorage.setItem(THEME_KEY, theme)
 		localStorage.setItem(FONT_KEY, font)
 		localStorage.setItem(SIZE_KEY, size)
 		KeyUtils.setGenerator(generator)
@@ -105,12 +104,6 @@ class Document extends React.Component {
 		SET_SIZE(size, false)
 		this.setState({ size })
 		window.setProperty(SIZE_KEY, size)
-	}
-
-	handleThemeChange = theme => {
-		SET_THEME(theme, false)
-		this.setState({ theme })
-		window.setProperty(THEME_KEY, theme)
 	}
 
 	handleWidthChange = width => {
@@ -157,17 +150,15 @@ class Document extends React.Component {
 	}
 
 	renderPanel() {
-		const { spellCheck, width, theme, font, size } = this.state
+		const { spellCheck, width, font, size } = this.state
 		return (
 			<Panel
 				spellCheck={spellCheck}
-				theme={theme}
 				width={width}
 				font={font}
 				size={size}
 				onSpellCheckChange={this.handleSpellCheckChange}
 				onWidthChange={this.handleWidthChange}
-				onThemeChange={this.handleThemeChange}
 				onFontChange={this.handleFontChange}
 				onSizeChange={this.handleSizeChange}
 			/>
