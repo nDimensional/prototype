@@ -18,15 +18,15 @@ const storageKeys = [
 window.setProperty = (key, value) => {
 	localStorage.setItem(key, value)
 	if (browser === window.chrome) {
-		return new Promise(resolve => storageArea.set({ [key]: value }, resolve))
+		return new Promise((resolve) => storageArea.set({ [key]: value }, resolve))
 	} else {
 		return storageArea.set({ [key]: value })
 	}
 }
 
-window.saveData = data => {
+window.saveData = (data) => {
 	if (browser === window.chrome) {
-		return new Promise(resolve => storageArea.set(data, resolve))
+		return new Promise((resolve) => storageArea.set(data, resolve))
 	} else {
 		return storageArea.set(data)
 	}
@@ -35,8 +35,8 @@ window.saveData = data => {
 window.initialize = Promise.all(
 	window.chrome === browser
 		? [
-				new Promise(resolve => browser.tabs.getCurrent(resolve)),
-				new Promise(resolve => storageArea.get(storageKeys, resolve)),
+				new Promise((resolve) => browser.tabs.getCurrent(resolve)),
+				new Promise((resolve) => storageArea.get(storageKeys, resolve)),
 		  ]
 		: [browser.tabs.getCurrent(), storageArea.get(storageKeys)]
 ).then(
@@ -102,7 +102,7 @@ window.attachChangeListener = (id, callback) =>
 			areaName
 		) => {
 			if (areaName === storageAreaName) {
-				callback(state => {
+				callback((state) => {
 					const newState = {}
 
 					let previousId = state.id

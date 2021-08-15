@@ -1,5 +1,5 @@
 import { Map } from "immutable"
-import * as MarkdownIt from "markdown-it"
+import MarkdownIt from "markdown-it"
 import { Point, Decoration, Mark } from "slate"
 
 import styles, { tags } from "./parser"
@@ -15,7 +15,7 @@ md.inline.ruler2.enableOnly(["text_collapse"])
 
 const inlines = new Set(Object.values(tags).map(([_, inline]) => inline))
 
-export const makeClass = className =>
+export const makeClass = (className) =>
 	Mark.create({ type: "class", data: { className } })
 
 function decorate({ key, index, offset }, start, end, type, data) {

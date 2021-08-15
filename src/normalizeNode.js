@@ -1,4 +1,4 @@
-import { Map, is } from "immutable"
+import { Map } from "immutable"
 
 const containerItemMap = {
 	ul: "li",
@@ -10,7 +10,7 @@ const blockContainers = Object.keys(containerItemMap)
 const blockItems = Object.values(containerItemMap)
 
 const itemContainerMap = Object.fromEntries(
-	Object.entries(containerItemMap).map(Array.reverse)
+	Object.entries(containerItemMap).map(([key, value]) => [value, key])
 )
 
 export const blockItemSet = new Set(blockItems)
@@ -44,7 +44,7 @@ export const containerTests = {
 	dl: definitionTest,
 }
 
-export const getDocumentData = document =>
+export const getDocumentData = (document) =>
 	document.nodes.reduce(
 		(data, node) =>
 			node.type === "dl"

@@ -48,17 +48,6 @@
 	--h3-offset: var(--panel-h3-offset);
 }
 
-/* Once Firefox & Chrome implement prefers-color-scheme we'll switch over */
-/* https://bugzilla.mozilla.org/show_bug.cgi?id=1494034 */
-/* https://bugs.chromium.org/p/chromium/issues/detail?id=889087 */
-/* https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme */
-/* @media (prefers-color-scheme: dark) {
-	html {
-		background-color: var(--dark-background-color);
-		color: var(--dark-text-color);
-	}
-} */
-
 html,
 body,
 main {
