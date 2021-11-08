@@ -2,13 +2,13 @@ window.setProperty = async (key, value) => {
 	localStorage.setItem(key, value)
 }
 
-window.saveData = async data => {
-	Object.keys(data).forEach(key =>
+window.saveData = async (data) => {
+	Object.keys(data).forEach((key) =>
 		localStorage.setItem(key, JSON.stringify(data[key]))
 	)
 }
 
-window.initialize = new Promise(resolve => {
+window.initialize = async () => {
 	const font = localStorage.getItem(FONT_KEY)
 	const size = localStorage.getItem(SIZE_KEY)
 	const theme = localStorage.getItem(THEME_KEY)
@@ -49,7 +49,7 @@ window.initialize = new Promise(resolve => {
 		props.settings = true
 	}
 
-	resolve(props)
-})
+	return props
+}
 
 window.attachChangeListener = (id, callback) => {}

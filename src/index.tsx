@@ -1,8 +1,6 @@
-import React from "react"
-import ReactDOM from "react-dom"
-import { Value, KeyUtils } from "slate"
+import React, { useCallback, useState } from "react"
 
-import { Editor } from "slate-react"
+import { Editable } from "slate-react"
 
 import { onKeyDown, onBeforeInput } from "./events"
 import renderBlock from "./renderBlock"
@@ -11,34 +9,44 @@ import renderDecoration from "./renderDecoration"
 import normalizeNode from "./normalizeNode"
 import decorateNode from "./decorateNode"
 
-import Panel from "./panel"
+// import Panel from "../panel"
 
-function createGenerator() {
-	let key = 0
-	return function generator() {
-		key++
-		return key.toString()
-	}
+const snapshotInterval = 2000
+const plugins = [
+	{
+		normalizeNode,
+		decorateNode,
+		onKeyDown,
+		onBeforeInput,
+	},
+]
+
+type DocumentValue = {}
+
+export interface DocumentProps {
+	value: DocumentValue
+	width: "" | "" | ""
+	theme: "" | "" | ""
+	font: "" | "" | ""
+	size: "" | "" | ""
+	onValueChange: (value: DocumentValue) => void
+}
+
+export function Document(props: DocumentProps) {
+	const [sync, setSync] = useState(true)
+
+	const handleValueChange = useCallback(() => {}, [])
+	const handleKeyDown = useCallback(() => {}, [])
+	const handleKeyUp = useCallback(() => {}, [])
 }
 
 class Document extends React.Component {
-	static snapshotInterval = 2000
-	static plugins = [
-		{
-			normalizeNode,
-			decorateNode,
-			onKeyDown,
-			onBeforeInput,
-		},
-	]
-
 	constructor(props) {
 		super(props)
-		const { id, value, settings, spellCheck, width, theme, font, size } = props
-		this.state = { value, settings, spellCheck, width, theme, font, size }
+		const { id, value, settings, width, theme, font, size } = props
+		this.state = { value, settings, width, theme, font, size }
 		this.sync = true
 		this.tabId = id
-		this.syncHtml = false
 
 		this.handleValueChange = this.handleValueChange.bind(this)
 		this.handleKeyDown = this.handleKeyDown.bind(this)
@@ -90,15 +98,9 @@ class Document extends React.Component {
 		window.setProperty(WIDTH_KEY, width)
 	}
 
-	handleSpellCheckChange = (spellCheck) => {
-		this.setState({ spellCheck })
-		window.setProperty(SPELLCHECK_KEY, spellCheck)
-	}
-
 	handleValueChange(event, editor, next) {
 		const { value } = event
 		if (value.document !== this.state.value.document) {
-			this.syncHtml = true
 			if (this.sync) this.save(value)
 			else this.value = value
 		}
@@ -127,65 +129,26 @@ class Document extends React.Component {
 		this.saveSnapshot()
 	}
 
-	renderPanel() {
-		const { spellCheck, width, theme, font, size } = this.state
-		return (
-			<Panel
-				spellCheck={spellCheck}
-				theme={theme}
-				width={width}
-				font={font}
-				size={size}
-				onSpellCheckChange={this.handleSpellCheckChange}
-				onWidthChange={this.handleWidthChange}
-				onThemeChange={this.handleThemeChange}
-				onFontChange={this.handleFontChange}
-				onSizeChange={this.handleSizeChange}
-			/>
-		)
-	}
-
 	render() {
-		const { settings, value, spellCheck } = this.state
+		const { settings, value } = this.state
 		return (
-			<React.Fragment>
-				<div
-					id="editor"
-					onFocus={() => document.body.classList.remove("cmd")}
-					onBlur={() => document.body.classList.add("cmd")}
-					onKeyDown={this.handleKeyDown}
-					onKeyUp={this.handleKeyUp}
-				>
-					<Editor
-						spellCheck={spellCheck}
-						autoFocus={true}
-						value={value}
-						plugins={Document.plugins}
-						onChange={this.handleValueChange}
-						renderBlock={renderBlock}
-						renderDecoration={renderDecoration}
-						onFocus={() => {}}
-					/>
-				</div>
-				{settings && this.renderPanel()}
-			</React.Fragment>
+			<div
+				id="editor"
+				onFocus={() => document.body.classList.remove("cmd")}
+				onBlur={() => document.body.classList.add("cmd")}
+				onKeyDown={this.handleKeyDown}
+				onKeyUp={this.handleKeyUp}
+			>
+				<Editable
+					autoFocus={true}
+					value={value}
+					plugins={Document.plugins}
+					onChange={this.handleValueChange}
+					renderBlock={renderBlock}
+					renderDecoration={renderDecoration}
+					onFocus={() => {}}
+				/>
+			</div>
 		)
 	}
 }
-
-window.initialize.then(async (props) => {
-	const generator = createGenerator()
-	KeyUtils.setGenerator(generator)
-
-	const value = Value.fromJSON(
-		props.value
-			? props.value
-			: await fetch("value.json").then((res) => res.json())
-	)
-
-	props = Object.assign(props, { generator, value })
-
-	const main = document.createElement("main")
-	document.body.appendChild(main)
-	ReactDOM.render(<Document {...props} />, main)
-})

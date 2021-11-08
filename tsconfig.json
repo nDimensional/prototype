@@ -1,0 +1,13 @@
+{
+	"include": ["src", "index.tsx", "panel.tsx", "renderElement.tsx"],
+	"compilerOptions": {
+		"outDir": "lib",
+		"strict": true,
+		"module": "esnext",
+		"target": "esnext",
+		"declaration": true,
+		"moduleResolution": "node",
+		"esModuleInterop": true,
+		"jsx": "react"
+	}
+}

@@ -11,7 +11,7 @@ const SNAPSHOT_KEY = "<--prototype-snapshot-->"
 
 const isMac = navigator.platform === "MacIntel"
 const CTRL_KEY = isMac ? "⌘" : "Ctrl"
-const CTRL_TEST = isMac ? event => event.metaKey : event => event.ctrlKey
+const CTRL_TEST = isMac ? (event) => event.metaKey : (event) => event.ctrlKey
 
 const DEFAULT_THEME = "light"
 const DARK_THEME = "dark"
@@ -82,7 +82,7 @@ const style = document.documentElement.style
 
 const themeProperties = ["text", "highlight", "background", "highlight-text"]
 function SET_THEME(theme, temp) {
-	themeProperties.forEach(property => {
+	themeProperties.forEach((property) => {
 		const variable = `--panel-${property}-color`
 		const reference = `var(${variable})`
 		const value =
@@ -101,14 +101,14 @@ function SET_THEME(theme, temp) {
 function SET_FONT(font, temp) {
 	if (temp) {
 		if (font === null) {
-			fontKeys.forEach(key =>
+			fontKeys.forEach((key) =>
 				style.setProperty(`--${key}`, `var(--panel-${key})`)
 			)
 		} else {
-			fontKeys.forEach(key => style.setProperty(`--${key}`, FONTS[font][key]))
+			fontKeys.forEach((key) => style.setProperty(`--${key}`, FONTS[font][key]))
 		}
 	} else {
-		fontKeys.forEach(key => {
+		fontKeys.forEach((key) => {
 			style.setProperty(`--panel-${key}`, FONTS[font][key])
 			style.setProperty(`--${key}`, `var(--panel-${key})`)
 		})

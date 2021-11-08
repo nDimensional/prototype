@@ -5,8 +5,8 @@
 	"main": "manifest.json",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"dev": "esbuild ./src/index.jsx --format=esm --bundle --outfile=./dist/index.js --watch",
-		"build": "esbuild ./src/index.jsx --format=esm --bundle --outfile=./dist/index.js --minify",
+		"dev": "esbuild ./index.tsx --format=esm --bundle --outfile=./dist/index.js --watch",
+		"build": "esbuild ./index.tsx --format=esm --bundle --outfile=./dist/index.js --minify",
 		"package": "zip -r -FS protptype.zip manifest.json index.html style.css constants.js value.json favicon.png icons/* Webfonts/* dist/*"
 	},
 	"repository": {
@@ -20,13 +20,13 @@
 	},
 	"homepage": "https://github.com/nDimensional/prototype#readme",
 	"dependencies": {
-		"immutable": "^3.8.2",
-		"markdown-it": "^8.4.2",
+		"@types/react": "^17.0.18",
+		"@types/react-dom": "^17.0.9",
 		"punycode": "^2.1.1",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2",
-		"slate": "^0.47.4",
-		"slate-react": "^0.22.4"
+		"slate": "^0.65.3",
+		"slate-react": "^0.65.3"
 	},
 	"devDependencies": {
 		"esbuild": "^0.12.15",
